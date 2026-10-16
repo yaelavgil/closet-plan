@@ -82,21 +82,21 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 <div class="ctl">
   <div class="r">
     <label for="run">המרחק האופקי מהקיר הגבוה עד הנקודה שבה התקרה מגיעה ל-95 ס״מ:</label>
-    <input type="number" id="run" value="285" min="80" max="460" step="1">
+    <input type="number" id="run" value="200" min="80" max="460" step="1">
     <span style="font-size:14px;color:var(--ink2)">ס״מ</span>
-    <span class="flag">לא נמדד</span>
+    <span class="flag" style="background:#4a6a52">נמדד 16.10</span>
   </div>
   <div class="r" style="margin-top:12px">
     <label>צורת השיפוע:</label>
     <div class="seg" id="model">
-      <button data-m="b" class="on">לפי מדידת ה-140</button>
-      <button data-m="a">שיפוע ישר</button>
+      <button data-m="a" class="on">שיפוע ישר</button>
+      <button data-m="b">לפי מדידת ה-140</button>
     </div>
   </div>
 </div>
 
 <h2>חתך — הקיר המשופע</h2>
-<p class="dims">234 ס״מ בשיא (צד שמאל) · 95 ס״מ בקצה · כל רצועה מראה מה נכנס בה</p>
+<p class="dims">233.4 ס״מ בשיא (צד שמאל) · 95.5 ס״מ בקצה · ירידה על פני 200 ס״מ · כל רצועה מראה מה נכנס בה</p>
 <div class="card">
   <svg viewBox="0 0 820 560" id="sec"></svg>
 </div>
@@ -121,26 +121,23 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   <svg viewBox="0 0 560 760" id="plan"></svg>
 </div>
 
-<div class="note warn">
-  <b>משהו לא מסתדר במדידות, ושווה לדעת את זה לפני שמזמינים.</b><br>
-  אם השיפוע ישר מ-234 ל-95, אז באמצע הדרך הגובה אמור להיות <b>164.5</b> ס״מ.
-  המדידה אומרת שקו ה-140 נמצא בערך באמצע.<br>
-  יש לזה שני הסברים: או שיש קיר ברך ואז שיפוע חד יותר, או שה״אמצע״ היה הערכה גסה.
-  המתג למעלה מראה את שתי האפשרויות — ההפרש ביניהן מגיע ל-25 ס״מ גובה, וזה בדיוק ההבדל בין ארון שנכנס לארון שלא.<br>
-  <b>מה שסוגר את זה:</b> מדידה אחת של המרחק האופקי מהקיר הגבוה עד הנקודה שבה התקרה נוגעת ב-95.
+<div class="note">
+  <b>הנתון שחסר נמדד — 16.10.</b> הגג יורד מ-233.4 ל-95.5 על פני <b>2 מטר</b> בדיוק, שיפוע של 34.6 מעלות. זה שיפוע גג טיפוסי, ולכן הקו ישר.<br>
+  מכאן יוצא שקו ה-140 נמצא <b>135 ס״מ</b> מהקיר הגבוה ולא באמצע — ההערכה המוקדמת הייתה גסה. המתג נשאר בדף להשוואה, אבל המודל הנכון הוא השיפוע הישר.<br>
+  <b>המספר המעשי:</b> ארון בעומק 60 ס״מ, שהוא העומק הסטנדרטי, מגיע לנקודה שבה התקרה היא <b>192 ס״מ</b>. זה הגובה המקסימלי של ארון רגיל כאן, אלא אם בונים לו גג משופע.
 </div>
 
 <div class="note">
   <b>כללי האצבע שלפיהם סומנו הרצועות:</b> חולצות ומכנסיים דורשים 90–100 ס״מ מתחת למוט, שמלות ומעילים 120–150.
   תליה כפולה דורשת 200 ומעלה.
   מתחת ל-120 ס״מ גובה אין טעם בתליה — שם מדפים, מגירות וסלסלות.<br>
-  <b>הנישה</b> של בערך 80×80 ס״מ מימין, בכניסה מחדר השינה, לא נמדדה במדויק ולא מצוירת כאן.
+  <b>הקיר הקצר מימין לכניסה מחדר השינה — 80 ס״מ</b> (נמדד 16.10). זו הנישה שהוזכרה קודם כ״בערך 80×80״; העומק שלה עדיין לא נמדד.
 </div>
 
 <p class="foot">
 כל המידות מ-<b>מידות.md</b> בתיקיית השיפוץ, תגית ״מדידה״ — יעל בשטח, 4.10.2026.<br>
 המרחק האופקי של השיפוע הוא הנתון היחיד בדף שלא נמדד, והוא ניתן לשינוי למעלה.<br>
-עודכן 16.10.2026
+גובה מירבי, גובה נמוך ומרחק הירידה — מדידת יעל 16.10.2026. עודכן 16.10.2026
 </p>
 
 </div>
@@ -150,8 +147,8 @@ const SVGNS='http://www.w3.org/2000/svg';
 function el(t,a){const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
 function txt(svg,x,y,s,cls){const t=el('text',{x,y,class:cls||'dim'});t.textContent=s;svg.appendChild(t);return t;}
 
-const HMAX=234, HMID=140, HMIN=95;
-let RUN=285, MODEL='b';
+const HMAX=233.4, HMID=140, HMIN=95.5;
+let RUN=200, MODEL='a';
 
 // height (cm) at horizontal distance x (cm) from the high wall
 function hAt(x){
@@ -214,7 +211,7 @@ function drawSection(){
   svg.appendChild(el('line',{x1:px(0)-14,y1:yFloor,x2:px(RUN)+14,y2:yFloor,stroke:'var(--ink)','stroke-width':2.4}));
 
   // height markers
-  [[0,HMAX,'234'],[RUN/2,hAt(RUN/2),Math.round(hAt(RUN/2))+''],[RUN,HMIN,'95']].forEach(m=>{
+  [[0,HMAX,'233.4'],[RUN/2,hAt(RUN/2),Math.round(hAt(RUN/2))+''],[RUN,HMIN,'95.5']].forEach(m=>{
     const x=px(m[0]), y=py(m[1]);
     svg.appendChild(el('line',{x1:x,y1:y,x2:x,y2:yFloor,stroke:'var(--ink3)','stroke-width':1,'stroke-dasharray':'4 4'}));
     const t=el('text',{x:x,y:y-9,class:'lbl'});t.textContent=m[2];svg.appendChild(t);

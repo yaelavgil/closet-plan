@@ -67,6 +67,11 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 .key i{width:13px;height:13px;border-radius:3px;display:inline-block}
 .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink3);line-height:1.8}
 .lbl{font:500 11.5px Heebo,sans-serif;fill:var(--ink);text-anchor:middle}
+.dln{stroke:var(--ink2);stroke-width:1}
+.ext{stroke:var(--ink3);stroke-width:.8}
+.dtx{font:500 11.5px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
+.room{fill:var(--surface2);stroke:var(--ink);stroke-width:2}
+.rlbl{font:600 13px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
 .dim{font:400 11px Heebo,sans-serif;fill:var(--ink3);text-anchor:middle}
 .zlbl{font:600 12px Heebo,sans-serif;fill:#fff;text-anchor:middle}
 .zsub{font:400 10.5px Heebo,sans-serif;fill:rgba(255,255,255,.85);text-anchor:middle}
@@ -116,9 +121,9 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </table>
 
 <h2>מבט על</h2>
-<p class="dims">מצולע של שלושה מלבנים · רוחב כולל 285.2 · עומק כולל 460.5 ס״מ</p>
+<p class="dims">כל המידות בס״מ · הקו המקווקו מסמן את המדרגות במצולע ואינו קיר</p>
 <div class="card">
-  <svg viewBox="0 0 560 760" id="plan"></svg>
+  <svg viewBox="0 0 580 700" id="plan"></svg>
 </div>
 
 <div class="note">
@@ -233,33 +238,55 @@ function drawTable(){
   });
 }
 
+function tick(svg,x,y){const d=4.5;
+  svg.appendChild(el('line',{x1:x-d,y1:y+d,x2:x+d,y2:y-d,class:'dln'}));}
+function dimH(svg,xa,xb,y,label,yGeomA,yGeomB){
+  svg.appendChild(el('line',{x1:xa,y1:yGeomA,x2:xa,y2:y+(y<yGeomA?-7:7)*-1,class:'ext'}));
+  svg.appendChild(el('line',{x1:xb,y1:yGeomB,x2:xb,y2:y+(y<yGeomB?-7:7)*-1,class:'ext'}));
+  svg.appendChild(el('line',{x1:xa,y1:y,x2:xb,y2:y,class:'dln'}));
+  tick(svg,xa,y); tick(svg,xb,y);
+  const t=el('text',{x:(xa+xb)/2,y:y-7,class:'dtx'}); t.textContent=label; svg.appendChild(t);
+}
+function dimV(svg,ya,yb,x,label,xGeom){
+  svg.appendChild(el('line',{x1:xGeom,y1:ya,x2:x+7,y2:ya,class:'ext'}));
+  svg.appendChild(el('line',{x1:xGeom,y1:yb,x2:x+7,y2:yb,class:'ext'}));
+  svg.appendChild(el('line',{x1:x,y1:ya,x2:x,y2:yb,class:'dln'}));
+  tick(svg,x,ya); tick(svg,x,yb);
+  const cy=(ya+yb)/2;
+  const t=el('text',{x:x-7,y:cy,class:'dtx',transform:'rotate(-90 '+(x-7)+' '+cy+')'});
+  t.textContent=label; svg.appendChild(t);
+}
+
 function drawPlan(){
   const svg=document.getElementById('plan'); svg.innerHTML='';
-  const S=1.22, OX=92, OY=40;
-  const rects=[
-    {w:195.7,d:101.5,label:'עליון',align:'left'},
-    {w:285.2,d:67,   label:'אמצעי',align:'full'},
-    {w:285,  d:292,  label:'תחתון',align:'full'}
-  ];
-  let y=OY;
-  rects.forEach(r=>{
-    const x=OX;                                  // left-aligned polygon
-    svg.appendChild(el('rect',{x,y,width:r.w*S,height:r.d*S,
-      fill:'var(--surface2)',stroke:'var(--ink2)','stroke-width':1.6}));
-    txt(svg,x+r.w*S/2,y+r.d*S/2-4,'רוחב '+r.w+' · עומק '+r.d,'lbl');
-    txt(svg,x+r.w*S/2,y+r.d*S/2+12,r.label);
-    y+=r.d*S;
-  });
-  // overall dims
-  const totD=(101.5+67+292)*S, totW=285.2*S;
-  svg.appendChild(el('line',{x1:OX-18,y1:OY,x2:OX-18,y2:OY+totD,stroke:'var(--ink3)','stroke-width':1}));
-  const t=el('text',{x:OX-30,y:OY+totD/2,class:'dim',transform:'rotate(-90 '+(OX-30)+' '+(OY+totD/2)+')'});
-  t.textContent='460.5 — עומק כולל'; svg.appendChild(t);
-  txt(svg,OX+totW/2,OY+totD+26,'285.2 — רוחב כולל');
-  // the exposed 89.5 side wall on the middle rectangle
-  const yMid=OY+101.5*S;
-  svg.appendChild(el('line',{x1:OX+195.7*S,y1:yMid,x2:OX+285.2*S,y2:yMid,stroke:'var(--accent)','stroke-width':2.4}));
-  txt(svg,OX+(195.7+89.5/2)*S,yMid-7,'89.5 דופן גלויה');
+  const S=1.14, OX=118, OY=86;
+  const W=285.2, Dt=101.5, Dm=67, Db=292, Wt=195.7;
+  const px=v=>OX+v*S, py=v=>OY+v*S;
+
+  const pts=[[0,0],[Wt,0],[Wt,Dt],[W,Dt],[W,Dt+Dm+Db],[0,Dt+Dm+Db]];
+  svg.appendChild(el('polygon',{class:'room',
+    points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
+
+  const yStep=py(Dt);
+  svg.appendChild(el('line',{x1:px(0),y1:yStep,x2:px(Wt),y2:yStep,
+    stroke:'var(--ink3)','stroke-width':.9,'stroke-dasharray':'5 4'}));
+  svg.appendChild(el('line',{x1:px(0),y1:py(Dt+Dm),x2:px(W),y2:py(Dt+Dm),
+    stroke:'var(--ink3)','stroke-width':.9,'stroke-dasharray':'5 4'}));
+
+  const rl=el('text',{x:px(W/2),y:py(Dt+Dm+Db/2),class:'rlbl'});
+  rl.textContent='חדר ארונות'; svg.appendChild(rl);
+
+  // top chain: 195.7 + 89.5, then the overall above it
+  dimH(svg,px(0),px(Wt),OY-34,'195.7',py(0),py(0));
+  dimH(svg,px(Wt),px(W),OY-34,'89.5',py(0),yStep);
+  dimH(svg,px(0),px(W),OY-68,'285.2',py(0),yStep);
+
+  // right chain: the three depths, then the overall
+  const xd=px(W)+42;
+  dimV(svg,py(0),py(Dt),xd,'101.5',px(Wt));
+  dimV(svg,py(Dt),py(Dt+Dm),xd,'67',px(W));
+  dimV(svg,py(Dt+Dm),py(Dt+Dm+Db),xd,'292',px(W));
+  dimV(svg,py(0),py(Dt+Dm+Db),xd+40,'460.5',px(W));
 }
 
 function redraw(){drawSection();drawTable();drawPlan();}

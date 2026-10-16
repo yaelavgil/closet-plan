@@ -121,9 +121,19 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </table>
 
 <h2>מבט על</h2>
-<p class="dims">כל המידות בס״מ · הקו המקווקו מסמן את המדרגות במצולע ואינו קיר</p>
+<p class="dims">כל המידות בס״מ · הקווים המקווקווים האפורים הם מדרגות במצולע ולא קירות</p>
+<div class="ctl" style="margin-top:0">
+  <div class="r">
+    <label>קטע הקיר של 200 ס״מ נמצא:</label>
+    <div class="seg" id="side">
+      <button data-s="top" class="on">בצד העליון</button>
+      <button data-s="bot">בצד התחתון</button>
+    </div>
+    <span class="flag">רוחב הפתח נגזר, לא נמדד</span>
+  </div>
+</div>
 <div class="card">
-  <svg viewBox="0 0 580 700" id="plan"></svg>
+  <svg viewBox="0 0 660 700" id="plan"></svg>
 </div>
 
 <div class="note">
@@ -136,7 +146,8 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   <b>כללי האצבע שלפיהם סומנו הרצועות:</b> חולצות ומכנסיים דורשים 90–100 ס״מ מתחת למוט, שמלות ומעילים 120–150.
   תליה כפולה דורשת 200 ומעלה.
   מתחת ל-120 ס״מ גובה אין טעם בתליה — שם מדפים, מגירות וסלסלות.<br>
-  <b>הקיר הקצר מימין לכניסה מחדר השינה — 80 ס״מ</b> (נמדד 16.10). זו הנישה שהוזכרה קודם כ״בערך 80×80״; העומק שלה עדיין לא נמדד.
+  <b>הפתח.</b> הקיר הארוך הוא 460.5 ס״מ, ומדדת 200 בצד אחד ו-80 בצד השני — מה שמשאיר <b>180.5 ס״מ של פתח</b>. זו נגזרת, לא מדידה, והיא תלויה בכך שהפתח אכן יושב בקיר הארוך. אם הוא בקיר של 285.2, המספרים לא מסתדרים: 200 ועוד 80 כבר תופסים 280 ונשארים 5 ס״מ בלבד.<br>
+  המתג שמעל התוכנית מחליף את הצד שבו יושב קטע ה-200, כי לא ידוע אם ״שמאלה״ הוא למעלה או למטה בשרטוט.
 </div>
 
 <p class="foot">
@@ -257,9 +268,10 @@ function dimV(svg,ya,yb,x,label,xGeom){
   t.textContent=label; svg.appendChild(t);
 }
 
+let SIDE='top';
 function drawPlan(){
   const svg=document.getElementById('plan'); svg.innerHTML='';
-  const S=1.14, OX=118, OY=86;
+  const S=1.14, OX=190, OY=86;
   const W=285.2, Dt=101.5, Dm=67, Db=292, Wt=195.7;
   const px=v=>OX+v*S, py=v=>OY+v*S;
 
@@ -287,10 +299,40 @@ function drawPlan(){
   dimV(svg,py(Dt),py(Dt+Dm),xd,'67',px(W));
   dimV(svg,py(Dt+Dm),py(Dt+Dm+Db),xd,'292',px(W));
   dimV(svg,py(0),py(Dt+Dm+Db),xd+40,'460.5',px(W));
+
+  // ---- the opening in the left wall
+  const D=Dt+Dm+Db;                       // 460.5
+  const A=SIDE==='top'?200:80;            // wall segment at the top
+  const B=SIDE==='top'?80:200;            // wall segment at the bottom
+  const OPEN=D-A-B;                       // derived
+  const y1=py(A), y2=py(D-B), x0=px(0);
+  // break the wall line
+  svg.appendChild(el('line',{x1:x0,y1:y1,x2:x0,y2:y2,
+    stroke:'var(--surface)','stroke-width':5}));
+  // jambs
+  [y1,y2].forEach(yy=>svg.appendChild(el('line',{x1:x0-9,y1:yy,x2:x0+9,y2:yy,
+    stroke:'var(--ink)','stroke-width':2})));
+  // swing-free passage marker
+  svg.appendChild(el('line',{x1:x0,y1:y1+4,x2:x0,y2:y2-4,
+    stroke:'var(--accent)','stroke-width':2,'stroke-dasharray':'7 5'}));
+  const ot=el('text',{x:x0+30,y:(y1+y2)/2,class:'dtx',
+    transform:'rotate(-90 '+(x0+30)+' '+((y1+y2)/2)+')'});
+  ot.setAttribute('fill','var(--accent)'); ot.textContent='פתח'; svg.appendChild(ot);
+  // left dimension chain: A / opening / B
+  const xl=px(0)-46;
+  dimV(svg,py(0),y1,xl,A+'',x0);
+  dimV(svg,y1,y2,xl,OPEN.toFixed(1),x0);
+  dimV(svg,y2,py(D),xl,B+'',x0);
 }
 
 function redraw(){drawSection();drawTable();drawPlan();}
 document.getElementById('run').oninput=e=>{const v=+e.target.value; if(v>=80&&v<=460){RUN=v;redraw();}};
+document.getElementById('side').onclick=e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  SIDE=b.dataset.s;
+  [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c===b));
+  drawPlan();
+};
 document.getElementById('model').onclick=e=>{
   const b=e.target.closest('button'); if(!b)return;
   MODEL=b.dataset.m;

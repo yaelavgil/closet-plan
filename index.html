@@ -121,13 +121,13 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </table>
 
 <h2>מבט על</h2>
-<p class="dims">כל המידות בס״מ · הקווים המקווקווים האפורים הם מדרגות במצולע ולא קירות</p>
+<p class="dims">כל המידות בס״מ · הקו הכתום הוא השערה שטרם אומתה</p>
 <div class="ctl" style="margin-top:0">
   <div class="r">
-    <label>קטע הקיר של 200 ס״מ נמצא:</label>
+    <label>סדר הקטעים בקיר הארוך:</label>
     <div class="seg" id="side">
-      <button data-s="top" class="on">בצד העליון</button>
-      <button data-s="bot">בצד התחתון</button>
+      <button data-s="bot" class="on">80 עד הפתח, ואז 200</button>
+      <button data-s="top">200 ראשון, ואז 80</button>
     </div>
     <span class="flag">הפתח 79 — נגזר מהשרשרת</span>
   </div>
@@ -146,8 +146,9 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   <b>כללי האצבע שלפיהם סומנו הרצועות:</b> חולצות ומכנסיים דורשים 90–100 ס״מ מתחת למוט, שמלות ומעילים 120–150.
   תליה כפולה דורשת 200 ומעלה.
   מתחת ל-120 ס״מ גובה אין טעם בתליה — שם מדפים, מגירות וסלסלות.<br>
-  <b>הפתח — 79 ס״מ.</b> 460.5 פחות 101.5 פחות 200 פחות 80. זו נגזרת מהשרשרת ולא מדידה ישירה, אז שווה לאמת אותה ברולטקה.<br>
-  המתג שמעל התוכנית מחליף את הצד שבו יושב קטע ה-200, כי לא ידוע אם ״שמאלה״ הוא למעלה או למטה בשרטוט.
+  <b>הפתח — 79 ס״מ.</b> 460.5 פחות 101.5 פחות 80 פחות 200. השרשרת סוגרת בדיוק. זו עדיין נגזרת ולא מדידה ישירה, אז שווה לאמת ברולטקה.<br>
+  <b>ה-67 כנראה אינו מידה של קיר.</b> אם הוא מסמן איפה הגג מתחיל לרדת, הסיפור נסגר יפה: השיפוע מתחיל 168.5 ס״מ מהקצה העליון, יורד על פני 200 ס״מ ומגיע ל-95.5 בנקודה 368.5, ונשארים 92 ס״מ בגובה הנמוך עד הקיר. הכל מסתכם ל-460.5.<br>
+  <b>מדידה אחת מאמתת את זה:</b> המרחק מהקיר העליון עד הנקודה שבה התקרה מתחילה לרדת.
 </div>
 
 <p class="foot">
@@ -268,7 +269,7 @@ function dimV(svg,ya,yb,x,label,xGeom){
   t.textContent=label; svg.appendChild(t);
 }
 
-let SIDE='top';
+let SIDE='bot';
 function drawPlan(){
   const svg=document.getElementById('plan'); svg.innerHTML='';
   const S=1.14, OX=190, OY=86;
@@ -282,8 +283,14 @@ function drawPlan(){
   const yStep=py(Dt);
   svg.appendChild(el('line',{x1:px(0),y1:yStep,x2:px(Wt),y2:yStep,
     stroke:'var(--ink3)','stroke-width':.9,'stroke-dasharray':'5 4'}));
-  svg.appendChild(el('line',{x1:px(0),y1:py(Dt+Dm),x2:px(W),y2:py(Dt+Dm),
-    stroke:'var(--ink3)','stroke-width':.9,'stroke-dasharray':'5 4'}));
+  // the 168.5 line — possibly where the ceiling starts to drop (unverified)
+  const ySl=py(Dt+Dm);
+  svg.appendChild(el('line',{x1:px(0),y1:ySl,x2:px(W),y2:ySl,
+    stroke:'var(--warn)','stroke-width':1.4,'stroke-dasharray':'8 5'}));
+  const st=el('text',{x:px(W/2),y:ySl-7,class:'dtx'});
+  st.setAttribute('fill','var(--warn)');
+  st.textContent='168.5 — כאן אולי מתחיל השיפוע · לא מאומת';
+  svg.appendChild(st);
 
   const rl=el('text',{x:px(W/2),y:py(Dt+Dm+Db/2),class:'rlbl'});
   rl.textContent='חדר ארונות'; svg.appendChild(rl);

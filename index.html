@@ -109,9 +109,9 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </div>
 
 <h2>עד איפה מגיע ארון</h2>
-<p class="dims">המרחק מהקיר הגבוה שבו עוד אפשר להעמיד ארון בגובה הזה, ושטח הרצפה שהוא תופס לאורך 285 ס״מ רוחב</p>
+<p class="dims">המרחק מהקיר הגבוה שבו עוד אפשר להעמיד ארון בגובה הזה, כולל 2 ס״מ מרווח התקנה</p>
 <table id="tbl">
-  <thead><tr><th>גובה הארון</th><th>עד מרחק</th><th>רוחב הרצועה</th><th>שטח לאורך 285 רוחב</th></tr></thead>
+  <thead><tr><th>גובה הארון</th><th>עד מרחק מהקיר הגבוה</th><th>שטח רצפה לכל מטר אורך קיר</th></tr></thead>
   <tbody></tbody>
 </table>
 
@@ -228,9 +228,9 @@ function drawTable(){
   [220,200,180,150,120].forEach(h=>{
     const x=xAt(h+2);                 // +2 for installation clearance
     const tr=document.createElement('tr');
-    const area=(x*285.2/10000).toFixed(2);
+    const area=(x/100).toFixed(2);
     tr.innerHTML='<td>'+h+' ס״מ</td><td class="n">'+Math.round(x)+' ס״מ</td>'+
-      '<td class="n">'+Math.round(x)+' ס״מ</td><td class="n">'+area+' מ״ר</td>';
+      '<td class="n">'+area+' מ״ר</td>';
     if(x<20) tr.style.color='var(--ink3)';
     tb.appendChild(tr);
   });
@@ -249,7 +249,7 @@ function drawPlan(){
     const x=OX;                                  // left-aligned polygon
     svg.appendChild(el('rect',{x,y,width:r.w*S,height:r.d*S,
       fill:'var(--surface2)',stroke:'var(--ink2)','stroke-width':1.6}));
-    txt(svg,x+r.w*S/2,y+r.d*S/2-4,r.w+' × '+r.d,'lbl');
+    txt(svg,x+r.w*S/2,y+r.d*S/2-4,'רוחב '+r.w+' · עומק '+r.d,'lbl');
     txt(svg,x+r.w*S/2,y+r.d*S/2+12,r.label);
     y+=r.d*S;
   });

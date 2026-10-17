@@ -76,6 +76,10 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 .slptx{font:600 11px Heebo,sans-serif;fill:#fff;text-anchor:middle}
 .room{fill:var(--surface2);stroke:var(--ink);stroke-width:2}
 .rlbl{font:600 13px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
+.unit{stroke:#2c3a30;stroke-width:1.2}
+.utx{font:600 11.5px Heebo,sans-serif;fill:#fff;text-anchor:middle}
+.usb{font:400 10px Heebo,sans-serif;fill:rgba(255,255,255,.88);text-anchor:middle}
+.mir{stroke:#7fa6bd;stroke-width:5;stroke-linecap:round}
 .dim{font:400 11px Heebo,sans-serif;fill:var(--ink3);text-anchor:middle}
 .zlbl{font:600 12px Heebo,sans-serif;fill:#fff;text-anchor:middle}
 .zsub{font:400 10.5px Heebo,sans-serif;fill:rgba(255,255,255,.85);text-anchor:middle}
@@ -110,6 +114,16 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   <span><i style="background:var(--z4)"></i> מגירות ומדפים</span>
   <span><i style="background:var(--z5)"></i> נעליים ותחתית בלבד</span>
 </div>
+
+<h2>הצעת נגרות</h2>
+<p class="dims">הכל במידות האמיתיות · הפרוזדור שנשאר בין שני הטורים הוא 165 ס״מ</p>
+<div class="card">
+  <svg viewBox="0 0 680 720" id="joinery"></svg>
+</div>
+<table id="prog">
+  <thead><tr><th>מה ביקשת</th><th>איפה</th><th>כמה יוצא</th></tr></thead>
+  <tbody></tbody>
+</table>
 
 <h2>עד איפה מגיע ארון</h2>
 <p class="dims">המרחק מהקיר הגבוה שבו עוד אפשר להעמיד ארון בגובה הזה, כולל 2 ס״מ מרווח התקנה · 171.5 הס״מ הראשונים שטוחים לגמרי</p>
@@ -362,7 +376,81 @@ function drawPlan(){
   dimH(svg,px(0),px(W),py(L)+40,'285.2',py(L),py(L));
 }
 
-function redraw(){drawSection();drawTable();drawPlan();}
+const UNITS=[
+ {x:0,    y:0,     w:115.7, h:60,   c:'#4a6a52', t:'מקופלים — רועי', s:'115 רוחב · 5 מדפים · עומק 60'},
+ {x:0,    y:60,    w:60,    h:180,  c:'#3f5f68', t:'תליה',            s:'180 אורך · כ-270 ס״מ מוט · גובה 200'},
+ {x:0,    y:240,   w:60,    h:105,  c:'#6b8a63', t:'מקופלים — יעל',   s:'105 אורך · גובה 190 עד 150'},
+ {x:0,    y:345,   w:60,    h:55,   c:'#9aa877', t:'מגירות',          s:'55 אורך · גובה 150 עד 124'},
+ {x:0,    y:400,   w:285.2, h:60.5, c:'#b98f7a', t:'מזוודות · מצעים · כריות ושמיכות', s:'285 רוחב · גובה 90 · מגירות עמוקות'},
+ {x:225.2,y:260.5, w:60,    h:139.5,c:'#8a6f52', t:'נעליים',          s:'139.5 אורך · 10 מדפים · כ-70 זוגות'},
+ {x:195.7,y:101.5, w:89.5,  h:40,   c:'#7a6a86', t:'פינת איפור',      s:'שולחן 75 · שתי מגירות · שרפרף'}
+];
+function drawJoinery(){
+  const svg=document.getElementById('joinery'); if(!svg)return;
+  svg.innerHTML='';
+  const S=1.14, OX=130, OY=74;
+  const px=v=>OX+v*S, py=v=>OY+v*S;
+  const pts=[[0,0],[Wt,0],[Wt,Dt],[W,Dt],[W,L],[0,L]];
+  svg.appendChild(el('polygon',{class:'room',
+    points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
+
+  // the two openings, left clear
+  const yT=py(0), tx1=px(Wt-TOP_W), tx2=px(Wt);
+  svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx2,y2:yT,stroke:'var(--surface)','stroke-width':5}));
+  const xR=px(W);
+  svg.appendChild(el('line',{x1:xR,y1:py(OP_A),x2:xR,y2:py(OP_B),stroke:'var(--surface)','stroke-width':5}));
+  const oi=el('text',{x:xR-26,y:(py(OP_A)+py(OP_B))/2,class:'dtx',
+    transform:'rotate(-90 '+(xR-26)+' '+((py(OP_A)+py(OP_B))/2)+')'});
+  oi.setAttribute('fill','var(--accent)'); oi.textContent='הכניסה'; svg.appendChild(oi);
+
+  UNITS.forEach(u=>{
+    svg.appendChild(el('rect',{x:px(u.x),y:py(u.y),width:u.w*S,height:u.h*S,fill:u.c,class:'unit',rx:2}));
+    const cx=px(u.x)+u.w*S/2, cy=py(u.y)+u.h*S/2;
+    const vert=u.h>u.w*1.4;
+    const t=el('text',{x:cx,y:vert?cy-6:cy-5,class:'utx'});
+    if(vert)t.setAttribute('transform','rotate(-90 '+cx+' '+(cy-6)+')');
+    t.textContent=u.t; svg.appendChild(t);
+    const s2=el('text',{x:cx,y:vert?cy+8:cy+10,class:'usb'});
+    if(vert)s2.setAttribute('transform','rotate(-90 '+cx+' '+(cy+8)+')');
+    s2.textContent=u.s; svg.appendChild(s2);
+  });
+
+  // the big mirror, on the face of the protrusion
+  svg.appendChild(el('line',{x1:px(Wt)+3,y1:py(Dt),x2:px(W)-3,y2:py(Dt),class:'mir'}));
+  const mt=el('text',{x:(px(Wt)+px(W))/2,y:py(Dt)-9,class:'dtx'});
+  mt.setAttribute('fill','#7fa6bd'); mt.textContent='מראה גדולה · 89.5 רוחב'; svg.appendChild(mt);
+
+  // the walkway
+  const wx=px(142), wy1=py(80), wy2=py(390);
+  svg.appendChild(el('line',{x1:wx,y1:wy1,x2:wx,y2:wy2,stroke:'var(--ink3)','stroke-width':1,'stroke-dasharray':'7 6'}));
+  const wt=el('text',{x:wx,y:py(215),class:'dtx',transform:'rotate(-90 '+wx+' '+py(215)+')'});
+  wt.textContent='פרוזדור 165 ס״מ'; svg.appendChild(wt);
+
+  dimH(svg,px(0),px(W),OY-26,'285.2',py(0),py(Dt));
+  dimV(svg,py(0),py(L),px(0)-40,'460.5',px(0));
+}
+
+const PROG=[
+ ['אחסון מת למזוודות','הרצועה הנמוכה בקצה החדר, גובה 90','285 ס״מ רוחב · 60 עומק'],
+ ['מצעים, כריות ושמיכות','באותה רצועה, מגירות עמוקות','כ-1.7 מ״ר רצפה'],
+ ['מדפים מקופלים — רועי','הקיר הגבוה, בגובה מלא 233','115 ס״מ'],
+ ['מדפים מקופלים — יעל','הקיר השמאלי, אחרי התליה','105 ס״מ'],
+ ['תליה משותפת 2.5 מ׳','הקיר השמאלי, ברצועה הגבוהה','כ-270 ס״מ מוט — מפוצל לשניים'],
+ ['נעליים, 50 זוגות','הקיר הימני מתחת לכניסה','139.5 ס״מ · 10 מדפים · כ-70 זוגות'],
+ ['פינת איפור עם ישיבה','על חזית הבליטה','89.5 ס״מ · שולחן 75 + שתי מגירות'],
+ ['מראה גדולה','על חזית הבליטה, מעל השולחן','89.5 רוחב · עד גובה 220'],
+ ['אחסון נוסף','מגירות בקיר השמאלי','55 ס״מ']
+];
+function drawProg(){
+  const tb=document.querySelector('#prog tbody'); if(!tb)return;
+  tb.innerHTML='';
+  PROG.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td class="n">'+r[2]+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function redraw(){drawSection();drawTable();drawPlan();drawJoinery();drawProg();}
 redraw();
 </script>
 </body>

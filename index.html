@@ -87,7 +87,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 <div class="ctl">
   <div class="r" style="gap:22px">
     <span><b>233.4</b> בשיא &nbsp;·&nbsp; <b>95.5</b> בנמוך</span>
-    <span>הגג שטוח <b>70</b> ס״מ, יורד על פני <b>200</b>, ואז שטוח <b>190.5</b> עד הקיר</span>
+    <span>הגג שטוח <b>171.5</b> ס״מ, יורד על פני <b>200</b>, ואז שטוח <b>89</b> עד הקיר</span>
     <span class="flag" style="background:#4a6a52">נמדד 16–17.10</span>
   </div>
 </div>
@@ -95,7 +95,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </div>
 
 <h2>חתך — הקיר המשופע</h2>
-<p class="dims">233.4 ס״מ בשיא (צד שמאל) · 95.5 ס״מ בקצה · ירידה על פני 200 ס״מ · כל רצועה מראה מה נכנס בה</p>
+<p class="dims">233.4 ס״מ לאורך 171.5 הראשונים · ירידה על פני 200 · 95.5 ב-89 האחרונים · כל רצועה מראה מה נכנס בה</p>
 <div class="card">
   <svg viewBox="0 0 820 560" id="sec"></svg>
 </div>
@@ -108,7 +108,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </div>
 
 <h2>עד איפה מגיע ארון</h2>
-<p class="dims">המרחק מהקיר הגבוה שבו עוד אפשר להעמיד ארון בגובה הזה, כולל 2 ס״מ מרווח התקנה · 70 הס״מ הראשונים שטוחים לגמרי</p>
+<p class="dims">המרחק מהקיר הגבוה שבו עוד אפשר להעמיד ארון בגובה הזה, כולל 2 ס״מ מרווח התקנה · 171.5 הס״מ הראשונים שטוחים לגמרי</p>
 <table id="tbl">
   <thead><tr><th>גובה הארון</th><th>עד מרחק מהקיר הגבוה</th><th>שטח רצפה לכל מטר אורך קיר</th></tr></thead>
   <tbody></tbody>
@@ -142,7 +142,8 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   מתחת ל-120 ס״מ גובה אין טעם בתליה — שם מדפים, מגירות וסלסלות.<br>
   <b>הפתח — 79 ס״מ</b>, בקיר הימני. מתחיל 80 ס״מ מתחת לקצה התחתון של הבליטה, ונגמר 200 ס״מ מהקצה הרחוק. 101.5 ועוד 80 ועוד 79 ועוד 200 נותנים 460.5 בדיוק.<br>
   <b>ה-67 לא היה תחילת השיפוע</b> — השיפוע מתחיל ב-70, והפער בין 67 ל-70 הוא 3 ס״מ. ה-67 נשאר פרוסת מדידה בלבד ולא מסמן שום דבר פיזי.<br>
-  <b>מה שזה אומר בפועל:</b> 70 הס״מ הראשונים מהקיר הגבוה הם בגובה מלא 233.4 לכל רוחב החדר, והפתח מתחיל רק ב-80 — כלומר כל הרצועה הגבוהה פנויה לארון.
+  <b>נקודת הייחוס של שתי המידות זהה:</b> גם ה-70 של השיפוע וגם ה-80 של הפתח נמדדים מהקצה התחתון של הבליטה. כלומר השיפוע מתחיל, ועשרה ס״מ אחריו מתחיל הפתח.<br>
+  <b>מה שזה אומר בפועל:</b> 171.5 הס״מ הראשונים מהקיר הגבוה הם בגובה מלא 233.4, וזו רצועה עמוקה מאוד — מספיקה לשלושה ארונות בעומק 60 זה אחרי זה.
 </div>
 
 <p class="foot">
@@ -159,10 +160,11 @@ function el(t,a){const e=document.createElementNS(SVGNS,t);for(const k in a)e.se
 function txt(svg,x,y,s,cls){const t=el('text',{x,y,class:cls||'dim'});t.textContent=s;svg.appendChild(t);return t;}
 
 const HMAX=233.4, HMIN=95.5;
-const L=460.5, FLAT1=70, RUN=200, SLOPE=(HMAX-HMIN)/RUN;
-const FLAT2=L-FLAT1-RUN;
 const Wt=195.7, Dt=101.5, W=285.2;    // the notch is at the top, 195.7 wide × 101.5 deep
-const OP_A=Dt+80, OP_B=L-200;         // the opening: 80 below the notch edge, to 200 from the far end
+const L=460.5, RUN=200, SLOPE=(HMAX-HMIN)/RUN;
+const FLAT1=Dt+70;                    // the slope starts 70 below the notch edge
+const FLAT2=L-FLAT1-RUN;
+const OP_A=Dt+80, OP_B=L-200;         // the opening starts 80 below the same edge
 
 // height (cm) at distance x from the high wall
 function hAt(x){
@@ -226,9 +228,9 @@ function drawSection(){
     svg.appendChild(el('line',{x1:x,y1:y,x2:x,y2:yFloor,stroke:'var(--ink3)','stroke-width':1,'stroke-dasharray':'4 4'}));
     if(m[2]){const t=el('text',{x:x,y:y-10,class:'lbl'});t.textContent=m[2];svg.appendChild(t);}
   });
-  txt(svg,px(FLAT1/2),OY-12,'70 שטוח');
+  txt(svg,px(FLAT1/2),OY-12,FLAT1.toFixed(1)+' שטוח ב-233.4');
   txt(svg,px(FLAT1+RUN/2),OY-12,'200 — הירידה');
-  txt(svg,px(FLAT1+RUN+FLAT2/2),OY-12,'190.5 שטוח ב-95.5');
+  txt(svg,px(FLAT1+RUN+FLAT2/2),OY-12,FLAT2.toFixed(0)+' שטוח ב-95.5');
   txt(svg,px(L/2),yFloor+46,'460.5 — עומק החדר');
 }
 
@@ -274,7 +276,7 @@ function drawPlan(){
   svg.appendChild(el('polygon',{class:'room',
     points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
 
-  [[FLAT1,'70 — כאן מתחיל השיפוע'],[FLAT1+RUN,'270 — כאן הוא נגמר']].forEach(m=>{
+  [[FLAT1,'171.5 — כאן מתחיל השיפוע · 70 מתחת לבליטה'],[FLAT1+RUN,'371.5 — כאן הוא נגמר']].forEach(m=>{
     const yy=py(m[0]);
     const xa=m[0]<Dt?px(0):px(0), xb=m[0]<Dt?px(Wt):px(W);
     svg.appendChild(el('line',{x1:xa,y1:yy,x2:xb,y2:yy,

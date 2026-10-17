@@ -443,12 +443,17 @@ function drawJoinery(){
     svg.appendChild(el('rect',{x:px(u.x),y:py(u.y),width:u.w*S,height:u.h*S,fill:u.c,class:'unit',rx:2}));
     const cx=px(u.x)+u.w*S/2, cy=py(u.y)+u.h*S/2;
     const vert=u.h>u.w*1.3;
-    const t=el('text',{x:cx,y:vert?cy-6:cy-5,class:'utx'});
-    if(vert)t.setAttribute('transform','rotate(-90 '+cx+' '+(cy-6)+')');
-    t.textContent=u.t; svg.appendChild(t);
-    if(u.s){const s2=el('text',{x:cx,y:vert?cy+8:cy+10,class:'usb'});
-      if(vert)s2.setAttribute('transform','rotate(-90 '+cx+' '+(cy+8)+')');
-      s2.textContent=u.s; svg.appendChild(s2);}
+    const along=(vert?u.h:u.w)*S;          // space along the text direction
+    const g=el('g',{});
+    if(vert) g.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+    const two=u.s && along>96;
+    const t=el('text',{x:cx,y:two?cy-4:cy+4,class:'utx'});
+    t.textContent=u.t; g.appendChild(t);
+    if(two){
+      const s2=el('text',{x:cx,y:cy+11,class:'usb'});
+      s2.textContent=u.s; g.appendChild(s2);
+    }
+    svg.appendChild(g);
   });
 
   svg.appendChild(el('line',{x1:px(Wt)+3,y1:py(Dt),x2:px(W)-3,y2:py(Dt),class:'mir'}));

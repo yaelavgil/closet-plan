@@ -242,13 +242,13 @@ function drawSection(){
   // slope triangle, the way it is marked on a section
   const xa=FLAT1+95, xb=xa+100, ya=hAt(xa), yb=hAt(xb);
   const Ax=px(xa), Ay=py(ya), Bx=px(xb), By=py(yb);
-  svg.appendChild(el('polygon',{points:Ax+','+Ay+' '+Bx+','+Ay+' '+Bx+','+By,
-    fill:'rgba(20,24,20,.28)'}));
-  svg.appendChild(el('path',{d:'M'+Ax+' '+Ay+' L'+Bx+' '+Ay+' L'+Bx+' '+By,class:'slp'}));
-  const h1=el('text',{x:(Ax+Bx)/2,y:Ay+15,class:'slptx'});h1.textContent='100';svg.appendChild(h1);
-  const v1=el('text',{x:Bx-17,y:(Ay+By)/2+4,class:'slptx'});
+  svg.appendChild(el('polygon',{points:Ax+','+Ay+' '+Ax+','+By+' '+Bx+','+By,
+    fill:'rgba(20,24,20,.26)'}));
+  svg.appendChild(el('path',{d:'M'+Ax+' '+Ay+' L'+Ax+' '+By+' L'+Bx+' '+By,class:'slp'}));
+  const v1=el('text',{x:Ax+18,y:(Ay+By)/2+4,class:'slptx'});
   v1.textContent=(SLOPE*100).toFixed(1);svg.appendChild(v1);
-  const an=el('text',{x:Bx,y:By+22,class:'slptx','text-anchor':'end'});
+  const h1=el('text',{x:(Ax+Bx)/2,y:By-7,class:'slptx'});h1.textContent='100';svg.appendChild(h1);
+  const an=el('text',{x:(Ax+Bx)/2,y:By+18,class:'slptx'});
   an.textContent=(Math.atan(SLOPE)*180/Math.PI).toFixed(1)+'°  ·  1:'+(1/SLOPE).toFixed(1)+'  ·  '+(SLOPE*100).toFixed(0)+'%';
   svg.appendChild(an);
 }

@@ -165,6 +165,7 @@ const L=460.5, RUN=200, SLOPE=(HMAX-HMIN)/RUN;
 const FLAT1=Dt+70;                    // the slope starts 70 below the notch edge
 const FLAT2=L-FLAT1-RUN;
 const OP_A=Dt+80, OP_B=L-200;         // the opening starts 80 below the same edge
+const TOP_W=80, TOP_A=Wt-TOP_W;       // the double-door opening in the high wall, flush right
 
 // height (cm) at distance x from the high wall
 function hAt(x){
@@ -287,8 +288,18 @@ function drawPlan(){
 
   const rl=el('text',{x:px(W/2),y:py(L-70),class:'rlbl'});
   rl.textContent='חדר ארונות'; svg.appendChild(rl);
-  const hw=el('text',{x:px(Wt/2),y:OY-14,class:'dtx'});
+  const hw=el('text',{x:px(Wt/2),y:OY+26,class:'dtx'});
   hw.setAttribute('fill','var(--ink)'); hw.textContent='הקיר הגבוה — 233.4 ס״מ'; svg.appendChild(hw);
+
+  // the double-door opening in the high wall, flush to the right
+  const yT=py(0), tx1=px(TOP_A), tx2=px(Wt);
+  svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx2,y2:yT,stroke:'var(--surface)','stroke-width':5}));
+  [tx1,tx2].forEach(xx=>svg.appendChild(el('line',{x1:xx,y1:yT-9,x2:xx,y2:yT+9,
+    stroke:'var(--ink)','stroke-width':2})));
+  const tt=el('text',{x:(tx1+tx2)/2,y:yT+22,class:'dtx'});
+  tt.setAttribute('fill','var(--accent)'); tt.textContent='פתח · שתי דלתות'; svg.appendChild(tt);
+  dimH(svg,px(0),tx1,OY-16,TOP_A.toFixed(1),yT,yT);
+  dimH(svg,tx1,tx2,OY-16,'80',yT,yT);
 
   // the opening, in the right wall
   const xR=px(W), y1=py(OP_A), y2=py(OP_B);

@@ -378,12 +378,12 @@ function drawPlan(){
 
 const UNITS=[
  {x:0,    y:0,     w:115.7, h:60,   c:'#4a6a52', t:'מקופלים — רועי', s:'115 רוחב · 5 מדפים · עומק 60'},
- {x:0,    y:60,    w:60,    h:180,  c:'#3f5f68', t:'תליה',            s:'180 אורך · כ-270 ס״מ מוט · גובה 200'},
- {x:0,    y:240,   w:60,    h:105,  c:'#6b8a63', t:'מקופלים — יעל',   s:'105 אורך · גובה 190 עד 150'},
- {x:0,    y:345,   w:60,    h:55,   c:'#9aa877', t:'מגירות',          s:'55 אורך · גובה 150 עד 124'},
+ {x:0,    y:60,    w:60,    h:180,  c:'#3f5f68', t:'תליה',            s:'כ-270 ס״מ מוט'},
+ {x:0,    y:240,   w:60,    h:105,  c:'#6b8a63', t:'מקופלים — יעל',   s:'105 אורך'},
+ {x:0,    y:345,   w:60,    h:55,   c:'#9aa877', t:'מגירות',          s:'55 אורך'},
  {x:0,    y:400,   w:285.2, h:60.5, c:'#b98f7a', t:'מזוודות · מצעים · כריות ושמיכות', s:'285 רוחב · גובה 90 · מגירות עמוקות'},
- {x:225.2,y:260.5, w:60,    h:139.5,c:'#8a6f52', t:'נעליים',          s:'139.5 אורך · 10 מדפים · כ-70 זוגות'},
- {x:195.7,y:101.5, w:89.5,  h:40,   c:'#7a6a86', t:'פינת איפור',      s:'שולחן 75 · שתי מגירות · שרפרף'}
+ {x:225.2,y:260.5, w:60,    h:139.5,c:'#8a6f52', t:'נעליים',          s:'כ-70 זוגות'},
+ {x:195.7,y:101.5, w:89.5,  h:40,   c:'#7a6a86', t:'פינת איפור',      s:'שולחן 75 · שתי מגירות'}
 ];
 function drawJoinery(){
   const svg=document.getElementById('joinery'); if(!svg)return;
@@ -418,7 +418,7 @@ function drawJoinery(){
   // the big mirror, on the face of the protrusion
   svg.appendChild(el('line',{x1:px(Wt)+3,y1:py(Dt),x2:px(W)-3,y2:py(Dt),class:'mir'}));
   const mt=el('text',{x:(px(Wt)+px(W))/2,y:py(Dt)-9,class:'dtx'});
-  mt.setAttribute('fill','#7fa6bd'); mt.textContent='מראה גדולה · 89.5 רוחב'; svg.appendChild(mt);
+  mt.setAttribute('fill','#7fa6bd'); mt.textContent='מראה 89.5'; svg.appendChild(mt);
 
   // the walkway
   const wx=px(142), wy1=py(80), wy2=py(390);

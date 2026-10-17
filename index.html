@@ -115,7 +115,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 </table>
 
 <h2>מבט על</h2>
-<p class="dims">כל המידות בס״מ · הקיר הגבוה למעלה, הפתח בקיר הימני</p>
+<p class="dims">כל המידות בס״מ · הקיר הגבוה למעלה, הבליטה בפינה הימנית העליונה, הפתח בקיר הימני</p>
 <div class="ctl" style="margin-top:0">
   <div class="r">
     <label>סדר הקטעים בקיר הארוך:</label>
@@ -140,7 +140,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   <b>כללי האצבע שלפיהם סומנו הרצועות:</b> חולצות ומכנסיים דורשים 90–100 ס״מ מתחת למוט, שמלות ומעילים 120–150.
   תליה כפולה דורשת 200 ומעלה.
   מתחת ל-120 ס״מ גובה אין טעם בתליה — שם מדפים, מגירות וסלסלות.<br>
-  <b>הפתח — 180.5 ס״מ</b>, בקיר הימני, מתחיל 80 ס״מ מהקיר הגבוה ונגמר 200 ס״מ מהקצה הרחוק. 80 ועוד 180.5 ועוד 200 נותנים 460.5 בדיוק.<br>
+  <b>הפתח — 79 ס״מ</b>, בקיר הימני. מתחיל 80 ס״מ מתחת לקצה התחתון של הבליטה, ונגמר 200 ס״מ מהקצה הרחוק. 101.5 ועוד 80 ועוד 79 ועוד 200 נותנים 460.5 בדיוק.<br>
   <b>ה-67 לא היה תחילת השיפוע</b> — השיפוע מתחיל ב-70, והפער בין 67 ל-70 הוא 3 ס״מ. ה-67 נשאר פרוסת מדידה בלבד ולא מסמן שום דבר פיזי.<br>
   <b>מה שזה אומר בפועל:</b> 70 הס״מ הראשונים מהקיר הגבוה הם בגובה מלא 233.4 לכל רוחב החדר, והפתח מתחיל רק ב-80 — כלומר כל הרצועה הגבוהה פנויה לארון.
 </div>
@@ -161,7 +161,8 @@ function txt(svg,x,y,s,cls){const t=el('text',{x,y,class:cls||'dim'});t.textCont
 const HMAX=233.4, HMIN=95.5;
 const L=460.5, FLAT1=70, RUN=200, SLOPE=(HMAX-HMIN)/RUN;
 const FLAT2=L-FLAT1-RUN;
-const OP_A=80, OP_B=L-200;            // the opening in the long wall
+const Wt=195.7, Dt=101.5, W=285.2;    // the notch is at the top, 195.7 wide × 101.5 deep
+const OP_A=Dt+80, OP_B=L-200;         // the opening: 80 below the notch edge, to 200 from the far end
 
 // height (cm) at distance x from the high wall
 function hAt(x){
@@ -218,7 +219,7 @@ function drawSection(){
   // the opening, projected on the floor — no wardrobe can stand in front of it
   svg.appendChild(el('line',{x1:px(OP_A),y1:yFloor+9,x2:px(OP_B),y2:yFloor+9,
     stroke:'var(--accent)','stroke-width':4}));
-  txt(svg,px((OP_A+OP_B)/2),yFloor+28,'הפתח בקיר הארוך — '+(OP_B-OP_A).toFixed(1)+' ס״מ');
+  txt(svg,px((OP_A+OP_B)/2),yFloor+28,'הפתח בקיר הימני — '+(OP_B-OP_A).toFixed(0)+' ס״מ');
 
   [[0,HMAX,'233.4'],[FLAT1,HMAX,''],[FLAT1+RUN,HMIN,''],[L,HMIN,'95.5']].forEach(m=>{
     const x=px(m[0]), y=py(m[1]);
@@ -265,34 +266,29 @@ function dimV(svg,ya,yb,x,label,xGeom){
 
 function drawPlan(){
   const svg=document.getElementById('plan'); svg.innerHTML='';
-  const S=1.14, OX=150, OY=86;
-  const W=285.2, Wt=195.7, Db=292, Dm=67, Dt=101.5;   // from the high wall downwards
+  const S=1.14, OX=150, OY=92;
   const px=v=>OX+v*S, py=v=>OY+v*S;
-  const yNotch=Db+Dm;                                  // 359
 
-  // outline — the notch (195.7 wide part) is at the far end, on the right
-  const pts=[[0,0],[W,0],[W,yNotch],[Wt,yNotch],[Wt,L],[0,L]];
+  // outline — the notch (the narrow 195.7 part) is at the top
+  const pts=[[0,0],[Wt,0],[Wt,Dt],[W,Dt],[W,L],[0,L]];
   svg.appendChild(el('polygon',{class:'room',
     points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
 
-  svg.appendChild(el('line',{x1:px(0),y1:py(Db),x2:px(W),y2:py(Db),
-    stroke:'var(--ink3)','stroke-width':.9,'stroke-dasharray':'5 4'}));
-
-  // slope lines
   [[FLAT1,'70 — כאן מתחיל השיפוע'],[FLAT1+RUN,'270 — כאן הוא נגמר']].forEach(m=>{
     const yy=py(m[0]);
-    svg.appendChild(el('line',{x1:px(0),y1:yy,x2:px(W),y2:yy,
+    const xa=m[0]<Dt?px(0):px(0), xb=m[0]<Dt?px(Wt):px(W);
+    svg.appendChild(el('line',{x1:xa,y1:yy,x2:xb,y2:yy,
       stroke:'var(--warn)','stroke-width':1.3,'stroke-dasharray':'8 5'}));
-    const t=el('text',{x:px(W/2),y:yy-7,class:'dtx'});
+    const t=el('text',{x:(xa+xb)/2,y:yy-7,class:'dtx'});
     t.setAttribute('fill','var(--warn)'); t.textContent=m[1]; svg.appendChild(t);
   });
 
-  const rl=el('text',{x:px(W/2),y:py(L-60),class:'rlbl'});
+  const rl=el('text',{x:px(W/2),y:py(L-70),class:'rlbl'});
   rl.textContent='חדר ארונות'; svg.appendChild(rl);
-  const hw=el('text',{x:px(W/2),y:OY-12,class:'dtx'});
+  const hw=el('text',{x:px(Wt/2),y:OY-14,class:'dtx'});
   hw.setAttribute('fill','var(--ink)'); hw.textContent='הקיר הגבוה — 233.4 ס״מ'; svg.appendChild(hw);
 
-  // the opening, on the right wall
+  // the opening, in the right wall
   const xR=px(W), y1=py(OP_A), y2=py(OP_B);
   svg.appendChild(el('line',{x1:xR,y1:y1,x2:xR,y2:y2,stroke:'var(--surface)','stroke-width':5}));
   [y1,y2].forEach(yy=>svg.appendChild(el('line',{x1:xR-9,y1:yy,x2:xR+9,y2:yy,
@@ -302,23 +298,21 @@ function drawPlan(){
     transform:'rotate(-90 '+(xR-30)+' '+((y1+y2)/2)+')'});
   ot.setAttribute('fill','var(--accent)'); ot.textContent='פתח'; svg.appendChild(ot);
 
-  // right chain: 80 / opening / 200
-  const xr=xR+46;
-  dimV(svg,py(0),y1,xr,'80',xR);
-  dimV(svg,y1,y2,xr,(OP_B-OP_A).toFixed(1),xR);
+  // right chain, exactly how it was measured: 101.5 / 80 / opening / 200
+  const xr=xR+48;
+  dimV(svg,py(0),py(Dt),xr,'101.5',px(Wt));
+  dimV(svg,py(Dt),y1,xr,'80',xR);
+  dimV(svg,y1,y2,xr,(OP_B-OP_A).toFixed(0),xR);
   dimV(svg,y2,py(L),xr,'200',xR);
 
-  // left chain: the depths, then the overall
-  const xl=px(0)-46;
-  dimV(svg,py(0),py(Db),xl,'292',px(0));
-  dimV(svg,py(Db),py(yNotch),xl,'67',px(0));
-  dimV(svg,py(yNotch),py(L),xl,'101.5',px(0));
-  dimV(svg,py(0),py(L),xl-40,'460.5',px(0));
+  // left: the overall depth
+  dimV(svg,py(0),py(L),px(0)-46,'460.5',px(0));
 
   // widths
-  dimH(svg,px(0),px(W),OY-40,'285.2',py(0),py(0));
-  dimH(svg,px(0),px(Wt),py(L)+40,'195.7',py(L),py(L));
-  dimH(svg,px(Wt),px(W),py(L)+40,'89.5',py(L),py(yNotch));
+  dimH(svg,px(0),px(Wt),OY-44,'195.7',py(0),py(0));
+  dimH(svg,px(Wt),px(W),OY-44,'89.5',py(0),py(Dt));
+  dimH(svg,px(0),px(W),OY-78,'285.2',py(0),py(Dt));
+  dimH(svg,px(0),px(W),py(L)+40,'285.2',py(L),py(L));
 }
 
 function redraw(){drawSection();drawTable();drawPlan();}

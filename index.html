@@ -70,6 +70,10 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 .dln{stroke:var(--ink2);stroke-width:1}
 .ext{stroke:var(--ink3);stroke-width:.8}
 .dtx{font:500 11.5px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
+.glass{stroke:#6f93a8;stroke-width:2.4;fill:none}
+.swing{stroke:#6f93a8;stroke-width:1;fill:none;stroke-dasharray:4 3}
+.slp{stroke:#fff;stroke-width:1.6;fill:none}
+.slptx{font:600 11px Heebo,sans-serif;fill:#fff;text-anchor:middle}
 .room{fill:var(--surface2);stroke:var(--ink);stroke-width:2}
 .rlbl{font:600 13px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
 .dim{font:400 11px Heebo,sans-serif;fill:var(--ink3);text-anchor:middle}
@@ -232,8 +236,19 @@ function drawSection(){
     svg.appendChild(el('line',{x1:x,y1:y,x2:x,y2:yFloor,stroke:'var(--ink3)','stroke-width':1,'stroke-dasharray':'4 4'}));
     if(m[2]){const t=el('text',{x:x,y:y-10,class:'lbl'});t.textContent=m[2];svg.appendChild(t);}
   });
-  txt(svg,px(FLAT1/2),OY-12,FLAT1.toFixed(1)+' שטוח ב-233.4');
-  txt(svg,px(FLAT1+RUN/2),OY-12,RUN.toFixed(1)+' — הירידה, עד הקיר');
+  txt(svg,px(FLAT1/2),OY-18,FLAT1.toFixed(1)+' שטוח ב-233.4');
+  txt(svg,px(FLAT1+RUN/2),OY-18,RUN.toFixed(1)+' — הירידה, עד הקיר');
+
+  // slope triangle, the way it is marked on a section
+  const xa=FLAT1+55, xb=xa+100, ya=hAt(xa), yb=hAt(xb);
+  const Ax=px(xa), Ay=py(ya), Bx=px(xb), By=py(yb);
+  svg.appendChild(el('path',{d:'M'+Ax+' '+Ay+' L'+Bx+' '+Ay+' L'+Bx+' '+By,class:'slp'}));
+  const h1=el('text',{x:(Ax+Bx)/2,y:Ay+16,class:'slptx'});h1.textContent='100';svg.appendChild(h1);
+  const v1=el('text',{x:Bx-15,y:(Ay+By)/2+4,class:'slptx'});
+  v1.textContent=(SLOPE*100).toFixed(1);svg.appendChild(v1);
+  const an=el('text',{x:Ax+42,y:Ay+30,class:'slptx'});
+  an.textContent=(Math.atan(SLOPE)*180/Math.PI).toFixed(1)+'° · 1:'+(1/SLOPE).toFixed(1);
+  svg.appendChild(an);
   txt(svg,px(L/2),yFloor+46,'460.5 — עומק החדר');
 }
 
@@ -288,9 +303,20 @@ function drawPlan(){
     t.setAttribute('fill','var(--warn)'); t.textContent=m[1]; svg.appendChild(t);
   });
 
-  const rl=el('text',{x:px(W/2),y:py(L-70),class:'rlbl'});
+  const rl=el('text',{x:px(W/2),y:py(L-54),class:'rlbl'});
   rl.textContent='חדר ארונות'; svg.appendChild(rl);
-  const hw=el('text',{x:px(TOP_A/2),y:OY+26,class:'dtx'});
+
+  // slope arrow — the direction of fall, with the gradient
+  const sx=px(42), sy1=py(FLAT1+26), sy2=py(L-34);
+  svg.appendChild(el('line',{x1:sx,y1:sy1,x2:sx,y2:sy2,stroke:'var(--warn)','stroke-width':1.6}));
+  svg.appendChild(el('path',{d:'M'+(sx-5)+' '+(sy2-11)+' L'+sx+' '+sy2+' L'+(sx+5)+' '+(sy2-11),
+    fill:'none',stroke:'var(--warn)','stroke-width':1.6}));
+  const sl=el('text',{x:sx-11,y:(sy1+sy2)/2,class:'dtx',
+    transform:'rotate(-90 '+(sx-11)+' '+((sy1+sy2)/2)+')'});
+  sl.setAttribute('fill','var(--warn)');
+  sl.textContent='שיפוע '+(SLOPE*100).toFixed(0)+'% · 1:'+(1/SLOPE).toFixed(1)+' · '+(Math.atan(SLOPE)*180/Math.PI).toFixed(1)+'°';
+  svg.appendChild(sl);
+  const hw=el('text',{x:px(TOP_A/2),y:OY+22,class:'dtx'});
   hw.setAttribute('fill','var(--ink)'); hw.textContent='הקיר הגבוה — 233.4 ס״מ'; svg.appendChild(hw);
 
   // the double-door opening in the high wall, flush to the right
@@ -298,8 +324,14 @@ function drawPlan(){
   svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx2,y2:yT,stroke:'var(--surface)','stroke-width':5}));
   [tx1,tx2].forEach(xx=>svg.appendChild(el('line',{x1:xx,y1:yT-9,x2:xx,y2:yT+9,
     stroke:'var(--ink)','stroke-width':2})));
-  const tt=el('text',{x:(tx1+tx2)/2,y:yT+26,class:'dtx'});
-  tt.setAttribute('fill','var(--accent)'); tt.textContent='פתח · שתי דלתות'; svg.appendChild(tt);
+  // two frosted-glass shower doors, hinged on the jambs, opening into the room
+  const leaf=(TOP_W/2)*S;
+  svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx1,y2:yT+leaf,class:'glass'}));
+  svg.appendChild(el('path',{d:'M'+(tx1+leaf)+' '+yT+' A'+leaf+' '+leaf+' 0 0 1 '+tx1+' '+(yT+leaf),class:'swing'}));
+  svg.appendChild(el('line',{x1:tx2,y1:yT,x2:tx2,y2:yT+leaf,class:'glass'}));
+  svg.appendChild(el('path',{d:'M'+(tx2-leaf)+' '+yT+' A'+leaf+' '+leaf+' 0 0 0 '+tx2+' '+(yT+leaf),class:'swing'}));
+  const tt=el('text',{x:(tx1+tx2)/2,y:yT+leaf+20,class:'dtx'});
+  tt.setAttribute('fill','#6f93a8'); tt.textContent='שתי דלתות זכוכית גלינה'; svg.appendChild(tt);
   dimH(svg,px(0),tx1,OY-16,TOP_A.toFixed(1),yT,yT);
   dimH(svg,tx1,tx2,OY-16,'80',yT,yT);
 

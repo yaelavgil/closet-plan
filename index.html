@@ -43,7 +43,18 @@ h1{font-family:"Frank Ruhl Libre",serif;font-weight:700;font-size:32px;line-heig
 h2{font-family:"Frank Ruhl Libre",serif;font-size:21px;font-weight:700;margin:34px 0 3px}
 .dims{font-size:13px;color:var(--ink3);margin-bottom:12px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);overflow-x:auto}
-svg{display:block;width:100%;height:auto}
+/* התוכניות גבוהות מרוחבן, ולכן ברוחב מלא הן תמיד גולשות מהמסך.
+   max-width לפי יחס ה-viewBox כופל את גובה החלון הפנוי ביחס, וכך
+   ה-SVG יוצא הכי רחב שהוא יכול להיות בלי לחרוג לגובה — בלי פסים בצדדים. */
+svg{display:block;width:100%;height:auto;margin-inline:auto}
+.card svg{max-width:calc((100vh - var(--chrome,150px)) * var(--ar,1))}
+@supports (height:100svh){.card svg{max-width:calc((100svh - var(--chrome,150px)) * var(--ar,1))}}
+.fitbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 -4px;
+  font-size:13.5px;color:var(--ink2)}
+.fitbar button{font:600 13.5px Heebo,sans-serif;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--line2);background:var(--surface);color:var(--ink2);cursor:pointer}
+.fitbar button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+body.nofit .card svg{max-width:none}
 .ctl{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:18px 0 6px}
 .ctl .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ctl label{font-size:14px;color:var(--ink2)}
@@ -102,10 +113,11 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   </div>
 </div>
 
+<div class="fitbar"><span>תצוגה:</span><button id="fitOn" class="on">מתאים למסך</button><button id="fitOff">גודל מלא</button><span id="fitNote">—</span></div>
 <h2>חתך — הקיר המשופע</h2>
 <p class="dims">233.4 ס״מ לאורך 171.5 הראשונים · ואז ירידה רצופה של 289 ס״מ עד 95.5 בקיר הרחוק</p>
 <div class="card">
-  <svg viewBox="0 0 820 560" id="sec"></svg>
+  <svg style="--ar:1.4643" viewBox="0 0 820 560" id="sec"></svg>
 </div>
 <div class="key">
   <span><i style="background:var(--z1)"></i> תליה כפולה — שני מוטות</span>
@@ -127,7 +139,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   </div>
 </div>
 <div class="card">
-  <svg viewBox="0 0 680 720" id="joinery"></svg>
+  <svg style="--ar:0.9444" viewBox="0 0 680 720" id="joinery"></svg>
 </div>
 <table id="prog">
   <thead><tr><th>מה ביקשת</th><th>א</th><th>ב</th><th>ג</th></tr></thead>
@@ -154,7 +166,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   </div>
 </div>
 <div class="card">
-  <svg viewBox="0 0 680 720" id="plan"></svg>
+  <svg style="--ar:0.9444" viewBox="0 0 680 720" id="plan"></svg>
 </div>
 
 <div class="note">
@@ -511,6 +523,30 @@ document.getElementById('scheme').onclick=e=>{
 };
 function redraw(){drawSection();drawTable();drawPlan();drawJoinery();drawProg();}
 redraw();
+</script>
+<script>
+/* --chrome הוא הגובה שהכותרת שמעל התוכנית תופסת. מודדים את הכותרת
+   עצמה ולא את המרחק מראש העמוד — אחרת כל גלילה מכווצת את השרטוט. */
+(function(){
+  const on=document.getElementById('fitOn'), off=document.getElementById('fitOff'),
+        note=document.getElementById('fitNote');
+  function measure(){
+    const card=document.querySelector('.card'); if(!card)return;
+    let head=0, n=card.previousElementSibling;
+    for(let i=0;i<2&&n;i++,n=n.previousElementSibling){
+      if(/^(H2|P)$/.test(n.tagName)) head+=n.getBoundingClientRect().height+10;
+    }
+    document.documentElement.style.setProperty('--chrome', Math.round(head+70)+'px');
+    const svg=card.querySelector('svg');
+    if(svg&&!document.body.classList.contains('nofit')){
+      const r=svg.getBoundingClientRect();
+      note.textContent=Math.round(r.width)+'×'+Math.round(r.height)+' פיקסלים';
+    } else note.textContent='';
+  }
+  on.onclick=()=>{document.body.classList.remove('nofit');on.classList.add('on');off.classList.remove('on');measure();};
+  off.onclick=()=>{document.body.classList.add('nofit');off.classList.add('on');on.classList.remove('on');note.textContent='';};
+  addEventListener('resize',measure); addEventListener('load',measure); setTimeout(measure,300);
+})();
 </script>
 </body>
 </html>

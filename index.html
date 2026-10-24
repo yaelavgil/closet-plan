@@ -47,13 +47,18 @@ h2{font-family:"Frank Ruhl Libre",serif;font-size:21px;font-weight:700;margin:34
    max-width לפי יחס ה-viewBox כופל את גובה החלון הפנוי ביחס, וכך
    ה-SVG יוצא הכי רחב שהוא יכול להיות בלי לחרוג לגובה — בלי פסים בצדדים. */
 svg{display:block;width:100%;height:auto;margin-inline:auto}
-.card svg{max-width:calc((100vh - var(--chrome,150px)) * var(--ar,1))}
-@supports (height:100svh){.card svg{max-width:calc((100svh - var(--chrome,150px)) * var(--ar,1))}}
+.card svg{max-width:calc((100vh - var(--chrome,150px)) * var(--ar,1) * var(--zoom,1))}
+@supports (height:100svh){.card svg{max-width:calc((100svh - var(--chrome,150px)) * var(--ar,1) * var(--zoom,1))}}
 .fitbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 -4px;
   font-size:13.5px;color:var(--ink2)}
 .fitbar button{font:600 13.5px Heebo,sans-serif;padding:7px 13px;border-radius:999px;
   border:1px solid var(--line2);background:var(--surface);color:var(--ink2);cursor:pointer}
 .fitbar button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+/* ההתאמה האוטומטית לא יודעת כמה מהמסך שלך תפוס בסרגלי הדפדפן,
+   ולכן נשאר גם כוונון ידני — והוא נזכר בין ביקורים. */
+.fitbar .zoomg{display:inline-flex;align-items:center;gap:4px;margin-inline-start:4px}
+.fitbar .zoomg button{padding:5px 11px;font-size:15px;line-height:1}
+.fitbar #zVal{min-width:46px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
 body.nofit .card svg{max-width:none}
 .ctl{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:18px 0 6px}
 .ctl .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -113,7 +118,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
   </div>
 </div>
 
-<div class="fitbar"><span>תצוגה:</span><button id="fitOn" class="on">מתאים למסך</button><button id="fitOff">גודל מלא</button><span id="fitNote">—</span></div>
+<div class="fitbar"><span>תצוגה:</span><button id="fitOn" class="on">מתאים למסך</button><button id="fitOff">גודל מלא</button><span class="zoomg"><button id="zOut" title="להקטין">−</button><span id="zVal">100%</span><button id="zIn" title="להגדיל">+</button></span><span id="fitNote">—</span></div>
 <h2>חתך — הקיר המשופע</h2>
 <p class="dims">233.4 ס״מ לאורך 171.5 הראשונים · ואז ירידה רצופה של 289 ס״מ עד 95.5 בקיר הרחוק</p>
 <div class="card">
@@ -531,18 +536,37 @@ redraw();
   const on=document.getElementById('fitOn'), off=document.getElementById('fitOff'),
         note=document.getElementById('fitNote');
   function measure(){
+    /* לכל תוכנית כותרת משלה, וגם הכרטיס עצמו תופס גובה — ריפוד, מסגרת
+       ושוליים. מודדים את שניהם לכל כרטיס בנפרד במקום להעריך 70 פיקסלים. */
+    document.querySelectorAll('.card').forEach(c=>{
+      let head=0, n=c.previousElementSibling;
+      for(let i=0;i<2&&n;i++,n=n.previousElementSibling){
+        if(/^(H2|P|DIV)$/.test(n.tagName)&&!n.classList.contains('card'))
+          head+=n.getBoundingClientRect().height+8;
+      }
+      const sv=c.querySelector('svg');
+      const pad=sv?Math.max(0,c.getBoundingClientRect().height-sv.getBoundingClientRect().height):30;
+      c.style.setProperty('--chrome', Math.round(head+pad+26)+'px');
+    });
     const card=document.querySelector('.card'); if(!card)return;
-    let head=0, n=card.previousElementSibling;
-    for(let i=0;i<2&&n;i++,n=n.previousElementSibling){
-      if(/^(H2|P)$/.test(n.tagName)) head+=n.getBoundingClientRect().height+10;
-    }
-    document.documentElement.style.setProperty('--chrome', Math.round(head+70)+'px');
     const svg=card.querySelector('svg');
     if(svg&&!document.body.classList.contains('nofit')){
       const r=svg.getBoundingClientRect();
       note.textContent=Math.round(r.width)+'×'+Math.round(r.height)+' פיקסלים';
     } else note.textContent='';
   }
+  let zoom=1;
+  try{ const v=parseFloat(localStorage.getItem('cp_zoom')); if(v>=.5&&v<=1.5)zoom=v; }catch(e){}
+  const zv=document.getElementById('zVal');
+  const applyZoom=()=>{
+    document.documentElement.style.setProperty('--zoom',zoom);
+    zv.textContent=Math.round(zoom*100)+'%';
+    try{ localStorage.setItem('cp_zoom',zoom); }catch(e){}
+    measure();
+  };
+  document.getElementById('zOut').onclick=()=>{ zoom=Math.max(.5,+(zoom-.1).toFixed(2)); applyZoom(); };
+  document.getElementById('zIn').onclick=()=>{ zoom=Math.min(1.5,+(zoom+.1).toFixed(2)); applyZoom(); };
+  applyZoom();
   on.onclick=()=>{document.body.classList.remove('nofit');on.classList.add('on');off.classList.remove('on');measure();};
   off.onclick=()=>{document.body.classList.add('nofit');off.classList.add('on');on.classList.remove('on');note.textContent='';};
   addEventListener('resize',measure); addEventListener('load',measure); setTimeout(measure,300);

@@ -111,7 +111,7 @@ td.n{font-variant-numeric:tabular-nums;font-weight:500}
 <div class="ctl">
   <div class="r" style="gap:22px">
     <span><b>233.4</b> בשיא &nbsp;·&nbsp; <b>95.5</b> בנמוך</span>
-    <span>הגג שטוח <b>171.5</b> ס״מ ואז יורד ברצף <b>289</b> ס״מ עד הקיר הרחוק · שיפוע 25.5°</span>
+    <span>הגג שטוח <b>171.5</b> ס״מ <i>מרחק</i> מהקיר הגבוה, ואז יורד ברצף <b>289</b> ס״מ עד הקיר הרחוק · שיפוע 25.5°</span>
     <span class="flag" style="background:#4a6a52">נמדד 16–17.10</span>
   </div>
 </div>
@@ -335,7 +335,7 @@ function drawPlan(){
   svg.appendChild(el('polygon',{class:'room',
     points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
 
-  [[FLAT1,'171.5 — כאן מתחיל השיפוע · 70 מתחת לבליטה']].forEach(m=>{
+  [[FLAT1,'171.5 מהקיר הגבוה — כאן מתחיל השיפוע · מרחק, לא גובה · 70 מתחת לבליטה']].forEach(m=>{
     const yy=py(m[0]);
     const xa=m[0]<Dt?px(0):px(0), xb=m[0]<Dt?px(Wt):px(W);
     svg.appendChild(el('line',{x1:xa,y1:yy,x2:xb,y2:yy,

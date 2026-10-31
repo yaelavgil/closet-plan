@@ -84,6 +84,23 @@ label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .crow input[type=number]{width:66px;font-variant-numeric:tabular-nums}
 .crow label{display:inline-flex;gap:4px;align-items:center;font-size:12.5px;color:var(--ink2)}
 .crow .span{margin-inline-start:auto;font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.prod{margin:0 0 12px}
+.prod h2{margin-bottom:2px}
+.ptabs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.ptabs button{font:500 12.5px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--ink2);padding:5px 10px;border-radius:999px;cursor:pointer}
+.ptabs button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:8px;margin-top:10px}
+.pitem{text-align:start;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.pitem:hover{border-color:var(--ink2)}
+.pitem b{font-size:13.5px;font-weight:600}
+.pitem span{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.pitem .pr{color:var(--accent);font-weight:700}
+.pitem .fit{font-size:11.5px}
+.pitem .fit.no{color:var(--bad)}
+.pcard{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13.5px}
+.pcard a{color:var(--accent)}
+.keys{font-size:12.5px;color:var(--ink2);margin:6px 0 0}
+.keys kbd{font:600 11.5px ui-monospace,Menlo,monospace;border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--surface);color:var(--ink)}
 .std{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;color:var(--ink2);margin:4px 0 8px}
 .ang input[type=range]{flex:1;accent-color:var(--accent)}
 .ang input[type=number]{width:78px;flex:none}
@@ -175,6 +192,12 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
 
 <div class="cur" id="cur"></div>
 <div class="shelf" id="shelf" aria-label="בלוקים להוספה"></div>
+<div class="card prod">
+  <h2>מוצרים אמיתיים</h2>
+  <p class="muted" style="margin:0">רהיטים מוכנים במידות ובמחירים מאתר איקאה ישראל ומאורבן, נבדק 31.10.2026. לוחצים על מוצר כדי להוסיף אותו לחדר, ואז מזיזים, מסובבים ומעצבים כמו כל בלוק. ליד כל מוצר גבוה כתוב עד איפה הוא נכנס מתחת לשיפוע.</p>
+  <div class="ptabs" id="ptabs"></div>
+  <div class="plist" id="plist"></div>
+</div>
 
 <div class="grid">
   <div class="card">
@@ -191,8 +214,10 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
       <span class="zoomg" aria-label="זום"><button class="btn sm" id="zo" title="להקטין">−</button><span id="zv" class="tnum">100%</span><button class="btn sm" id="zi" title="להגדיל">+</button><button class="btn sm" id="zr">כל החדר</button></span>
       <label class="chk"><input type="checkbox" id="doors"> ארונות עם דלתות ציר</label>
       <span style="flex:1"></span>
+      <button class="btn" id="undo" title="ביטול (⌘Z)">↶ ביטול</button><button class="btn" id="redo" title="שחזור (⇧⌘Z)">↷ שחזור</button>
       <button class="btn" id="clear">חדר ריק</button>
     </div>
+    <p class="keys">קיצורים, כשבלוק בחור: <kbd>R</kbd> סיבוב · <kbd>[</kbd> <kbd>]</kbd> זווית ±5° · חצים הזזה ב-1 ס״מ, עם <kbd>Shift</kbd> ב-10 · <kbd>⌘/Ctrl D</kbd> שכפול · <kbd>⌘/Ctrl C</kbd> <kbd>V</kbd> העתקה והדבקה · <kbd>Delete</kbd> מחיקה · <kbd>Esc</kbd> ביטול בחירה · <kbd>⌘/Ctrl Z</kbd> ביטול פעולה</p>
   </div>
 
   <div class="card panel" id="panel"></div>
@@ -222,6 +247,13 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
   <p class="muted" style="margin:0 0 8px">כל קיר כמו שהוא נראה כשעומדים מולו בתוך החדר, עם כל הארונות שצמודים אליו. המידות בס״מ: רוחב כל יחידה בשרשרת למטה, גובה היחידה בכל קצה, וקו התקרה מעל. בלוק שלא צמוד לקיר, או מסובב בזווית, מופיע ברשימה בסוף.</p>
   <div class="bar" style="margin:0"><span class="zoomg"><button class="btn sm" id="ezo" title="להקטין">−</button><span id="ezv" class="tnum">100%</span><button class="btn sm" id="ezi" title="להגדיל">+</button></span></div>
   <div id="elev"></div>
+</div>
+
+<div class="section card">
+  <h2>רשימת קניות</h2>
+  <p class="muted" style="margin:0 0 4px">כל המוצרים האמיתיים שבחדר עכשיו. בארונות PAX נוסף מחיר הפנים (מוטות, מדפים, מגירות וסלסלות של KOMPLEMENT) לפי מה שעיצבת בהם. דלתות, משלוח והרכבה לא כלולים.</p>
+  <table><thead><tr><th>מוצר</th><th>כמות</th><th>ליחידה</th><th>סה״כ</th></tr></thead><tbody id="shop"></tbody></table>
+  <p id="shopTot" style="margin:8px 0 0;font-weight:700"></p>
 </div>
 
 <div class="section card">
@@ -287,9 +319,99 @@ const TYPES={
   mirrorS:{n:'מראה עומדת',w:50,d:40,h:175,req:180,fz:150,view:1,c:'#6f9ab3',info:'עם רגל — תופסת 40 ברצפה'},
   deep:{n:'אחסון עמוק',w:80,d:60,h:999,req:30,c:'#9a8566',doors:1,info:'פוך, שמיכות, ארגזי חורף'},
   suit:{n:'מזוודות עומדות',w:100,d:35,h:80,req:82,c:'#a07457',info:'גובה 80 — הערכה, למדוד'},
+  rack:{n:'מתלה בגדים עומד',w:99,d:46,h:152,req:0,c:'#9aa0a6',rod:1,info:'מתלה פתוח על הרצפה: שתי רגליים ומוט'},
+  box:{n:'קופסת אחסון',w:60,d:50,h:30,req:0,c:'#d9cdb8',info:'קופסה או תיק אחסון רך'},
   bench:{n:'ספסל',w:100,d:40,h:45,req:50,c:'#a48d6b',info:'לשבת ולנעול נעליים'}
 };
-const ORDER=['drawers','hang2','hangL','hangM','hangS','corner','shelves','shoes','vanity','mirror','wallShelf','mirrorW','mirrorS','deep','suit','bench'];
+const ORDER=['drawers','hang2','hangL','hangM','hangS','corner','shelves','shoes','vanity','mirror','wallShelf','mirrorW','mirrorS','deep','suit','rack','box','bench'];
+
+/* ===== מוצרים אמיתיים — מידות ומחירים מהאתרים, 31.10.2026 ===== */
+const IK='https://www.ikea.com/il/he/p/',IKS=q=>'https://www.ikea.com/il/he/search/?q='+encodeURIComponent(q);
+const PGROUPS=[['pax','ארונות PAX'],['chest','שידות מגירות'],['shelf','מדפים IVAR ו-KALLAX'],['wall','ארונות פתוחים'],['rack','מתלים'],['mirror','מראות'],['vanity','איפור'],['shoes','נעליים'],['low','אחסון נמוך וספסלים']];
+const PAXH=[{k:'rod',h:null},{k:'shelves',h:30,n:0}],PAXS=[{k:'shelves',h:null,n:4}];
+const WH='#ece8e0',PINE='#d2b48c',BAMB='#c8a96a',BLK='#3a3a3c',GL='#8fb3c8';
+const PRODUCTS=[
+ ...[[50,201,395,'70458217'],[75,201,445,'80458231'],[100,201,495,'70458203'],[50,236,445,'90458221'],[75,236,495,'90458235'],[100,236,545,'80458207']]
+   .map(([w,h,pr,id])=>({id:'pax'+w+'x58x'+h,g:'pax',n:'PAX מסגרת '+w+'×58×'+h,t:'hangS',w,d:58,h,price:pr,u:IK+'pax-wardrobe-frame-white-'+id+'/',c:WH,cfg:PAXH,note:'מחיר המסגרת. פנים KOMPLEMENT מתומחר לפי העיצוב'})),
+ ...[[50,345,'20458210'],[75,395,'30458224'],[100,445,'30458196']]
+   .map(([w,pr,id])=>({id:'pax'+w+'x35x201',g:'pax',n:'PAX מסגרת '+w+'×35×201',t:'shelves',w,d:35,h:201,price:pr,u:IK+'pax-wardrobe-frame-white-'+id+'/',c:WH,cfg:PAXS,note:'עומק 35 — מקופלים, או מתלה נשלף'})),
+ {id:'hemnes8',g:'chest',n:'HEMNES שידת 8 מגירות',t:'drawers',w:160,d:50,h:96,price:1895,u:IK+'hemnes-chest-of-8-drawers-white-stain-10239280/',c:WH,cfg:[{k:'drawers',h:null,n:4}],cols:2},
+ {id:'hemnes6',g:'chest',n:'HEMNES שידת 6 מגירות',t:'drawers',w:108,d:50,h:131,price:1595,u:IK+'hemnes-chest-of-6-drawers-white-stain-60239273/',c:WH,cfg:[{k:'drawers',h:null,n:3}],cols:2,note:'חלוקת המגירות בהדמיה סכמטית'},
+ {id:'kilberget6',g:'chest',n:'KILBERGET שידת 6 מגירות',t:'drawers',w:144,d:41,h:78,price:995,u:IK+'kilberget-chest-of-6-drawers-white-20609916/',c:WH,cfg:[{k:'drawers',h:null,n:3}],cols:2,note:'מגירה פנימית 61×33'},
+ {id:'lillberget6',g:'chest',n:'LILLBERGET שידת 6 מגירות',t:'drawers',w:140,d:43,h:68,price:795,u:IK+'lillberget-chest-of-6-drawers-white-40630479/',c:WH,cfg:[{k:'drawers',h:null,n:3}],cols:2},
+ {id:'storklinta6',g:'chest',n:'STORKLINTA שידת 6 מגירות',t:'drawers',w:140,d:50,h:75,price:1150,u:IK+'storklinta-chest-of-6-drawers-white-70627550/',c:WH,cfg:[{k:'drawers',h:null,n:3}],cols:2},
+ {id:'hauga6',g:'chest',n:'HAUGA שידת 6 מגירות',t:'drawers',w:138,d:46,h:84,price:1195,u:IK+'hauga-chest-of-6-drawers-white-00581536/',c:WH,cfg:[{k:'drawers',h:null,n:3}],cols:2},
+ {id:'idanas6',g:'chest',n:'IDANÄS שידת 6 מגירות',t:'drawers',w:162,d:50,h:95,price:1995,u:IK+'idanaes-chest-of-6-drawers-white-10458710/',c:WH,cfg:[{k:'drawers',h:null,n:3}],cols:2},
+ {id:'brimnes4',g:'chest',n:'BRIMNES שידת 4 מגירות',t:'drawers',w:78,d:46,h:124,price:795,u:IK+'brimnes-chest-of-4-drawers-white-frosted-glass-90392046/',c:WH,cfg:[{k:'drawers',h:null,n:4}]},
+ {id:'ivar89x30x124',g:'shelf',n:'IVAR יחידת מדפים 89×30×124',t:'shelves',w:89,d:30,h:124,price:420,u:IK+'ivar-shelving-unit-pine-s89404583/',c:PINE,cfg:[{k:'shelves',h:null,n:2}]},
+ {id:'ivar89x30x179',g:'shelf',n:'IVAR יחידת מדפים 89×30×179',t:'shelves',w:89,d:30,h:179,price:535,u:IK+'ivar-shelving-unit-pine-s89404578/',c:PINE,cfg:[{k:'shelves',h:null,n:3}]},
+ {id:'ivar89x50x179',g:'shelf',n:'IVAR יחידת מדפים 89×50×179',t:'shelves',w:89,d:50,h:179,price:610,u:IK+'ivar-1-section-shelves-pine-s79407054/',c:PINE,cfg:[{k:'shelves',h:null,n:3}]},
+ {id:'ivar89x50x226',g:'shelf',n:'IVAR 6 מדפים 89×50×226',t:'shelves',w:89,d:50,h:226,price:820,u:IK+'ivar-shelving-unit-with-6-shelves-pine-s09631216/',c:PINE,cfg:[{k:'shelves',h:null,n:4}]},
+ {id:'ivar174x50x226',g:'shelf',n:'IVAR 2 חלקים 174×50×226',t:'shelves',w:174,d:50,h:226,price:1480,u:IK+'ivar-2-sections-shelves-pine-s89407058/',c:PINE,cfg:[{k:'shelves',h:null,n:4}],cols:2},
+ {id:'ivar259x30x226',g:'shelf',n:'IVAR 3 חלקים 259×30×226',t:'shelves',w:259,d:30,h:226,price:1430,u:IK+'ivar-3-sections-shelves-pine-s49403948/',c:PINE,cfg:[{k:'shelves',h:null,n:4}],cols:3},
+ {id:'kallax1x2',g:'shelf',n:'KALLAX 1×2 — 77×39×41',t:'shelves',w:77,d:39,h:41,price:195,u:IK+'kallax-shelving-unit-white-90301555/',c:WH,cfg:[{k:'shelves',h:null,n:0}],cols:2},
+ {id:'kallax2x2',g:'shelf',n:'KALLAX 2×2 — 77×39×77',t:'shelves',w:77,d:39,h:77,price:275,u:IK+'kallax-shelving-unit-white-20275814/',c:WH,cfg:[{k:'shelves',h:null,n:1}],cols:2},
+ {id:'kallax1x4',g:'shelf',n:'KALLAX 1×4 — 42×39×147',t:'shelves',w:42,d:39,h:147,price:345,u:IK+'kallax-shelving-unit-white-00275848/',c:WH,cfg:[{k:'shelves',h:null,n:3}]},
+ {id:'kallax2x4',g:'shelf',n:'KALLAX 2×4 — 77×39×147',t:'shelves',w:77,d:39,h:147,price:475,u:IK+'kallax-shelving-unit-white-80275887/',c:WH,cfg:[{k:'shelves',h:null,n:3}],cols:2},
+ {id:'kallax4x2',g:'shelf',n:'KALLAX 2×4 שוכב — 147×39×77',t:'shelves',w:147,d:39,h:77,price:475,u:IK+'kallax-shelving-unit-white-80275887/',c:WH,cfg:[{k:'shelves',h:null,n:1}],cols:4,note:'אותה יחידה, מונחת על הצד'},
+ {id:'kallax3x4',g:'shelf',n:'KALLAX 3×4 — 112×39×147',t:'shelves',w:112,d:39,h:147,price:650,u:IK+'kallax-shelving-unit-white-10409932/',c:WH,cfg:[{k:'shelves',h:null,n:3}],cols:3},
+ {id:'kallax4x4',g:'shelf',n:'KALLAX 4×4 — 147×39×147',t:'shelves',w:147,d:39,h:147,price:795,u:IK+'kallax-shelving-unit-white-30275861/',c:WH,cfg:[{k:'shelves',h:null,n:3}],cols:4},
+ {id:'boaxel62',g:'wall',n:'BOAXEL ארון פתוח 62×40×201',t:'hangS',w:62,d:40,h:201,price:515,u:IKS('BOAXEL'),c:WH,cfg:PAXH,note:'מערכת קיר — נתלית על הקיר השמאלי מבלוקים'},
+ {id:'boaxel125',g:'wall',n:'BOAXEL ארון פתוח 125×40×201',t:'hangS',w:125,d:40,h:201,price:1095,u:IKS('BOAXEL'),c:WH,cfg:PAXH,cols:2,note:'מערכת קיר'},
+ {id:'boaxel125low',g:'wall',n:'BOAXEL נמוך 125×40×101',t:'shelves',w:125,d:40,h:101,price:580,u:IKS('BOAXEL'),c:WH,cfg:[{k:'shelves',h:null,n:1}],cols:2,note:'נמוך — מתאים מתחת לשיפוע'},
+ {id:'elvarli92',g:'wall',n:'ELVARLI ארון פתוח 92×51×222',t:'hangS',w:92,d:51,h:222,price:1045,u:IKS('ELVARLI'),c:WH,cfg:PAXH,note:'עמוד מרצפה לתקרה, 221.5–350 — רק איפה שהתקרה לפחות 221.5'},
+ {id:'mulig',g:'rack',n:'MULIG מתלה 99×46×152',t:'rack',w:99,d:46,h:152,price:75,u:IK+'mulig-clothes-rack-white-60179434/',c:'#d8d8d8',note:'עד 20 ק״ג'},
+ {id:'rigga',g:'rack',n:'RIGGA מתלה 111×51×175',t:'rack',w:111,d:51,h:175,price:145,u:IK+'rigga-clothes-rack-white-50231630/',c:'#d8d8d8',note:'גובה מתכוונן 126–175, על גלגלים, עד 35 ק״ג'},
+ {id:'grafjallet',g:'rack',n:'GRÅFJÄLLET מתלה עם מדף נעליים 90×36×175',t:'rack',w:90,d:36,h:175,price:295,u:IK+'grafjaellet-clothes-rack-with-shoe-storage-anthracite-00570222/',c:BLK},
+ {id:'alganas',g:'rack',n:'ÄLGANÄS מתלה עם מדף נעליים 46×39×166',t:'rack',w:46,d:39,h:166,price:145,u:IK+'aelganaes-clothes-rack-with-shoe-storage-black-10585888/',c:BLK},
+ {id:'urbanron',g:'rack',s:'Urban',n:'מתלה במבוק RON 76×43×170',t:'rack',w:76,d:43,h:170,price:279,u:'https://urban-shop.co.il/103968.html',c:BAMB},
+ {id:'knapper',g:'mirror',n:'KNAPPER מראה עומדת 48×160',t:'mirrorS',w:48,d:53,h:160,price:295,u:IK+'knapper-standing-mirror-white-00396242/',c:GL},
+ {id:'karmsund',g:'mirror',n:'KARMSUND מראה עומדת 40×167',t:'mirrorS',w:40,d:45,h:167,price:345,u:IK+'karmsund-standing-mirror-black-40294982/',c:GL},
+ {id:'ikornnes',g:'mirror',n:'IKORNNES מראה עומדת 52×167',t:'mirrorS',w:52,d:52,h:167,price:595,u:IK+'ikornnes-standing-mirror-ash-30298396/',c:GL},
+ {id:'hovet',g:'mirror',n:'HOVET מראה 78×196',t:'mirrorW',w:78,d:6,h:196,price:695,u:IK+'hovet-mirror-black-70515915/',c:GL,note:'נשענת על הקיר או נתלית'},
+ {id:'nissedal150',g:'mirror',n:'NISSEDAL מראה 65×150',t:'mirror',w:65,d:1,h:180,zz:30,price:345,u:IK+'nissedal-mirror-white-80605487/',c:GL,note:'גובה התליה לבחירתך'},
+ {id:'lindbyn170',g:'mirror',n:'LINDBYN מראה 60×170',t:'mirror',w:60,d:2,h:190,zz:20,price:450,u:IK+'lindbyn-mirror-black-80597232/',c:GL,note:'גובה התליה לבחירתך'},
+ {id:'urbanmirror',g:'mirror',s:'Urban',n:'מראת גוף 50×160',t:'mirrorW',w:50,d:2,h:160,price:199,u:'https://urban-shop.co.il/103950.html',c:GL},
+ {id:'brimnesdt',g:'vanity',n:'BRIMNES שולחן איפור 70×42×77',t:'vanity',w:70,d:42,h:77,price:395,u:IK+'brimnes-dressing-table-white-70290459/',c:WH},
+ {id:'nordkisa',g:'vanity',n:'NORDKISA שולחן איפור 76×47×76',t:'vanity',w:76,d:47,h:76,price:595,u:IK+'nordkisa-dressing-table-bamboo-20439472/',c:BAMB},
+ {id:'micke',g:'vanity',n:'MICKE שולחן 73×50×75',t:'vanity',w:73,d:50,h:75,price:395,u:IK+'micke-desk-white-30213076/',c:WH},
+ {id:'malmdt',g:'vanity',n:'MALM שולחן איפור 120×41×78',t:'vanity',w:120,d:41,h:78,price:650,u:IK+'malm-dressing-table-white-70620346/',c:WH},
+ {id:'nissedal65',g:'vanity',n:'NISSEDAL מראה 65×65',t:'mirror',w:65,d:1,h:160,zz:95,price:175,u:IK+'nissedal-mirror-white-20605485/',c:GL},
+ {id:'lettan',g:'vanity',n:'LETTAN מראה 60×95',t:'mirror',w:60,d:1,h:185,zz:90,price:145,u:IK+'lettan-mirror-80556401/',c:GL},
+ {id:'larbro',g:'vanity',n:'LÄRBRO מראה 48×60',t:'mirror',w:48,d:1,h:155,zz:95,price:69,u:IK+'laerbro-mirror-40601778/',c:GL},
+ {id:'marius',g:'vanity',n:'MARIUS שרפרף',t:'bench',w:40,d:40,h:45,price:35,u:IK+'marius-stool-black-10135659/',c:BLK},
+ {id:'kyrre',g:'vanity',n:'KYRRE שרפרף',t:'bench',w:42,d:48,h:45,price:95,u:IK+'kyrre-stool-birch-60416925/',c:PINE},
+ {id:'bissa2',g:'shoes',n:'BISSA ארון נעליים 2 תאים',t:'shoes',w:49,d:28,h:93,price:225,u:IK+'bissa-shoe-cabinet-with-2-compartments-white-70530256/',c:WH,cfg:[{k:'shoes',h:null,n:1,door:true}],note:'כ-8 זוגות'},
+ {id:'bissa3',g:'shoes',n:'BISSA ארון נעליים 3 תאים',t:'shoes',w:49,d:28,h:135,price:295,u:IK+'bissa-shoe-cabinet-with-3-compartments-white-10530259/',c:WH,cfg:[{k:'shoes',h:null,n:2,door:true}],note:'כ-12 זוגות'},
+ {id:'mackapar',g:'shoes',n:'MACKAPÄR מתקן נעליים 78×32×40',t:'shoes',w:78,d:32,h:40,price:175,u:IK+'mackapaer-shoe-rack-white-50530993/',c:WH,cfg:[{k:'shoes',h:null,n:1}],note:'כ-6 זוגות'},
+ {id:'vasskar',g:'shoes',n:'VASSKÄR מתקן נעליים 60×30×35',t:'shoes',w:60,d:30,h:35,price:95,u:IK+'vasskaer-shoe-rack-bamboo-80624645/',c:BAMB,cfg:[{k:'shoes',h:null,n:1}],note:'כ-6 זוגות'},
+ {id:'urbanlenlu',g:'shoes',s:'Urban',n:'ארון נעליים במבוק Lenlu 90×25×169',t:'shoes',w:90,d:25,h:169,price:279,u:'https://urban-shop.co.il/103989.html',c:BAMB,cfg:[{k:'shoes',h:null,n:7}],note:'עד כ-44 זוגות'},
+ {id:'skubb90',g:'low',n:'SKUBB תיבת אחסון 90×53×19',t:'box',w:90,d:53,h:19,price:69,u:IK+'skubb-storage-case-white-20591049/',c:'#e6e2da'},
+ {id:'stuk71',g:'low',n:'STUK תיבת אחסון 71×51×18',t:'box',w:71,d:51,h:18,price:59,u:IK+'stuk-storage-case-white-black-20621541/',c:'#e6e2da'},
+ {id:'samla',g:'low',n:'SAMLA קופסה שקופה 78×56×18',t:'box',w:78,d:56,h:18,price:55,u:IK+'samla-box-transparent-00130129/',c:'#cfd8dc'},
+ {id:'dimpa',g:'low',n:'DIMPA שק לשמיכות 65×22×65',t:'box',w:65,d:22,h:65,price:19,u:IK+'dimpa-storage-bag-transparent-10056770/',c:'#cfd8dc'},
+ {id:'kuggis',g:'low',n:'KUGGIS קופסה 32×32×32',t:'box',w:32,d:32,h:32,price:95,u:IK+'kuggis-storage-box-with-lid-white-00526875/',c:WH},
+ {id:'trofast',g:'low',n:'TROFAST עם קופסאות 99×44×56',t:'shelves',w:99,d:44,h:56,price:427,u:IK+'trofast-storage-combination-with-boxes-white-white-s59574459/',c:WH,cfg:[{k:'baskets',h:null,n:2}],cols:2},
+ {id:'perjohan',g:'low',n:'PERJOHAN ספסל עם אחסון 100×28×45',t:'bench',w:100,d:28,h:45,price:395,u:IK+'perjohan-bench-with-storage-pine-60485339/',c:PINE},
+ {id:'stegesund',g:'low',n:'STEGESUND ספסל 79×34×47',t:'bench',w:79,d:34,h:47,price:275,u:IK+'stegesund-bench-light-bamboo-60632019/',c:BAMB},
+ {id:'raggberg',g:'low',n:'RAGGBERG ספסל עם מקום לנעליים 60×35×45',t:'bench',w:60,d:35,h:45,price:195,u:IK+'raggberg-bench-with-shoe-storage-pine-20611127/',c:PINE},
+];
+const PMAP=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+/* KOMPLEMENT interiors for PAX, ₪ by frame depth and width */
+const KOMP={58:{rod:{50:20,75:25,100:30},shelves:{50:50,75:60,100:75},drawers:{50:115,75:140,100:165},baskets:{50:45,75:55,100:65}},
+            35:{rod:{50:55,75:65,100:75},shelves:{50:45,75:55,100:65},drawers:{50:90,75:115,100:140},baskets:{50:40,75:50,100:60}}};
+function paxInside(b){const p=PMAP[b.p];if(!p||p.g!=='pax'||!b.cfg)return null;const K=KOMP[b.d>=50?58:35],w=[50,75,100].reduce((a,c)=>Math.abs(c-b.w)<Math.abs(a-b.w)?c:a);
+  let sum=0;const parts={};const add=(k,n,each)=>{if(!n)return;sum+=n*each;parts[k]=(parts[k]||0)+n};
+  b.cfg.forEach((r,i)=>{if(i)add('מדף',1,K.shelves[w]);
+    if(r.k==='rod')add('מוט',1,K.rod[w]);if(r.k==='shelves'||r.k==='shoes')add('מדף',r.n|0,K.shelves[w]);
+    if(r.k==='drawers')add('מגירה',r.n|0,K.drawers[w]);if(r.k==='baskets')add('סלסלה',r.n|0,K.baskets[w]+15)});
+  return{sum,txt:Object.entries(parts).map(([k,n])=>n+' '+k).join(', ')}}
+function applyProduct(b,id){const p=PMAP[id];if(!p)return;
+  Object.assign(b,{p:id,t:p.t,w:p.w,d:p.d,hh:p.h,c:p.c});
+  if(p.zz!=null)b.zz=p.zz;else delete b.zz;
+  if(p.cfg)b.cfg=JSON.parse(JSON.stringify(p.cfg));else delete b.cfg;
+  if(p.cols)b.cols=p.cols;else delete b.cols;delete b.lb;delete b.rq}
+const fitTxt=h=>h>=999?'':h+2>H?'לא נכנס בחדר — גבוה מ-233.4':h+2>yAt(h+2)*0+hAt(L)?'נכנס עד '+f1(yAt(h+2))+' מהקיר הגבוה':'נכנס בכל החדר';
 
 /* ===== הצעות הפתיחה ===== */
 const BACK=[
@@ -384,7 +506,7 @@ const hOf=b=>b.hh!=null?b.hh:TYPES[b.t].h;
 const zOf=b=>b.zz!=null?b.zz:(TYPES[b.t].z0||0);
 /* a wall-hung block clears anything lower than its bottom edge */
 function under(a,b){const za=zOf(a),zb=zOf(b);return (za>0&&hOf(b)<=za)||(zb>0&&hOf(a)<=zb)}
-const bname=b=>b.lb||TYPES[b.t].n;
+const bname=b=>b.lb||(b.p&&PMAP[b.p]?PMAP[b.p].n:TYPES[b.t].n);
 const colOf=b=>b.c||TYPES[b.t].c;
 const SWATCH=['#7a5a3a','#a07457','#c9a27a','#8c7a55','#4f6e5a','#6f8f74','#3c5c66','#5f8aa3','#7a6a86','#a5687a','#b4442f','#c08a22','#d9cbb2','#5c5852'];
 
@@ -545,12 +667,26 @@ function rotateB(b){const nx={N:'E',E:'S',S:'W',W:'N'},r0=R(b);b.f=nx[b.f];const
   b.x=+(r0.x+(r0.w-r1.w)/2).toFixed(1);b.y=+(r0.y+(r0.h-r1.h)/2).toFixed(1);touch();renderAll()}
 function setAngle(b,a){a=((a%360)+540)%360-180;b.a=Math.abs(a)<.05?0:+a.toFixed(1);if(!b.a)delete b.a;touch();renderAll()}
 svg.addEventListener('dblclick',e=>{const id=+(e.target.closest('[data-id]')||{}).dataset?.id;const b=B.find(x=>x.id===id);if(b){sel=id;rotateB(b)}});
+let COPY=null;
 addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;
-  const b=B.find(x=>x.id===sel);if(!b)return;
-  if(e.key==='r'||e.key==='R'||e.key==='ר'){rotateB(b);e.preventDefault()}
+  const mod=e.metaKey||e.ctrlKey,k=e.key.toLowerCase(),code=e.code;
+  if(mod&&(code==='KeyZ'||k==='z')){e.preventDefault();e.shiftKey?redo():undo();return}
+  if(mod&&(code==='KeyY'||k==='y')){e.preventDefault();redo();return}
+  if(mod&&(code==='KeyV'||k==='v')&&COPY){e.preventDefault();const c=Object.assign(JSON.parse(JSON.stringify(COPY)),{id:uid++});c.x=+(c.x+10).toFixed(1);c.y=+(c.y+10).toFixed(1);B.push(c);sel=c.id;touch();renderAll();return}
+  const b=B.find(x=>x.id===sel);
+  if(e.key==='Escape'){if(sel){sel=null;renderAll(true)}return}
+  if(!b)return;
+  if(mod&&(code==='KeyC'||k==='c')){COPY=JSON.parse(JSON.stringify(b));e.preventDefault();return}
+  if(mod&&(code==='KeyD'||k==='d')){e.preventDefault();const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});const q=R(b);
+    if(b.f==='E'||b.f==='W')c.y=+(q.y+q.h).toFixed(1);else c.x=+(q.x+q.w).toFixed(1);B.push(c);sel=c.id;touch();renderAll();return}
+  if(mod)return;
+  const mv={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+  if(mv){e.preventDefault();const st=e.shiftKey?10:1;b.x=+(b.x+mv[0]*st).toFixed(1);b.y=+(b.y+mv[1]*st).toFixed(1);touch();renderAll();return}
+  if(code==='KeyR'||e.key==='r'||e.key==='R'||e.key==='ר'){rotateB(b);e.preventDefault()}
   if(e.key==='['||e.key===']'){setAngle(b,(b.a||0)+(e.key===']'?5:-5));e.preventDefault()}
   if(e.key==='Delete'||e.key==='Backspace'){B=B.filter(x=>x!==b);sel=null;touch();renderAll();e.preventDefault()}});
 svg.addEventListener('pointerdown',e=>{
+  if(document.activeElement&&document.activeElement!==document.body)document.activeElement.blur();
   if(e.target.closest('[data-rot]')){const b=B.find(x=>x.id===sel);if(b)rotateB(b);e.preventDefault();return}
   const hd=e.target.closest('[data-h]');
   if(hd){const b=B.find(x=>x.id===sel);if(b){rsz={b,k:hd.dataset.h,r0:R(b),d0:b.d};svg.setPointerCapture(e.pointerId);e.preventDefault()}return}
@@ -658,10 +794,11 @@ function insideHtml(b){
     ${['shelves','drawers','baskets','shoes'].includes(r.k)?`<label>${r.k==='drawers'?'מגירות':r.k==='baskets'?'סלסלות':'מדפים'}<input data-f="n" type="number" min="${r.k==='drawers'||r.k==='baskets'?1:0}" max="20" step="1" value="${r.n|0}"></label>`:''}
     ${r.k!=='drawers'&&r.k!=='baskets'?`<label><input data-f="door" type="checkbox"${r.door?' checked':''}> דלת</label>`:''}
     <button class="btn sm danger" data-x="1" title="להסיר את התא" aria-label="להסיר את התא">✕</button><span class="span">${f1(r.z0)}–${f1(r.z1)}</span></div>`;
-  return`<div class="inside"><h3>פנים הרהיט</h3><p class="muted" style="margin:0">גובה פנימי ${f1(Lr.top-Lr.base)}, מ-${f1(Lr.base)} עד ${f1(Lr.top)}. תא בלי גובה מקבל את מה שנשאר. בין תא לתא מדף קבוע של 1.8. מלמעלה למטה:</p>
+  return`<div class="inside"><h3>פנים הרהיט</h3><p class="muted" style="margin:0 0 6px"><label style="display:inline-flex;gap:6px;align-items:center">עמודות<input id="ccols" type="number" min="1" max="6" step="1" value="${b.cols||1}" style="width:60px;font:500 14px var(--body);padding:4px 6px;border:1px solid var(--line2);border-radius:7px;background:var(--bg);color:var(--ink)"></label></p><p class="muted" style="margin:0">גובה פנימי ${f1(Lr.top-Lr.base)}, מ-${f1(Lr.base)} עד ${f1(Lr.top)}. תא בלי גובה מקבל את מה שנשאר. בין תא לתא מדף קבוע של 1.8. מלמעלה למטה:</p>
     <div class="rows" id="crows">${Lr.rows.slice().reverse().map(row).join('')}</div>
     <div class="bar"><button class="btn sm" id="cAdd">+ תא למעלה</button><button class="btn sm" id="cOpen">הכל פתוח</button><button class="btn sm" id="cDoor">הכל עם דלתות</button><button class="btn sm" id="cDef">חזרה לברירת המחדל</button></div></div>`}
 function wireInside(b){const $=id=>document.getElementById(id),go=()=>{touch();renderAll()};
+  if($('ccols'))$('ccols').onchange=e=>{const v=Math.max(1,Math.min(6,parseInt(e.target.value)||1));if(v>1)b.cols=v;else delete b.cols;go()};
   if($('cfgOn'))$('cfgOn').onclick=()=>{b.cfg=defCfg(b);go()};
   if(!$('crows'))return;
   $('crows').addEventListener('change',e=>{const rw=e.target.closest('[data-i]'),f=e.target.dataset.f;if(!rw||!f)return;const r=b.cfg[+rw.dataset.i];
@@ -687,7 +824,11 @@ function drawPanel(){
      <li>קצה לבן על בלוק = הצד שממנו פותחים אותו. בלוק מקווקו = תלוי על הקיר.</li>
     </ul>`;return}
   const Ty=TYPES[b.t],a=analyse(b),r=R(b),hung=zOf(b)>0;
+  const pd=b.p&&PMAP[b.p],pin=paxInside(b);
+  const pchoice=`<label class="wide">${pd?'להחליף במוצר אחר':'להפוך למוצר אמיתי'}<select id="fp"><option value="">${pd?'— בלוק חופשי, בלי מוצר —':'— בחירת מוצר —'}</option>${PGROUPS.map(([g,gn])=>`<optgroup label="${gn}">${PRODUCTS.filter(p=>p.g===g).map(p=>`<option value="${p.id}"${p.id===b.p?' selected':''}>${p.n} · ₪${p.price}</option>`).join('')}</optgroup>`).join('')}</select></label>`;
   panel.innerHTML=`<h2>${bname(b)}</h2><p class="muted" style="margin:0">${Ty.info}</p>
+   ${pd?`<div class="pcard"><b>${pd.n}</b> · ${pd.s||'IKEA'} · <b>₪${pd.price}</b>${pin?` + פנים ₪${pin.sum} (${pin.txt})`:''}<br>${pd.w}×${pd.d}×${pd.h} ס״מ${pd.note?' · '+pd.note:''}${(b.w!==pd.w||b.d!==pd.d||(b.hh??999)!==pd.h)?' · <span style="color:var(--warn)">המידות כאן שונו מהמוצר</span>':''}<br><a href="${pd.u}" target="_blank" rel="noopener">לעמוד המוצר</a></div>`:''}
+   <div class="fields" style="margin-bottom:0">${pchoice}</div>
    <div class="fields">
     <label class="wide">שם הבלוק<input id="fl" type="text" value="${(b.lb||'').replace(/"/g,'&quot;')}" placeholder="${Ty.n}"></label>
     <div class="wide"><span style="font-size:12.5px;color:var(--ink2)">צבע</span>
@@ -727,6 +868,7 @@ function drawPanel(){
   panel.querySelectorAll('[data-sw],[data-sd],[data-sh]').forEach(bt=>bt.onclick=()=>{const v=+(bt.dataset.sw||bt.dataset.sd||bt.dataset.sh);
     if(bt.dataset.sw)b.w=v;else if(bt.dataset.sd)b.d=v;else b.hh=v;touch();renderAll()});
   wireInside(b);
+  $('fp').onchange=e=>{const v=e.target.value;if(v)applyProduct(b,v);else{delete b.p}touch();renderAll()};
   $('ft').onchange=e=>{b.t=e.target.value;b.rq=null;touch();renderAll()};
   $('fl').addEventListener('change',e=>{b.lb=e.target.value.trim()||undefined;touch();renderAll()});
   $('fa').addEventListener('change',e=>{const v=parseFloat(e.target.value);if(!isNaN(v))setAngle(b,v)});
@@ -744,7 +886,7 @@ function drawPanel(){
 
 /* ===== טבלה וסיכום ===== */
 function stats(list){let rod=0,dr=0,bad=0,warn=0;
-  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.corner)rod+=2*(b.w-b.d/2);else if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
+  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.corner)rod+=2*(b.w-b.d/2);else if(b.t==='rack')rod+=b.w;else if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
   B=keep;return{rod,dr,bad,warn}}
 function drawList(){
   const tb=document.getElementById('list');tb.innerHTML='';
@@ -798,11 +940,11 @@ document.getElementById('clear').onclick=()=>{B=[];sel=null;cur={name:'חדר ר
 const io=document.getElementById('io'),ioMsg=document.getElementById('ioMsg');
 function pack(list){const keep=B;B=list;const out=list.map(b=>{const r=R(b),a=analyse(b);
   return{type:b.t,name:bname(b),w:b.w,d:b.d,face:b.f,x:r.x,y:r.y,...(b.a?{angle:b.a}:{}),ceiling:[+f1(a.cmin),+f1(a.cmax)],status:a.lvl,
-    ...(b.rq!=null?{req:b.rq}:{}),...(b.hh!=null?{height:b.hh}:{}),...(b.zz!=null?{from:b.zz}:{}),...(b.c?{color:b.c}:{}),...(b.cfg?{inside:b.cfg}:{})}});B=keep;return out}
+    ...(b.rq!=null?{req:b.rq}:{}),...(b.hh!=null?{height:b.hh}:{}),...(b.zz!=null?{from:b.zz}:{}),...(b.c?{color:b.c}:{}),...(b.cfg?{inside:b.cfg}:{}),...(b.cols?{cols:b.cols}:{}),...(b.p?{product:b.p}:{})}});B=keep;return out}
 function unpack(bl){return bl.map(o=>{const t=o.type||o.t;if(!TYPES[t])return null;
   const b={t,w:o.w,d:o.d,f:o.face||o.f||'S',x:o.x,y:o.y};
   if(o.name&&o.name!==TYPES[t].n)b.lb=o.name;else if(o.lb)b.lb=o.lb;
-  if(o.angle||o.a)b.a=o.angle||o.a;if(o.req!=null)b.rq=o.req;if(o.height!=null)b.hh=o.height;if(o.from!=null)b.zz=o.from;if(o.color)b.c=o.color;if(Array.isArray(o.inside))b.cfg=o.inside;
+  if(o.angle||o.a)b.a=o.angle||o.a;if(o.req!=null)b.rq=o.req;if(o.height!=null)b.hh=o.height;if(o.from!=null)b.zz=o.from;if(o.color)b.c=o.color;if(Array.isArray(o.inside))b.cfg=o.inside;if(o.cols)b.cols=o.cols;if(o.product&&PMAP[o.product])b.p=o.product;
   return b}).filter(Boolean)}
 function copyOut(text){io.value=text;
   const fallback=()=>{io.select();ioMsg.textContent='סימנתי את הטקסט — להעתיק ידנית.'};
@@ -897,8 +1039,8 @@ function joinery(b,G){
       if(r.k==='shelves'||r.k==='shoes'){const n=Math.max(0,r.n|0),st=hh/(n+1);
         for(let k=0;k<=n;k++){const zz=r.z0+k*st;if(k)P(TK,w-TK,.8,d-1,zz,zz+TK);
           if(r.k==='shelves')stacks(zz+(k?TK:0),st-TK,seed+i*31+k);else shoesAt(zz+(k?TK:0),st-TK,seed+i*31+k)}}
-      if(r.k==='drawers'){const n=Math.max(1,r.n|0),dh=hh/n;
-        for(let k=0;k<n;k++){const zz=r.z0+k*dh;P(.2,w-.2,d,d+1.9,zz+.15,zz+dh-.15,Fr);P(w/2-14,w/2+14,d+1.9,d+3,zz+dh-4.4,zz+dh-3.4,MMET())}}
+      if(r.k==='drawers'){const n=Math.max(1,r.n|0),dh=hh/n,nc=Math.max(1,b.cols|0),cw=w/nc,hw=Math.min(14,cw/4);
+        for(let c=0;c<nc;c++)for(let k=0;k<n;k++){const zz=r.z0+k*dh,u0=c*cw;P(u0+.2,u0+cw-.2,d,d+1.9,zz+.15,zz+dh-.15,Fr);P(u0+cw/2-hw,u0+cw/2+hw,d+1.9,d+3,zz+dh-4.4,zz+dh-3.4,MMET())}}
       if(r.k==='baskets'){const n=Math.max(1,r.n|0),dh=hh/n,mm=mat('mesh',()=>new THREE.MeshStandardMaterial({color:0xc9c7c2,metalness:.6,roughness:.4,transparent:true,opacity:.55}));
         for(let k=0;k<n;k++){const zz=r.z0+k*dh,bh=Math.min(dh-3,18);P(TK+1,w-TK-1,2,d-2,zz+1,zz+1.6,MMET());P(TK+1,w-TK-1,d-2.6,d-2,zz+1,zz+bh,mm);
           P(TK+1,TK+1.6,2,d-2,zz+1,zz+bh,mm);P(w-TK-1.6,w-TK-1,2,d-2,zz+1,zz+bh,mm);if(CLOTHES)stacks(zz+1.6,bh-1,seed+i*7+k)}}
@@ -906,6 +1048,7 @@ function joinery(b,G){
       if(r.door&&r.k!=='drawers'&&r.k!=='baskets'){const n=Math.max(1,Math.ceil(w/50)),dw=w/n,zt=flex?(y=>cap(y)-.2):topN-.2;
         for(let k=0;k<n;k++){P(k*dw+.2,(k+1)*dw-.2,d,d+1.9,r.z0+.2,zt,Fr);const ku=k%2?k*dw+3:(k+1)*dw-4,kz=hh>60?r.z0+hh/2:r.z0+hh-9;P(ku,ku+1,d+1.9,d+3.4,kz,kz+7,MMET())}}
     });
+    for(let c=1;c<Math.max(1,b.cols|0);c++){const u=c*w/b.cols;P(u-TK/2,u+TK/2,.8,d,Lr.base,y=>cap(y)-TK)}
     if(z0>0)P(TK,w-TK,d-5,d-3.6,z0-.6,z0,MLED());else led(topMin-TK);return}
   switch(b.t){
     case 'drawers':{carcass(0,true);let z=PL;
@@ -951,6 +1094,9 @@ function joinery(b,G){
       P(0,w,d/2-1.5,d/2+1.5,3,t);P(2,w-2,d/2+1.5,d/2+1.9,5,t-2,MGL());break}
     case 'suit':{const r=rng(seed),t=Math.min(hb,topMin);
       for(let u=1;u+44<=w;u+=48){P(u,u+44,Math.max(0,d-30),d-1,1.5,t-2,MFAB(BAG[r()*BAG.length|0]));P(u+16,u+28,d-17,d-13,t-2,t+.5,MMET())}break}
+    case 'rack':{const t=Math.min(hb,topMin),mt=MFAB(colOf(b));P(0,3,d/2-1.5,d/2+1.5,0,t,mt);P(w-3,w,d/2-1.5,d/2+1.5,0,t,mt);
+      P(0,3,0,d,0,3,mt);P(w-3,w,0,d,0,3,mt);cyl(G,F,0,w,d/2,t-2,1.3,MMET());garments(t-2,Math.min(110,t-12),0,seed);break}
+    case 'box':{const t=Math.min(hb,topMin);P(0,w,0,d,0,t,MFAB(colOf(b)));break}
     case 'bench':{P(2,6,2,d-2,0,34);P(w-6,w-2,2,d-2,0,34);P(0,w,0,d,34,38);P(1,w-1,1,d-1,38,45,MFAB('#cdbfa8'));break}
     default:carcass(z0,!z0);
   }
@@ -1110,16 +1256,17 @@ function drawElev(){
             if(i<nr-1)line(r.z1+.9,x0,x1);
             if(r.k==='shelves'||r.k==='shoes'){const n=r.n|0,st=hh/(n+1);for(let k=1;k<=n;k++)line(r.z0+k*st)}
             if(r.k==='drawers'||r.k==='baskets'){const n=Math.max(1,r.n|0),dh=hh/n;for(let k=1;k<=n;k++){const zz=r.z0+k*dh;if(k<n)line(zz,x0,x1);
-              E('line',{x1:x0+uw/2-10,y1:Z(zz-3.9),x2:x0+uw/2+10,y2:Z(zz-3.9),class:'ein','stroke-width':1.2,'stroke-dasharray':r.k==='baskets'?'1 1':'none'},g)}}
+              const nc=Math.max(1,b.cols|0),cw=uw/nc;for(let c=0;c<nc;c++){const cx2=x0+c*cw+cw/2,hw=Math.min(10,cw/4);E('line',{x1:cx2-hw,y1:Z(zz-3.9),x2:cx2+hw,y2:Z(zz-3.9),class:'ein','stroke-width':1.2,'stroke-dasharray':r.k==='baskets'?'1 1':'none'},g)}}}
             if(r.k==='rod'){gar(topN-5,Math.min(140,hh-8),r.z0);T(x0+uw/2,Z(topN-5)+5,'מוט '+f1(topN-5),'esm',g)}
             if(r.door&&r.k!=='drawers'&&r.k!=='baskets'){const n=Math.max(1,Math.ceil(b.w/50)),dw=uw/n;
               for(let k=0;k<n;k++){const a0=x0+k*dw,a1=a0+dw,hinge=k%2?a1:a0,hand=k%2?a0:a1;
                 E('rect',{x:a0+.3,y:Z(topN),width:dw-.6,height:hh,class:'ein'},g);
                 E('polyline',{points:`${hand},${Z(topN)} ${hinge},${Z(r.z0+hh/2)} ${hand},${Z(r.z0)}`,class:'ein','stroke-dasharray':'2 1.5'},g)}}
-            T(x1-3,Z(r.z0+hh/2)+2,f1(hh),'esm',g,{style:'text-anchor:end'})})}
+            T(x1-3,Z(r.z0+hh/2)+2,f1(hh),'esm',g,{style:'text-anchor:end'})});
+          for(let c=1;c<Math.max(1,b.cols|0);c++)E('line',{x1:x0+c*uw/b.cols,y1:Z(Lr.base),x2:x0+c*uw/b.cols,y2:Z(Lr.top),class:'ein'},g)}
         else if(Tyt==='hang2'){const low=Math.min(rodZ/2+3,rodZ-3-92-6);gar(rodZ,92,low+4);gar(low,90,floorZ);
           T(x0+uw/2,Z(rodZ)+5,'מוט '+f1(rodZ),'esm',g);T(x0+uw/2,Z(low)+5,'מוט '+f1(low),'esm',g)}
-        else if(Tyt==='hangS'||Tyt==='hangM'||Tyt==='hangL'||Tyt==='corner'){gar(rodZ,{hangS:95,hangM:112,hangL:140,corner:100}[Tyt],floorZ);T(x0+uw/2,Z(rodZ)+5,'מוט '+f1(rodZ),'esm',g)}
+        else if(Tyt==='hangS'||Tyt==='hangM'||Tyt==='hangL'||Tyt==='corner'||Tyt==='rack'){gar(rodZ,{hangS:95,hangM:112,hangL:140,corner:100,rack:110}[Tyt],Tyt==='rack'?0:floorZ);T(x0+uw/2,Z(rodZ)+5,'מוט '+f1(rodZ),'esm',g)}
         else if(Tyt==='drawers'){let z=PL;DRW.forEach(h=>{if(z+h>topMin+.5)return;line(z+h,x0,x1);E('line',{x1:x0+uw/2-10,y1:Z(z+h-3.9),x2:x0+uw/2+10,y2:Z(z+h-3.9),class:'ein','stroke-width':1.2},g);z+=h});
           for(let q=z+34;q<topMin-12;q+=34)line(q);T(x0+uw/2,Z(z)+ -3,'6 מגירות · עד '+f1(z),'esm',g)}
         else if(Tyt==='shelves'||Tyt==='deep'||Tyt==='shoes'){const st={shelves:34,deep:40,shoes:19}[Tyt];for(let q=floorZ+st;q<topMin-12;q+=st)line(q)}
@@ -1159,7 +1306,32 @@ function mirrorOver(v,list){if(v.a)return null;const vr=R(v),f=v.f,ax=(f==='E'||
   return m}
 (function(){let mm=false;try{mm=localStorage.getItem('closet_mig_mirror')==='1';localStorage.setItem('closet_mig_mirror','1')}catch(e){}
   if(!mm&&!B.some(b=>b.t==='mirror'))B.filter(b=>b.t==='vanity').forEach(v=>{const m=mirrorOver(v,B);if(m)B.push(Object.assign({id:uid++},m))})})();
-function renderAll(light){drawPlan();drawPanel();drawList();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
+/* ===== קטלוג המוצרים ===== */
+let PTAB='pax';
+function drawCatalog(){const tabs=document.getElementById('ptabs'),list=document.getElementById('plist');if(!tabs)return;
+  tabs.innerHTML=PGROUPS.map(([g,n])=>`<button data-g="${g}" class="${g===PTAB?'on':''}">${n}</button>`).join('');
+  list.innerHTML=PRODUCTS.filter(p=>p.g===PTAB).map(p=>{const ft=p.t.startsWith('mirror')||p.zz!=null?'':fitTxt(p.h);
+    return`<button class="pitem" data-p="${p.id}"><b>${p.n}</b><span>${p.w}×${p.d}×${p.h} · ${p.s||'IKEA'}</span><span class="pr">₪${p.price}</span>${ft?`<span class="fit${ft.startsWith('לא')?' no':''}">${ft}</span>`:''}</button>`}).join('')}
+document.getElementById('ptabs').onclick=e=>{const g=e.target.closest('[data-g]')?.dataset.g;if(g){PTAB=g;drawCatalog()}};
+document.getElementById('plist').onclick=e=>{const id=e.target.closest('[data-p]')?.dataset.p;if(!id)return;
+  const b={id:uid++,x:90,y:200,f:'S'};applyProduct(b,id);B.push(b);sel=b.id;touch();renderAll();
+  svg.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})};
+function drawShop(){const tb=document.getElementById('shop');if(!tb)return;const rows={};let tot=0;
+  B.forEach(b=>{const p=b.p&&PMAP[b.p];if(!p)return;(rows[p.id]=rows[p.id]||{p,n:0}).n++;tot+=p.price;const pi=paxInside(b);if(pi&&pi.sum){(rows['in'+b.id]={p:{n:'פנים KOMPLEMENT ל'+bname(b),price:pi.sum,u:IKS('KOMPLEMENT'),s:pi.txt},n:1});tot+=pi.sum}});
+  const list=Object.values(rows);
+  tb.innerHTML=list.length?list.map(({p,n})=>`<tr><td><a href="${p.u}" target="_blank" rel="noopener" style="color:var(--ink)">${p.n}</a>${p.s&&p.s!=='IKEA'&&p.s!=='Urban'?`<div class="muted">${p.s}</div>`:p.s==='Urban'?' <span class="muted">· אורבן</span>':''}</td><td class="n">${n}</td><td class="n">₪${p.price}</td><td class="n">₪${p.price*n}</td></tr>`).join(''):`<tr><td colspan="4" class="muted">עוד אין בחדר מוצרים אמיתיים. בוחרים מוצר מ״מוצרים אמיתיים״ למעלה, או הופכים בלוק קיים למוצר בלוח שלו.</td></tr>`;
+  document.getElementById('shopTot').textContent=list.length?'סך הכל ₪'+tot.toLocaleString('he-IL')+' · בלי דלתות, משלוח והרכבה':''}
+
+/* ===== ביטול ושחזור ===== */
+let HIST=[],FUT=[],LAST=null;
+function track(){const now=JSON.stringify(strip(B));if(LAST===null){LAST=now;return}if(now!==LAST){HIST.push(LAST);if(HIST.length>100)HIST.shift();FUT=[];LAST=now}}
+function restore(snap){B=clone(JSON.parse(snap));LAST=snap;sel=null;touch();renderAll()}
+function undo(){if(!HIST.length)return;FUT.push(LAST);restore(HIST.pop())}
+function redo(){if(!FUT.length)return;HIST.push(LAST);restore(FUT.pop())}
+document.getElementById('undo').onclick=undo;document.getElementById('redo').onclick=redo;
+
+function renderAll(light){if(!light)track();drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
+drawCatalog();
 renderAll();
 if(document.readyState==='complete')init3();else addEventListener('load',init3);
 </script>

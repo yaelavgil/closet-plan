@@ -3,574 +3,1098 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>חדר הארונות</title>
-<meta name="description" content="החדר במידות שנמדדו בשטח, עם הקיר המשופע ומה נכנס בכל נקודה.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="אשל 57">
 <meta property="og:locale" content="he_IL">
-<meta property="og:title" content="חדר הארונות — אשל 57">
-<meta property="og:description" content="234 בשיא, 95 בקצה. איפה אפשר לתלות ואיפה רק מדפים.">
+<meta property="og:title" content="בונים את חדר הארונות — אשל 57">
+<meta property="og:description" content="תוכנית אינטראקטיבית במידות שנמדדו: להזיז, לשנות גודל, להוסיף ולהסיר ארונות, ולראות תקרה משופעת, מעברים ותלת-ממד.">
 <meta property="og:url" content="https://yaelavgil.github.io/closet-plan/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%91%97%3C/text%3E%3C/svg%3E">
-<meta name="theme-color" content="#f4f2ee" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#16150f" media="(prefers-color-scheme: dark)">
+<title>בונים את חדר הארונות</title>
+<meta name="description" content="אשל 57 — לגרור בלוקים של תליה, מדפים ומגירות לתוך החדר במידות שנמדדו, ולראות מיד גובה תקרה, מעברים וחסימות.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@300;400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@300;400;500;600;700&display=swap">
 <style>
+/* פריסה: שולחן עבודה של נגר — תוכנית לעריכה מימין, לוח מאפיינים לצדה, גרסאות ותלת-ממד מתחת */
 :root{
-  --bg:#f4f2ee; --surface:#fffefb; --surface2:#ebe7df; --line:#dcd6cb; --line2:#c2baac;
-  --ink:#24211c; --ink2:#665e53; --ink3:#968d80; --accent:#8a5a2b; --warn:#c8912f;
-  --z1:#4a6a52; --z2:#6b8a63; --z3:#9aa877; --z4:#c2a878; --z5:#b98f7a;
-  --shadow:0 1px 2px rgba(40,34,26,.05),0 8px 22px rgba(40,34,26,.06);
+  --bg:#f3f1ec; --surface:#fffefb; --surface2:#e9e5dc; --line:#d9d2c5; --line2:#bfb6a6;
+  --ink:#24211c; --ink2:#625a4f; --ink3:#938a7d; --accent:#8a5a2b;
+  --ok:#3f7a52; --warn:#c08a22; --bad:#b4442f; --keep:#c76b3a; --glass:#5f8aa3;
+  --room:#ebe7df; --wallc:#24211c;
+  --display:"Frank Ruhl Libre",Georgia,serif; --body:Heebo,-apple-system,"Segoe UI",sans-serif;
+  --shadow:0 1px 2px rgba(40,34,26,.05),0 8px 22px rgba(40,34,26,.07);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#16150f; --surface:#1f1d16; --surface2:#28251c; --line:#342f25; --line2:#4a4436;
-  --ink:#efe9dd; --ink2:#a99f8f; --ink3:#7d7466; --accent:#d9a066;
-  --z1:#5d8167; --z2:#7da075; --z3:#adbb87; --z4:#d4ba88; --z5:#c9a08a;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);}}
+  --bg:#16150f; --surface:#1f1d16; --surface2:#29261d; --line:#363126; --line2:#4c4537;
+  --ink:#efe9dd; --ink2:#aca291; --ink3:#7f7667; --accent:#d9a066;
+  --ok:#6db383; --warn:#e0ab46; --bad:#e2715b; --keep:#e08a57; --glass:#86b1c9;
+  --room:#26231b; --wallc:#efe9dd; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#16150f; --surface:#1f1d16; --surface2:#28251c; --line:#342f25; --line2:#4a4436;
-  --ink:#efe9dd; --ink2:#a99f8f; --ink3:#7d7466; --accent:#d9a066;
-  --z1:#5d8167; --z2:#7da075; --z3:#adbb87; --z4:#d4ba88; --z5:#c9a08a;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);}
-*{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--ink);font:400 16px/1.6 Heebo,-apple-system,sans-serif}
-.wrap{max-width:900px;margin:0 auto;padding:24px 16px 80px}
-.eyebrow{font-size:12.5px;color:var(--ink3);margin-bottom:6px}
-h1{font-family:"Frank Ruhl Libre",serif;font-weight:700;font-size:32px;line-height:1.12}
-.sub{color:var(--ink2);font-size:15px;margin-top:9px;max-width:62ch}
-h2{font-family:"Frank Ruhl Libre",serif;font-size:21px;font-weight:700;margin:34px 0 3px}
-.dims{font-size:13px;color:var(--ink3);margin-bottom:12px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow);overflow-x:auto}
-/* התוכניות גבוהות מרוחבן, ולכן ברוחב מלא הן תמיד גולשות מהמסך.
-   max-width לפי יחס ה-viewBox כופל את גובה החלון הפנוי ביחס, וכך
-   ה-SVG יוצא הכי רחב שהוא יכול להיות בלי לחרוג לגובה — בלי פסים בצדדים. */
-svg{display:block;width:100%;height:auto;margin-inline:auto}
-.card svg{max-width:calc((100vh - var(--chrome,150px)) * var(--ar,1) * var(--zoom,1))}
-@supports (height:100svh){.card svg{max-width:calc((100svh - var(--chrome,150px)) * var(--ar,1) * var(--zoom,1))}}
-.fitbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 -4px;
-  font-size:13.5px;color:var(--ink2)}
-.fitbar button{font:600 13.5px Heebo,sans-serif;padding:7px 13px;border-radius:999px;
-  border:1px solid var(--line2);background:var(--surface);color:var(--ink2);cursor:pointer}
-.fitbar button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-/* ההתאמה האוטומטית לא יודעת כמה מהמסך שלך תפוס בסרגלי הדפדפן,
-   ולכן נשאר גם כוונון ידני — והוא נזכר בין ביקורים. */
-.fitbar .zoomg{display:inline-flex;align-items:center;gap:4px;margin-inline-start:4px}
-.fitbar .zoomg button{padding:5px 11px;font-size:15px;line-height:1}
-.fitbar #zVal{min-width:46px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
-body.nofit .card svg{max-width:none}
-.ctl{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:18px 0 6px}
-.ctl .r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.ctl label{font-size:14px;color:var(--ink2)}
-input[type=number]{width:92px;font:500 15px Heebo,sans-serif;padding:8px 10px;border:1px solid var(--line2);
-  border-radius:9px;background:var(--bg);color:var(--ink);text-align:center}
-.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px}
-.seg button{border:none;background:transparent;padding:7px 13px;border-radius:999px;font:500 13px Heebo,sans-serif;color:var(--ink2);cursor:pointer}
-.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
-.flag{display:inline-block;background:var(--warn);color:#fff;font-size:11.5px;font-weight:600;
-  border-radius:999px;padding:3px 10px;margin-right:4px}
-.note{font-size:13.5px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);
-  border-radius:12px;padding:13px 15px;margin-top:16px;line-height:1.75}
+  --bg:#16150f; --surface:#1f1d16; --surface2:#29261d; --line:#363126; --line2:#4c4537;
+  --ink:#efe9dd; --ink2:#aca291; --ink3:#7f7667; --accent:#d9a066;
+  --ok:#6db383; --warn:#e0ab46; --bad:#e2715b; --keep:#e08a57; --glass:#86b1c9;
+  --room:#26231b; --wallc:#efe9dd; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.6 var(--body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:22px 70px}
+.eyebrow{font-size:12.5px;color:var(--ink3);letter-spacing:.04em}
+h1{font-family:var(--display);font-size:30px;line-height:1.15;margin:4px 0 6px;text-wrap:balance}
+h2{font-family:var(--display);font-size:19px;margin:0 0 6px}
+.sub{color:var(--ink2);max-width:68ch;margin:0}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;padding:0;list-style:none}
+.steps li{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:7px 11px;font-size:13.5px;color:var(--ink2)}
+.steps b{color:var(--ink)}
+.cur{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 0;font-size:14px;color:var(--ink2)}
+.cur b{color:var(--ink);font-family:var(--display);font-size:17px}
+.cur .dirty{color:var(--warn);font-size:12.5px}
+.shelf{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 12px}
+.shelf button{font:500 13.5px var(--body);border:1px solid var(--line2);background:var(--surface);color:var(--ink);
+  border-radius:999px;padding:6px 12px 6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.shelf button i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.shelf button:hover{border-color:var(--ink2)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);min-width:0}
+#plan{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none;max-height:calc(100vh - 60px)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:13px;color:var(--ink2)}
+.btn{font:600 13px var(--body);padding:7px 12px;border-radius:9px;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);cursor:pointer}
+.btn.pri{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:12.5px}
+label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.panel h2{margin-bottom:2px}
+.muted{color:var(--ink3);font-size:13px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px;margin:10px 0}
+.fields label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.fields input,.fields select,.vsave input{font:500 15px var(--body);padding:7px 9px;border:1px solid var(--line2);border-radius:8px;background:var(--bg);color:var(--ink);
+  font-variant-numeric:tabular-nums;width:100%}
+.fields .wide{grid-column:1/-1}
+.sw{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:4px}
+.sw button[data-c]{width:24px;height:24px;border-radius:6px;border:2px solid transparent;cursor:pointer;padding:0}
+.sw button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface) inset}
+.sw input[type=color]{width:34px;height:26px;padding:0;border:1px solid var(--line2);border-radius:6px;background:none;cursor:pointer}
+.ang{display:flex;gap:6px;align-items:center}
+.inside{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.inside h3{font:600 14.5px var(--body);margin:0 0 4px}
+.rows{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.crow{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:6px 8px}
+.crow select,.crow input[type=number]{font:500 14px var(--body);padding:5px 7px;border:1px solid var(--line2);border-radius:7px;background:var(--bg);color:var(--ink)}
+.crow input[type=number]{width:66px;font-variant-numeric:tabular-nums}
+.crow label{display:inline-flex;gap:4px;align-items:center;font-size:12.5px;color:var(--ink2)}
+.crow .span{margin-inline-start:auto;font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums}
+.std{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;color:var(--ink2);margin:4px 0 8px}
+.ang input[type=range]{flex:1;accent-color:var(--accent)}
+.ang input[type=number]{width:78px;flex:none}
+.seg{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 10px}
+.seg button{font:500 12.5px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--ink2);padding:5px 10px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.facts{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.facts li{font-size:13.5px;padding:8px 10px;border-radius:9px;background:var(--surface2);border-inline-start:4px solid var(--line2);line-height:1.55}
+.facts li.ok{border-color:var(--ok)} .facts li.warn{border-color:var(--warn)} .facts li.bad{border-color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--ink2);font-weight:600;font-size:12.5px}
+td.n{font-variant-numeric:tabular-nums}
+tr.sel td{background:var(--surface2)}
+#list tr{cursor:pointer}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:6px}
+.vsave{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vsave input{flex:1 1 200px;width:auto}
+.vtable td:last-child{white-space:nowrap}
+.vtable .acts{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-size:11.5px;color:var(--ink3);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-inline-start:6px}
+.tag.on{color:var(--surface);background:var(--accent);border-color:var(--accent)}
+#three{width:100%;height:440px;border-radius:10px;overflow:hidden;background:var(--surface2);position:relative}
+#three .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink3);font-size:13px}
+.note{font-size:13px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:14px;line-height:1.75}
 .note b{color:var(--ink)}
-.note.warn{border-color:var(--warn)}
-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14.5px}
-th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line)}
-th{font-weight:600;color:var(--ink2);font-size:13px}
-td.n{font-variant-numeric:tabular-nums;font-weight:500}
-.key{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.key span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)}
-.key i{width:13px;height:13px;border-radius:3px;display:inline-block}
-.foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink3);line-height:1.8}
-.lbl{font:500 11.5px Heebo,sans-serif;fill:var(--ink);text-anchor:middle}
-.dln{stroke:var(--ink2);stroke-width:1}
-.ext{stroke:var(--ink3);stroke-width:.8}
-.dtx{font:500 11.5px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
-.glass{stroke:#6f93a8;stroke-width:2.4;fill:none}
-.swing{stroke:#6f93a8;stroke-width:1;fill:none;stroke-dasharray:4 3}
-.slp{stroke:#fff;stroke-width:1.6;fill:none}
-.slptx{font:600 11px Heebo,sans-serif;fill:#fff;text-anchor:middle}
-.room{fill:var(--surface2);stroke:var(--ink);stroke-width:2}
-.rlbl{font:600 13px Heebo,sans-serif;fill:var(--ink2);text-anchor:middle}
-.unit{stroke:#2c3a30;stroke-width:1.2}
-.utx{font:600 11.5px Heebo,sans-serif;fill:#fff;text-anchor:middle}
-.usb{font:400 10px Heebo,sans-serif;fill:rgba(255,255,255,.88);text-anchor:middle}
-.mir{stroke:#7fa6bd;stroke-width:5;stroke-linecap:round}
-.dim{font:400 11px Heebo,sans-serif;fill:var(--ink3);text-anchor:middle}
-.zlbl{font:600 12px Heebo,sans-serif;fill:#fff;text-anchor:middle}
-.zsub{font:400 10.5px Heebo,sans-serif;fill:rgba(255,255,255,.85);text-anchor:middle}
+textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;border:1px solid var(--line2);border-radius:9px;background:var(--bg);color:var(--ink);padding:8px;direction:ltr}
+.section{margin-top:18px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--ink2);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:10px;border-radius:2px;display:inline-block}
+/* SVG */
+.room{fill:var(--room);stroke:var(--wallc);stroke-width:1.6}
+.flatln{stroke:var(--warn);stroke-width:.7;stroke-dasharray:4 3}
+.contour{stroke:var(--ink3);stroke-width:.4;stroke-dasharray:2 3}
+.ctx{font:500 5.6px var(--body);fill:var(--ink3);text-anchor:middle}
+.keep{fill:var(--keep);fill-opacity:.13;stroke:var(--keep);stroke-width:.6;stroke-dasharray:3 2}
+.keeptx{font:600 5.6px var(--body);fill:var(--keep);text-anchor:middle}
+.zone{fill:var(--ink2);fill-opacity:.07;stroke:var(--ink3);stroke-width:.5;stroke-dasharray:2 2}
+.zone.view{fill:var(--glass);fill-opacity:.07;stroke:var(--glass)}
+.blk{stroke:rgba(0,0,0,.35);stroke-width:.6;cursor:grab}
+.blk.sel{stroke:var(--ink);stroke-width:1.6}
+.ring-bad{stroke:var(--bad)!important;stroke-width:1.8!important}
+.ring-warn{stroke:var(--warn)!important;stroke-width:1.5!important}
+.btx{font:600 6.2px var(--body);fill:#fff;text-anchor:middle;pointer-events:none}
+.bsb{font:400 5px var(--body);fill:rgba(255,255,255,.9);text-anchor:middle;pointer-events:none}
+.dimln{stroke:var(--accent);stroke-width:.6}
+.dimtx{font:600 6px var(--body);fill:var(--accent);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:2px}
+.wtx{font:500 5.8px var(--body);fill:var(--ink2);text-anchor:middle}
+.door{stroke:var(--glass);stroke-width:1.2;fill:none}
+.swing{stroke:var(--glass);stroke-width:.5;fill:none;stroke-dasharray:2 1.5}
+.zoomg{display:inline-flex;align-items:center;gap:4px}
+.zoomg .tnum{min-width:44px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.ev{margin-top:14px;overflow-x:auto}
+.ev h3{font:600 15px var(--body);margin:0 0 2px}
+.ev svg{display:block;max-width:none}
+.ewall{fill:var(--room);stroke:var(--wallc);stroke-width:1.2}
+.eceil{fill:none;stroke:var(--warn);stroke-width:.8}
+.eop{fill:var(--surface);stroke:var(--keep);stroke-width:.7;stroke-dasharray:3 2}
+.eunit{stroke:var(--ink);stroke-width:.7}
+.ein{stroke:var(--ink);stroke-width:.45;fill:none}
+.egar{fill:var(--surface);stroke:var(--ink3);stroke-width:.3}
+.eglass{fill:var(--glass);fill-opacity:.35;stroke:var(--glass);stroke-width:.5}
+.etx{font:600 6.4px var(--body);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--room);stroke-width:1.6px}
+.esm{font:400 5px var(--body);fill:var(--ink2);text-anchor:middle}
+.edim{stroke:var(--accent);stroke-width:.5}
+.edtx{font:600 5.6px var(--body);fill:var(--accent);text-anchor:middle}
+.ehtx{font:500 5px var(--body);fill:var(--warn);text-anchor:middle}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
+
 <div class="wrap">
+<p class="eyebrow">אשל 57 · קומה עליונה · כל המידות בס״מ</p>
+<h1>בונים את חדר הארונות</h1>
+<p class="sub">החדר מצויר לפי המדידות של יעל. כל בלוק שמזיזים מקבל מיד את גובה התקרה בנקודה שבה הוא עומד, והחדר בודק שאף מגירה, דלת או כיסא לא נכנסים למעבר.</p>
+<ol class="steps">
+  <li><b>1.</b> לבחור בלוק מהמדף למטה</li>
+  <li><b>2.</b> לגרור אותו לקיר — הוא נצמד לבד, ונשאר בכיוון שבחרת</li>
+  <li><b>✎</b> בלחיצה על בלוק: שם, צבע, ייעוד, מידות, זווית — ופנים הרהיט: תאים, מדפים, מגירות, מוטות ודלתות</li>
+  <li><b>↻</b> העיגול בפינה, לחיצה כפולה או R מסובבים 90°. זווית חופשית — בלוח הבלוק</li>
+  <li><b>3.</b> מסגרת ירוקה = עובד · כתומה = גובה גבולי · אדומה = חוסם</li>
+  <li><b>4.</b> לשמור גרסה, ולהמשיך לשחק על עותק</li>
+</ol>
+<p class="muted" style="margin:6px 0 0">השרטוט הקודם, עם חתך התקרה וטבלת הגבהים: <a href="measurements.html" style="color:var(--accent)">חתך ומידות</a></p>
 
-<p class="eyebrow">אשל 57 · קומה עליונה</p>
-<h1>חדר הארונות</h1>
-<p class="sub">החדר במידות שיעל מדדה בשטח ב-4.10.2026. הקריאה מהתוכנית הייתה שגויה והמדידה גוברת עליה. כאן רואים מה נכנס בכל נקודה לאורך הקיר המשופע.</p>
+<div class="cur" id="cur"></div>
+<div class="shelf" id="shelf" aria-label="בלוקים להוספה"></div>
 
-<div class="ctl">
-  <div class="r" style="gap:22px">
-    <span><b>233.4</b> בשיא &nbsp;·&nbsp; <b>95.5</b> בנמוך</span>
-    <span>הגג שטוח <b>171.5</b> ס״מ <i>מרחק</i> מהקיר הגבוה, ואז יורד ברצף <b>289</b> ס״מ עד הקיר הרחוק · שיפוע 25.5°</span>
-    <span class="flag" style="background:#4a6a52">נמדד 16–17.10</span>
-  </div>
-</div>
-  </div>
-</div>
-
-<div class="fitbar"><span>תצוגה:</span><button id="fitOn" class="on">מתאים למסך</button><button id="fitOff">גודל מלא</button><span class="zoomg"><button id="zOut" title="להקטין">−</button><span id="zVal">100%</span><button id="zIn" title="להגדיל">+</button></span><span id="fitNote">—</span></div>
-<h2>חתך — הקיר המשופע</h2>
-<p class="dims">233.4 ס״מ לאורך 171.5 הראשונים · ואז ירידה רצופה של 289 ס״מ עד 95.5 בקיר הרחוק</p>
-<div class="card">
-  <svg style="--ar:1.4643" viewBox="0 0 820 560" id="sec"></svg>
-</div>
-<div class="key">
-  <span><i style="background:var(--z1)"></i> תליה כפולה — שני מוטות</span>
-  <span><i style="background:var(--z2)"></i> תליה ארוכה — שמלות ומעילים</span>
-  <span><i style="background:var(--z3)"></i> תליה קצרה — חולצות ומכנסיים</span>
-  <span><i style="background:var(--z4)"></i> מגירות ומדפים</span>
-  <span><i style="background:var(--z5)"></i> נעליים ותחתית בלבד</span>
-</div>
-
-<h2>הצעת נגרות</h2>
-<p class="dims" id="schemeSub">שלוש גישות לאותו חדר · כולן עומדות בתוכנית, ההבדל הוא איפה יושבת עמדת הפן ואיפה התליה</p>
-<div class="ctl" style="margin-top:0">
-  <div class="r">
-    <div class="seg" id="scheme">
-      <button data-k="a" class="on">א · שני טורים</button>
-      <button data-k="b">ב · הפן צמוד למקלחת</button>
-      <button data-k="c">ג · תליה על שני קירות</button>
+<div class="grid">
+  <div class="card">
+    <svg id="plan" viewBox="-34 -40 360 548" role="img" aria-label="מבט על של חדר הארונות"></svg>
+    <div class="legend">
+      <span><i style="background:var(--keep);opacity:.45"></i>מעבר שאסור לחסום</span>
+      <span><i style="background:var(--ink2);opacity:.2"></i>מקום שמגירה, דלת או כיסא צריכים</span>
+      <span><i style="background:var(--glass);opacity:.3"></i>מרחק נסיגה מהמראה</span>
+      <span><i style="background:none;border-top:1.5px dashed var(--warn);height:0;border-radius:0"></i>כאן מתחיל השיפוע · 171.5 מהקיר הגבוה</span>
+      <span><i style="background:var(--ink3);opacity:.5;border:1px dashed var(--ink)"></i>תלוי על הקיר, מעל הרצפה</span>
+    </div>
+    <div class="bar">
+      <span class="zoomg" aria-label="זום"><button class="btn sm" id="zo" title="להקטין">−</button><span id="zv" class="tnum">100%</span><button class="btn sm" id="zi" title="להגדיל">+</button><button class="btn sm" id="zr">כל החדר</button></span>
+      <label class="chk"><input type="checkbox" id="doors"> ארונות עם דלתות ציר</label>
+      <span style="flex:1"></span>
+      <button class="btn" id="clear">חדר ריק</button>
     </div>
   </div>
-</div>
-<div class="card">
-  <svg style="--ar:0.9444" viewBox="0 0 680 720" id="joinery"></svg>
-</div>
-<table id="prog">
-  <thead><tr><th>מה ביקשת</th><th>א</th><th>ב</th><th>ג</th></tr></thead>
-  <tbody></tbody>
-</table>
 
-<h2>עד איפה מגיע ארון</h2>
-<p class="dims">המרחק מהקיר הגבוה שבו עוד אפשר להעמיד ארון בגובה הזה, כולל 2 ס״מ מרווח התקנה · 171.5 הס״מ הראשונים שטוחים לגמרי</p>
-<table id="tbl">
-  <thead><tr><th>גובה הארון</th><th>עד מרחק מהקיר הגבוה</th><th>שטח רצפה לכל מטר אורך קיר</th></tr></thead>
-  <tbody></tbody>
-</table>
+  <div class="card panel" id="panel"></div>
+</div>
 
-<h2>מבט על</h2>
-<p class="dims">כל המידות בס״מ · הקיר הגבוה למעלה, הבליטה בפינה הימנית העליונה, הפתח בקיר הימני</p>
-<div class="ctl" style="margin-top:0">
-  <div class="r">
-    <label>סדר הקטעים בקיר הארוך:</label>
-    <div class="seg" id="side">
-      <button data-s="bot" class="on">80 עד הפתח, ואז 200</button>
-      <button data-s="top">200 ראשון, ואז 80</button>
-    </div>
-    <span class="flag">הפתח 79 — נגזר מהשרשרת</span>
+<div class="section card">
+  <h2>גרסאות</h2>
+  <p class="muted" style="margin:0 0 10px">שומרים את מה שעל המסך בשם, וממשיכים לשחק. הגרסה השמורה לא משתנה עד שלוחצים ״עדכון״ עליה. הגרסאות נשמרות בדפדפן הזה בלבד — כדי שיגיעו אליי או לרועי, משתמשים ב״העתקת כל הגרסאות״ למטה.</p>
+  <div class="vsave"><input id="vname" type="text" placeholder="שם לגרסה, למשל ״איפור ליד המקלחת, נעליים בכניסה״" aria-label="שם הגרסה"><button class="btn pri" id="vsave">שמירת גרסה</button></div>
+  <table class="vtable"><thead><tr><th>גרסה</th><th>תליה</th><th>מצב</th><th></th></tr></thead><tbody id="vlist"></tbody></table>
+</div>
+
+<div class="section card">
+  <h2>הדמיה בתלת-ממד</h2>
+  <p class="muted" style="margin:0 0 8px">גוררים כדי לסובב, צובטים או גוללים כדי להתקרב. במצב נגרות כל ארון בנוי מלוחות: דפנות, גב, מדפים, מוטות, חזיתות מגירות וידיות, וחותך את עצמו לפי התקרה בנקודה שבה הוא עומד.</p>
+  <div class="bar" style="margin:0 0 8px">
+    <div class="seg" id="mode3" style="margin:0"><button data-m="real" class="on">נגרות</button><button data-m="schem">סכמטי</button></div>
+    <div class="seg" id="fin3" style="margin:0"><button data-f="oak" class="on">אלון טבעי</button><button data-f="white">לבן מט</button><button data-f="walnut">אגוז</button><button data-f="block">צבעי הבלוקים</button></div>
   </div>
+  <div id="three"><div class="ph">טוען את התלת-ממד…</div></div>
+  <div class="bar"><label class="chk"><input type="checkbox" id="ceil"> להראות את התקרה</label><label class="chk"><input type="checkbox" id="clothes" checked> בגדים על המוטות</label>
+    <button class="btn" id="camTop">מבט על</button><button class="btn" id="camIn">מבט מהמקלחת</button><button class="btn" id="camBed">מבט מחדר השינה</button><button class="btn" id="camNiche">מבט לנישה</button></div>
 </div>
-<div class="card">
-  <svg style="--ar:0.9444" viewBox="0 0 680 720" id="plan"></svg>
+
+<div class="section card">
+  <h2>פריסות קירות</h2>
+  <p class="muted" style="margin:0 0 8px">כל קיר כמו שהוא נראה כשעומדים מולו בתוך החדר, עם כל הארונות שצמודים אליו. המידות בס״מ: רוחב כל יחידה בשרשרת למטה, גובה היחידה בכל קצה, וקו התקרה מעל. בלוק שלא צמוד לקיר, או מסובב בזווית, מופיע ברשימה בסוף.</p>
+  <div class="bar" style="margin:0"><span class="zoomg"><button class="btn sm" id="ezo" title="להקטין">−</button><span id="ezv" class="tnum">100%</span><button class="btn sm" id="ezi" title="להגדיל">+</button></span></div>
+  <div id="elev"></div>
+</div>
+
+<div class="section card">
+  <h2>מה יש בחדר</h2>
+  <table><thead><tr><th>בלוק</th><th>רוחב × עומק</th><th>תקרה בנקודה</th><th>מצב</th></tr></thead><tbody id="list"></tbody></table>
+  <p class="muted" id="totals" style="margin-top:8px"></p>
+</div>
+
+<div class="section card">
+  <h2>לשלוח לי</h2>
+  <p class="muted" style="margin:0 0 8px">ההעתקה שמה את התוכנית בלוח, ומדביקים אותה בשיחה איתי. אפשר גם להדביק כאן תוכנית או גרסאות שקיבלת ממני, ואז ״טעינה מהתיבה״.</p>
+  <textarea id="io" aria-label="התוכנית כטקסט"></textarea>
+  <div class="bar"><button class="btn pri" id="copy">העתקת התוכנית שעל המסך</button><button class="btn" id="copyAll">העתקת כל הגרסאות</button><button class="btn" id="load">טעינה מהתיבה</button><span id="ioMsg"></span></div>
 </div>
 
 <div class="note">
-  <b>הנתון שחסר נמדד — 16.10.</b> הגג יורד מ-233.4 ל-95.5 על פני <b>2 מטר</b> בדיוק, שיפוע של 34.6 מעלות. זה שיפוע גג טיפוסי, ולכן הקו ישר.<br>
-  מכאן יוצא שקו ה-140 נמצא <b>135 ס״מ</b> מהקיר הגבוה ולא באמצע — ההערכה המוקדמת הייתה גסה. המתג נשאר בדף להשוואה, אבל המודל הנכון הוא השיפוע הישר.<br>
-  <b>המספר המעשי:</b> ארון בעומק 60 ס״מ, שהוא העומק הסטנדרטי, מגיע לנקודה שבה התקרה היא <b>192 ס״מ</b>. זה הגובה המקסימלי של ארון רגיל כאן, אלא אם בונים לו גג משופע.
+  <b>מה נמדד ומה הנחה.</b><br>
+  החדר, הגבהים, השיפוע ושני הפתחים — מדידה של יעל, 4.10 ו-16–17.10.2026.<br>
+  <b>הנישה — 89.5 × 80, נמדדה</b>, ואומתה גם במדידה של רועי מיולי. 89.5 היא פאת הבליטה, ו-80 הן מהבליטה עד הפתח לחדר השינה.<br>
+  <b>שתי הצעות פתיחה:</b> בהצעה א׳ פינת האיפור בנישה. בהצעה ב׳ היא על הקיר השמאלי ליד המגירות, וארונית תלויה אחת רצה מעל שתיהן. הנישה מתפנה לתליה כפולה.<br>
+  <b>פתח הגג 50×50</b> — מצויר בפינה הימנית התחתונה, צמוד לקיר הרחוק, כפי שתואר. צריך למדוד באיזה קיר הוא, כמה ס״מ מהפינה ובאיזה גובה.<br>
+  <b>דלתות המקלחת</b> מצוירות כנפתחות פנימה לחדר הארונות, 40 כל אחת. צריך לוודא.<br>
+  <b>האחסון האחורי הוא חלל שנכנסים אליו בזחילה.</b> הרצפה באמצע פנויה, מדפים על הדפנות, מזוודות למטה, ומתלה הפרוות נייד.<br>
+  <b>גובה נדרש לכל בלוק</b> — הנחת תכנון, ואפשר לשנות אותה בלוח של הבלוק. תליה קצרה 120 לפי הכלל שלך, ארוכה 160 לשמלות של 150, כפולה 205. בתליה מניחים 6 ס״מ בין המוט לתקרה.<br>
+  🔴 <b>שאלה פתוחה — מה הקירות נושאים.</b> הקיר השמאלי הוא קיר חיצוני מבלוקים (יעל, 25.10), ולכן מה שתלוי עליו לא מותנה. שאר הקירות בחדר הם גבס שנבנה בשיפוץ. מה שתלוי עליהם מסומן כמותנה, עם חלופה שעומדת על הרצפה. השאלה פתוחה מול ברק.<br>
+  <b>אין דלת לחדר — הוחלט ב-26.5.2026.</b> במקום דלת: תאורה כפולה, חלשה וחזקה.<br>
+  <b>תאורה לפינת איפור — נשאלת מול קרלוס:</b> נקודה עם מתג נפרד בכל אחד משני המקומות האפשריים לפינת האיפור.<br>
+  <b>גובה מזוודה 80</b> — הערכה. צריך למדוד את המזוודה הגדולה.<br>
+  בלוק בזווית נבדק לפי ארבע הפינות שלו. גובה הפתחים בתלת-ממד סכמטי, לא נמדד.
+</div>
 </div>
 
-<div class="note">
-  <b>כללי האצבע שלפיהם סומנו הרצועות:</b> חולצות ומכנסיים דורשים 90–100 ס״מ מתחת למוט, שמלות ומעילים 120–150.
-  תליה כפולה דורשת 200 ומעלה.
-  מתחת ל-120 ס״מ גובה אין טעם בתליה — שם מדפים, מגירות וסלסלות.<br>
-  <b>הפתח — 79 ס״מ</b>, בקיר הימני. מתחיל 80 ס״מ מתחת לקצה התחתון של הבליטה, ונגמר 200 ס״מ מהקצה הרחוק. 101.5 ועוד 80 ועוד 79 ועוד 200 נותנים 460.5 בדיוק.<br>
-  <b>ה-67 לא היה תחילת השיפוע</b> — השיפוע מתחיל ב-70, והפער בין 67 ל-70 הוא 3 ס״מ. ה-67 נשאר פרוסת מדידה בלבד ולא מסמן שום דבר פיזי.<br>
-  <b>נקודת הייחוס של שתי המידות זהה:</b> גם ה-70 של השיפוע וגם ה-80 של הפתח נמדדים מהקצה התחתון של הבליטה. כלומר השיפוע מתחיל, ועשרה ס״מ אחריו מתחיל הפתח.<br>
-  <b>מה שזה אומר בפועל:</b> 171.5 הס״מ הראשונים מהקיר הגבוה הם בגובה מלא 233.4 — רצועה עמוקה מספיק לשני ארונות בעומק 60 ועוד מעבר. משם הגג יורד ברצף עד הקיר הרחוק, בלי קטע שטוח בסוף.<br>
-  ⚠️ <b>זה מחליף את המספר 200 שנמסר קודם כאורך הירידה.</b> לפי התיקון של 17.10 הירידה נמשכת 289 ס״מ — מ-171.5 ועד 460.5. אם ה-200 היה נכון דווקא, תגידי ואחזיר.
-</div>
-
-<p class="foot">
-כל המידות מ-<b>מידות.md</b> בתיקיית השיפוץ, תגית ״מדידה״ — יעל בשטח, 4.10.2026.<br>
-המרחק האופקי של השיפוע הוא הנתון היחיד בדף שלא נמדד, והוא ניתן לשינוי למעלה.<br>
-גובה מירבי, גובה נמוך ומרחק הירידה — מדידת יעל 16.10.2026. עודכן 16.10.2026
-</p>
-
-</div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-const SVGNS='http://www.w3.org/2000/svg';
-function el(t,a){const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
-function txt(svg,x,y,s,cls){const t=el('text',{x,y,class:cls||'dim'});t.textContent=s;svg.appendChild(t);return t;}
-
-const HMAX=233.4, HMIN=95.5;
-const Wt=195.7, Dt=101.5, W=285.2;    // the notch is at the top, 195.7 wide × 101.5 deep
-const L=460.5;
-const FLAT1=Dt+70;                    // the slope starts 70 below the notch edge
-const RUN=L-FLAT1;                    // and keeps descending to the far wall — 289
-const SLOPE=(HMAX-HMIN)/RUN;
-const FLAT2=0;
-const OP_A=Dt+80, OP_B=L-200;         // the opening starts 80 below the same edge
-const TOP_W=80, TOP_A=Wt-TOP_W;       // the double-door opening in the high wall, flush right
-
-// height (cm) at distance x from the high wall
-function hAt(x){
-  if(x<=FLAT1) return HMAX;
-  if(x>=FLAT1+RUN) return HMIN;
-  return HMAX-(x-FLAT1)*SLOPE;
-}
-// distance at which the ceiling drops to height h
-function xAt(h){
-  if(h>=HMAX) return FLAT1;
-  if(h<=HMIN) return L;
-  return FLAT1+(HMAX-h)/SLOPE;
-}
-
-const ZONES=[
-  {from:210,to:999,c:'--z1',t:'תליה כפולה',s:'שני מוטות זה מעל זה'},
-  {from:170,to:210,c:'--z2',t:'תליה ארוכה',s:'שמלות ומעילים'},
-  {from:120,to:170,c:'--z3',t:'תליה קצרה',s:'חולצות ומכנסיים'},
-  {from:60, to:120,c:'--z4',t:'מגירות ומדפים',s:'סלסלות וקיפול'},
-  {from:0,  to:60, c:'--z5',t:'תחתית',s:'נעליים ואחסון נמוך'}
+/* ===== החדר — מדידות ===== */
+const H=233.4,HMIN=95.5,FLAT=171.5,L=460.5,W=285.2,WT=195.7,DT=101.5;
+const SL=(H-HMIN)/(L-FLAT);                       // 0.477 ס״מ לכל ס״מ
+const hAt=y=>y<=FLAT?H:Math.max(HMIN,H-(y-FLAT)*SL);
+const yAt=h=>h>=H?FLAT:FLAT+(H-h)/SL;
+const OP_A=181.5,OP_B=260.5,TOP_A=115.7;
+const KEEP=[
+  {x:115.7,y:0,w:80,h:80,n:'יציאה מהמקלחת',s:'2 דלתות × 40 + עמידה'},
+  {x:205.2,y:OP_A,w:80,h:OP_B-OP_A,n:'כניסה מחדר השינה',s:'פתח 79'},
+  {x:235.2,y:400.5,w:50,h:60,n:'פתח לגג',s:'50×50 · למדוד'},
+  {x:140,y:340,w:85,h:85.5,n:'כניסה בזחילה',s:'לאחסון האחורי · הצעה'}
 ];
+const f1=v=>(Math.round(v*10)/10).toString();
 
-function drawSection(){
-  const svg=document.getElementById('sec'); svg.innerHTML='';
-  const OX=56, OY=44, W=720;
-  const S=W/L;
-  const yFloor=OY+HMAX*S;
-  const px=x=>OX+x*S, py=h=>yFloor-h*S;
+/* ===== סוגי בלוקים — מידות ברירת מחדל והנחות גובה ===== */
+const TYPES={
+  drawers:{n:'6 מגירות + מקופלים',w:110,d:60,h:999,req:116,fz:50,c:'#7a5a3a',info:'6 מגירות רחבות עד גובה 114, ומעליהן מקופלים'},
+  hang2:{n:'תליה כפולה',w:100,d:60,h:999,req:205,c:'#3c5c66',doors:1,rod:2,info:'שני מוטות — חולצות ומכנסיים'},
+  hangL:{n:'תליה ארוכה',w:80,d:60,h:999,req:160,c:'#4f6e5a',doors:1,rod:1,info:'שמלות עד 150'},
+  hangM:{n:'תליה בינונית',w:80,d:60,h:999,req:135,c:'#5d7f6a',doors:1,rod:1,info:'מעילים ושמלות קצרות עד 120'},
+  hangS:{n:'תליה קצרה',w:80,d:60,h:999,req:120,c:'#6f8f74',doors:1,rod:1,info:'חולצות, 90–100 מתחת למוט'},
+  shelves:{n:'מדפים',w:80,d:45,h:999,req:40,c:'#8c7a55',doors:1,info:'מקופלים, סלסלות'},
+  shoes:{n:'נעליים',w:80,d:35,h:999,req:40,c:'#8a6a4f',doors:1,info:'מדפים משופעים'},
+  vanity:{n:'פינת איפור ושיער',w:80,d:45,h:75,req:140,fz:55,c:'#7a6a86',info:'שולחן 75 וכיסא לפניו. המראה היא בלוק ״מראה״ נפרד מעליו'},
+  wallShelf:{n:'ארונית תלויה',w:89.5,d:25,h:999,z0:100,req:130,c:'#9c7f5c',info:'מדפים או ארונית על הקיר, מהגובה שבשדה ״מגובה״ ועד התקרה. מה שנמוך ממנה נכנס מתחתיה'},
+  mirrorW:{n:'מראה גוף מלא',w:50,d:1,h:190,req:190,fz:150,view:1,c:'#5f8aa3',info:'צמודה לקיר, בלי רגל'},
+  mirror:{n:'מראה',w:60,d:1,h:160,z0:88,req:100,c:'#7fa6bd',info:'מראה על הקיר. ״מגובה״ הוא הקצה התחתון, ״גובה״ הוא הקצה העליון'},
+  mirrorS:{n:'מראה עומדת',w:50,d:40,h:175,req:180,fz:150,view:1,c:'#6f9ab3',info:'עם רגל — תופסת 40 ברצפה'},
+  deep:{n:'אחסון עמוק',w:80,d:60,h:999,req:30,c:'#9a8566',doors:1,info:'פוך, שמיכות, ארגזי חורף'},
+  suit:{n:'מזוודות עומדות',w:100,d:35,h:80,req:82,c:'#a07457',info:'גובה 80 — הערכה, למדוד'},
+  bench:{n:'ספסל',w:100,d:40,h:45,req:50,c:'#a48d6b',info:'לשבת ולנעול נעליים'}
+};
+const ORDER=['drawers','hang2','hangL','hangM','hangS','shelves','shoes','vanity','mirror','wallShelf','mirrorW','mirrorS','deep','suit','bench'];
 
-  ZONES.forEach(z=>{
-    const xa=(z.to>=HMAX)?0:xAt(Math.min(z.to,HMAX));
-    const xb=(z.from<=HMIN)?L:xAt(z.from);
-    if(xb-xa<0.5) return;
-    const col=getComputedStyle(document.documentElement).getPropertyValue(z.c).trim();
-    const pts=[[px(xa),yFloor]];
-    for(let x=xa;x<=xb;x+=1.5) pts.push([px(x),py(hAt(x))]);
-    pts.push([px(xb),py(hAt(xb))],[px(xb),yFloor]);
-    svg.appendChild(el('polygon',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),
-      fill:col,stroke:'rgba(0,0,0,.18)','stroke-width':1}));
-    const mid=(xa+xb)/2, w=(xb-xa)*S;
-    if(w>58){
-      const t=el('text',{x:px(mid),y:yFloor-15,class:'zlbl'});t.textContent=z.t;svg.appendChild(t);
-      if(w>104){const s2=el('text',{x:px(mid),y:yFloor-2,class:'zsub'});s2.textContent=z.s;svg.appendChild(s2);}
-      txt(svg,px(mid),py(hAt(mid))-8,Math.round(xb-xa)+' ס״מ');
-    }
-  });
+/* ===== הצעות הפתיחה ===== */
+const BACK=[
+  {t:'deep',x:0,y:340,w:120.5,d:60,f:'E',lb:'פוך ושמיכות'},
+  {t:'shoes',x:250.2,y:262.5,w:77.5,d:35,f:'W'},
+  {t:'shelves',x:250.2,y:340,w:60.5,d:35,f:'W',lb:'מדפי צד — חורף'},
+  {t:'hangS',x:60,y:350,w:80,d:50,f:'N',lb:'פרוות — מתלה נייד'},
+  {t:'suit',x:60,y:425.5,w:175,d:35,f:'N',lb:'מזוודות למטה'}
+];
+const PROP_A=[
+  {t:'drawers',x:0,y:0,w:110,d:60,f:'E',lb:'תחתונים ופיג׳מות'},
+  {t:'mirrorW',x:62,y:0,w:50,d:1,f:'S'},
+  {t:'hang2',x:0,y:110,w:100,d:60,f:'E'},
+  {t:'hangL',x:0,y:210,w:70,d:60,f:'E'},
+  {t:'hangS',x:0,y:280,w:60,d:60,f:'E'},
+  {t:'vanity',x:240.2,y:101.5,w:80,d:45,f:'W'},
+  {t:'mirror',x:284.2,y:129.5,w:49,d:1,f:'W',lb:'מראה איפור'},
+  {t:'wallShelf',x:195.7,y:101.5,w:89.5,d:25,f:'S',lb:'ארונית איפור ושיער'},
+  ...BACK
+];
+const PROP_B=[
+  {t:'drawers',x:0,y:0,w:110,d:60,f:'E',hh:114,lb:'תחתונים ופיג׳מות'},
+  {t:'vanity',x:0,y:110,w:80,d:45,f:'E'},
+  {t:'mirror',x:0,y:115,w:70,d:1,f:'E',hh:148,lb:'מראה איפור'},
+  {t:'wallShelf',x:0,y:0,w:190,d:35,f:'E',zz:150,lb:'ארונית רציפה מעל האיפור והמגירות'},
+  {t:'mirrorW',x:62,y:0,w:50,d:1,f:'S'},
+  {t:'hang2',x:195.7,y:101.5,w:89.5,d:60,f:'S',lb:'תליה כפולה בנישה'},
+  {t:'hangL',x:0,y:190,w:80,d:60,f:'E'},
+  {t:'hangS',x:0,y:270,w:70,d:60,f:'E'},
+  ...BACK
+];
+const PRESETS=[{id:'pA',name:'הצעה א׳ · איפור בנישה',B:PROP_A},{id:'pB',name:'הצעה ב׳ · איפור ליד המגירות, ארונית רציפה מעל',B:PROP_B}];
 
-  const line=[]; for(let x=0;x<=L;x+=1.5) line.push(px(x).toFixed(1)+','+py(hAt(x)).toFixed(1));
-  svg.appendChild(el('polyline',{points:line.join(' '),fill:'none',stroke:'var(--ink)','stroke-width':2.4}));
-  svg.appendChild(el('line',{x1:px(0),y1:py(HMAX),x2:px(0),y2:yFloor,stroke:'var(--ink)','stroke-width':2.4}));
-  svg.appendChild(el('line',{x1:px(L),y1:py(HMIN),x2:px(L),y2:yFloor,stroke:'var(--ink)','stroke-width':2.4}));
-  svg.appendChild(el('line',{x1:px(0)-12,y1:yFloor,x2:px(L)+12,y2:yFloor,stroke:'var(--ink)','stroke-width':2.4}));
+let B=[],sel=null,doorsOn=false,uid=1,V=[],cur={name:'',dirty:false};
+const clone=a=>a.map(({id,...r})=>Object.assign({id:uid++},JSON.parse(JSON.stringify(r))));
+const strip=a=>a.map(({id,...r})=>JSON.parse(JSON.stringify(r)));
+function save(){try{localStorage.setItem('closet_v1',JSON.stringify({B:strip(B),doorsOn,cur}));localStorage.setItem('closet_versions',JSON.stringify(V))}catch(e){}}
+function boot(){
+  let s=null;try{s=JSON.parse(localStorage.getItem('closet_v1'));V=JSON.parse(localStorage.getItem('closet_versions'))||[]}catch(e){V=[]}
+  if(!Array.isArray(V))V=[];
+  let mig=false;try{mig=localStorage.getItem('closet_mig_b')==='1';localStorage.setItem('closet_mig_b','1')}catch(e){}
+  if(s&&Array.isArray(s.B)&&s.B.length){
+    if(!mig){ // 25.10: keep what was on screen as a version, then open proposal B
+      V.push({name:'הפריסה שלי לפני הצעה ב׳',at:Date.now(),B:strip(s.B),doors:!!s.doorsOn});
+      B=clone(PROP_B);cur={name:PRESETS[1].name,dirty:false};
+    }else{B=clone(s.B);doorsOn=!!s.doorsOn;cur=s.cur||cur}
+  }else{B=clone(PROP_B);cur={name:PRESETS[1].name,dirty:false}}
+}
+boot();
+document.getElementById('doors').checked=doorsOn;
 
-  // the opening, projected on the floor — no wardrobe can stand in front of it
-  svg.appendChild(el('line',{x1:px(OP_A),y1:yFloor+9,x2:px(OP_B),y2:yFloor+9,
-    stroke:'var(--accent)','stroke-width':4}));
-  txt(svg,px((OP_A+OP_B)/2),yFloor+28,'הפתח בקיר הימני — '+(OP_B-OP_A).toFixed(0)+' ס״מ');
+/* ===== גאומטריה ===== */
+const D2R=Math.PI/180;
+function R(b){const ns=b.f==='S'||b.f==='N';return{x:b.x,y:b.y,w:ns?b.w:b.d,h:ns?b.d:b.w}}
+function ctr(b){const r=R(b);return[r.x+r.w/2,r.y+r.h/2]}
+const rp=r=>[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]];
+function rot(pts,c,a){if(!a)return pts;const s=Math.sin(a*D2R),k=Math.cos(a*D2R);
+  return pts.map(([x,y])=>{const dx=x-c[0],dy=y-c[1];return[c[0]+dx*k-dy*s,c[1]+dx*s+dy*k]})}
+function P(b){return rot(rp(R(b)),ctr(b),b.a||0)}
+const doorW=b=>b.w/Math.max(1,Math.ceil(b.w/50));
+function FZ(b){const T=TYPES[b.t];let z=T.fz||0;
+  if(b.cfg&&CFGT.includes(b.t)){z=0;b.cfg.forEach(r=>{if(r.k==='drawers'||r.k==='baskets')z=Math.max(z,50);else if(r.door)z=Math.max(z,doorW(b))})}
+  else if(doorsOn&&T.doors)z=Math.max(z,Math.min(50,b.w/2));
+  if(!z)return null;const r=R(b),i=T.view?0:2;
+  if(b.f==='S')return{x:r.x+i,y:r.y+r.h,w:r.w-2*i,h:z};
+  if(b.f==='N')return{x:r.x+i,y:r.y-z,w:r.w-2*i,h:z};
+  if(b.f==='E')return{x:r.x+r.w,y:r.y+i,w:z,h:r.h-2*i};
+  return{x:r.x-z,y:r.y+i,w:z,h:r.h-2*i}}
+function FZP(b){const z=FZ(b);return z?rot(rp(z),ctr(b),b.a||0):null}
+/* separating-axis test: do two convex shapes share any area */
+function hit(A,Bp){
+  for(const Q of [A,Bp])for(let i=0;i<Q.length;i++){const p=Q[i],q=Q[(i+1)%Q.length];
+    const nx=q[1]-p[1],ny=p[0]-q[0],len=Math.hypot(nx,ny)||1;
+    let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+    A.forEach(v=>{const d=(v[0]*nx+v[1]*ny)/len;a0=Math.min(a0,d);a1=Math.max(a1,d)});
+    Bp.forEach(v=>{const d=(v[0]*nx+v[1]*ny)/len;b0=Math.min(b0,d);b1=Math.max(b1,d)});
+    if(a1<=b0+.05||b1<=a0+.05)return false}
+  return true}
+const NOTCH=rp({x:WT,y:-999,w:999,h:DT+999});
+const outRoom=p=>p.some(([x,y])=>x<-.05||y<-.05||x>W+.05||y>L+.05)||hit(p,NOTCH);
+const ys=p=>[Math.min(...p.map(v=>v[1])),Math.max(...p.map(v=>v[1]))];
+const reqOf=b=>b.rq!=null?b.rq:TYPES[b.t].req;
+const hOf=b=>b.hh!=null?b.hh:TYPES[b.t].h;
+const zOf=b=>b.zz!=null?b.zz:(TYPES[b.t].z0||0);
+/* a wall-hung block clears anything lower than its bottom edge */
+function under(a,b){const za=zOf(a),zb=zOf(b);return (za>0&&hOf(b)<=za)||(zb>0&&hOf(a)<=zb)}
+const bname=b=>b.lb||TYPES[b.t].n;
+const colOf=b=>b.c||TYPES[b.t].c;
+const SWATCH=['#7a5a3a','#a07457','#c9a27a','#8c7a55','#4f6e5a','#6f8f74','#3c5c66','#5f8aa3','#7a6a86','#a5687a','#b4442f','#c08a22','#d9cbb2','#5c5852'];
 
-  [[0,HMAX,'233.4'],[FLAT1,HMAX,''],[FLAT1+RUN,HMIN,''],[L,HMIN,'95.5']].forEach(m=>{
-    const x=px(m[0]), y=py(m[1]);
-    svg.appendChild(el('line',{x1:x,y1:y,x2:x,y2:yFloor,stroke:'var(--ink3)','stroke-width':1,'stroke-dasharray':'4 4'}));
-    if(m[2]){const t=el('text',{x:x,y:y-10,class:'lbl'});t.textContent=m[2];svg.appendChild(t);}
-  });
-  txt(svg,px(FLAT1/2),OY-18,FLAT1.toFixed(1)+' שטוח ב-233.4');
-  txt(svg,px(FLAT1+RUN/2),OY-18,RUN.toFixed(1)+' — הירידה, עד הקיר');
-
-  // slope triangle, the way it is marked on a section
-  const xa=FLAT1+95, xb=xa+100, ya=hAt(xa), yb=hAt(xb);
-  const Ax=px(xa), Ay=py(ya), Bx=px(xb), By=py(yb);
-  svg.appendChild(el('polygon',{points:Ax+','+Ay+' '+Ax+','+By+' '+Bx+','+By,
-    fill:'rgba(20,24,20,.26)'}));
-  svg.appendChild(el('path',{d:'M'+Ax+' '+Ay+' L'+Ax+' '+By+' L'+Bx+' '+By,class:'slp'}));
-  const v1=el('text',{x:Ax+18,y:(Ay+By)/2+4,class:'slptx'});
-  v1.textContent=(SLOPE*100).toFixed(1);svg.appendChild(v1);
-  const h1=el('text',{x:(Ax+Bx)/2,y:By-7,class:'slptx'});h1.textContent='100';svg.appendChild(h1);
-  const an=el('text',{x:(Ax+Bx)/2,y:By+18,class:'slptx'});
-  an.textContent=(Math.atan(SLOPE)*180/Math.PI).toFixed(1)+'°  ·  1:'+(1/SLOPE).toFixed(1)+'  ·  '+(SLOPE*100).toFixed(0)+'%';
-  svg.appendChild(an);
+/* ===== פנים הרהיט: תאים מלמטה למעלה ===== */
+const CFGT=['drawers','hang2','hangL','hangM','hangS','shelves','shoes','deep','wallShelf'];
+const KINDS=[['shelves','מדפים'],['drawers','מגירות'],['baskets','סלסלות רשת'],['rod','מוט תליה'],['shoes','מדפי נעליים'],['empty','חלל פתוח']];
+const TK=1.8,PL=8;   // panel thickness and plinth — design values
+function inner(b){const cmin=hAt(ys(P(b))[1]),topMin=Math.min(hOf(b),cmin-2),z0=zOf(b);return{base:z0>0?z0+TK:PL+TK,top:topMin-TK}}
+function defCfg(b){const{base,top}=inner(b),av=top-base,n=s=>Math.max(0,Math.floor(av/s)-1);
+  switch(b.t){
+    case 'drawers':return av>130?[{k:'drawers',h:104,n:6},{k:'shelves',h:null,n:Math.max(0,Math.floor((av-106)/34)-1)}]:[{k:'drawers',h:null,n:6}];
+    case 'hang2':return[{k:'rod',h:Math.round(av/2-1)},{k:'rod',h:null}];
+    case 'hangL':case 'hangM':case 'hangS':return[{k:'rod',h:null}];
+    case 'shoes':return[{k:'shoes',h:null,n:n(19)}];
+    case 'deep':return[{k:'shelves',h:null,n:n(40)}];
+    case 'wallShelf':return[{k:'shelves',h:null,n:1,door:true}];
+    default:return[{k:'shelves',h:null,n:n(34)}]}}
+function lay(b){const{base,top}=inner(b),cf=b.cfg||[];
+  const fixed=cf.reduce((t,r)=>t+(r.h!=null?+r.h:0),0),nul=cf.filter(r=>r.h==null).length;
+  const rem=top-base-fixed-TK*Math.max(0,cf.length-1),share=nul?rem/nul:0;let z=base;
+  const rows=cf.map((r,i)=>{const h=r.h!=null?+r.h:share,o=Object.assign({},r,{i,z0:z,z1:z+h});z+=h+TK;return o});
+  return{rows,base,top,rem:nul?0:rem,short:nul?share:rem}}
+function analyse(b){
+  const T=TYPES[b.t],p=P(b),out=[];let lvl='ok';
+  const [y0,y1]=ys(p),cmin=hAt(y1),cmax=hAt(y0),req=reqOf(b);
+  if(outRoom(p)){out.push(['bad','יוצא מהקירות של החדר']);lvl='bad'}
+  KEEP.forEach(k=>{if(hit(p,rp(k))){out.push(['bad','עומד בתוך '+k.n]);lvl='bad'}});
+  B.forEach(o=>{if(o!==b&&!under(b,o)&&hit(p,P(o))){out.push(['bad','חופף ל'+bname(o)]);lvl='bad'}});
+  const z=FZP(b);
+  if(z){
+    const what=T.view?'מרחק הנסיגה מהמראה':b.t==='vanity'?'מקום הכיסא':(b.cfg&&CFGT.includes(b.t)?b.cfg.some(r=>r.k==='drawers'||r.k==='baskets'):b.t==='drawers')?'שליפת המגירות והדלתות':'פתיחת הדלתות';
+    if(!T.view&&outRoom(z)){out.push(['bad',what+' נתקע בקיר']);lvl='bad'}
+    if(!T.view)KEEP.forEach(k=>{if(hit(z,rp(k))){out.push(['bad',what+' נכנס ל'+k.n]);lvl='bad'}});
+    B.forEach(o=>{if(o===b)return;const zo=zOf(o);
+      if(zo>0&&(hOf(b)<=zo||T.view||b.t==='vanity'||b.t==='bench'))return;
+      if(zOf(b)>0&&hOf(o)<=zOf(b))return;  // a wall cabinet's doors swing above what stands under it
+      if(hit(z,P(o))){out.push(['bad',what+' נתקע ב'+bname(o)]);lvl='bad'}});
+    if(T.view&&!b.a)out.push(['ok','מרחק נסיגה פנוי: '+f1(clearRun(b))+' ס״מ']);
+  }
+  const hb=hOf(b),z0=zOf(b);
+  if(hb<999&&hb+2>cmin){
+    if(hb+2>H)out.push(['bad','גובה '+hb+' לא נכנס בשום מקום בחדר — המקסימום 233.4, פחות 2 להתקנה']);
+    else out.push(['bad','גובה '+hb+' לא נכנס כאן: בקצה הרחוק התקרה '+f1(cmin)+'. רהיט בגובה הזה נכנס רק עד '+f1(yAt(hb+2))+' מהקיר הגבוה']);
+    lvl='bad'}
+  if(cmin>=req)out.push(['ok','תקרה '+f1(cmin)+(cmax-cmin>.05?'–'+f1(cmax):'')+' · נדרש '+req]);
+  else{const yok=yAt(req);
+    if(cmax>=req){out.push(['warn','התקרה יורדת ל-'+f1(cmin)+' בקצה, נדרש '+req+'. עובד רק עד '+f1(yok)+' מהקיר הגבוה']);if(lvl==='ok')lvl='warn'}
+    else{out.push(['bad','התקרה כאן '+f1(cmin)+'–'+f1(cmax)+', נדרש '+req]);lvl='bad'}}
+  const custom=b.cfg&&CFGT.includes(b.t);
+  if(custom){const Lr=lay(b);
+    if(!b.cfg.some(r=>r.h==null)){if(Lr.rem<-.5){out.push(['bad','התאים גבוהים מהרהיט ב-'+f1(-Lr.rem)+' ס״מ']);lvl='bad'}else if(Lr.rem>.5)out.push(['ok','נשארים '+f1(Lr.rem)+' ס״מ ריקים מעל התא העליון'])}
+    else if(Lr.short<5){out.push(['bad','לא נשאר מקום לתא בלי גובה קבוע — '+f1(Lr.short)+' ס״מ']);lvl='bad'}
+    Lr.rows.forEach(r=>{if(r.k!=='rod')return;const rz=r.z1-5,ln=r.z1-r.z0-8;
+      out.push([ln>=90?'ok':'warn','מוט ב-'+f1(rz)+' · '+f1(ln)+' ס״מ לתליה'+(ln<90?' — קצר לחולצות, שצריכות 90–100':ln>=120?' — מספיק גם לשמלות':'')])})}
+  if(T.rod&&!custom){const rod=Math.min(cmin,hb)-6;
+    if(T.rod===2)out.push([cmin>=req?'ok':'warn','מוט עליון ב-'+f1(rod)+', מוט תחתון ב-'+f1(rod/2+3)+' · '+f1(rod/2-3)+' מתחת לכל מוט']);
+    else out.push([cmin>=req?'ok':'warn','מוט ב-'+f1(rod)+' · '+f1(rod)+' ס״מ מתחת למוט'])}
+  if(b.t==='drawers'&&!custom){const top=Math.min(hb,cmin-2);out.push(['ok',top>114.5?'מעל המגירות: '+f1(top-114)+' ס״מ למקופלים':'שידה בגובה '+f1(top)+' — המשטח שלה פנוי לקיפול'])}
+  if(z0>0&&b.t==='mirror')out.push(['ok','מראה מגובה '+f1(z0)+' עד '+f1(Math.min(hb,cmin-2))+' · '+f1(Math.min(hb,cmin-2)-z0)+' ס״מ גובה']);
+  else if(z0>0)out.push(['ok','תלויה מגובה '+f1(z0)+' עד '+f1(Math.min(hb,cmin-2))+' · '+f1(Math.min(hb,cmin-2)-z0)+' ס״מ אחסון']);
+  const onLeft=!b.a&&Math.abs(R(b).x)<.1;
+  if((z0>0||b.t==='mirrorW')&&onLeft)out.push(['ok','תלוי על הקיר השמאלי — קיר חיצוני מבלוקים, לפי יעל. אפשר לתלות עליו, עם דיבלים לבלוק']);
+  else if(z0>0||b.t==='mirrorW')out.push(['warn','🔴 תלוי על הקיר, ולכן מותנה. הקירות כאן גבס. צריך לוודא מול ברק שהקיר נושא את זה. חלופה: '+(b.t==='mirrorW'||b.t==='mirror'?'מראה עומדת על הרצפה או על השולחן':'מדף עומד ברוחב ובעומק דומים')]);
+  if(b.a)out.push(['ok','מסובב '+f1(b.a)+'° · נבדק לפי ארבע הפינות']);
+  return{lvl,out,cmin,cmax}
 }
 
-function drawTable(){
-  const tb=document.querySelector('#tbl tbody'); tb.innerHTML='';
-  [220,200,180,150,120].forEach(h=>{
-    const x=xAt(h+2);                 // +2 for installation clearance
-    const tr=document.createElement('tr');
-    const area=(x/100).toFixed(2);
-    tr.innerHTML='<td>'+h+' ס״מ</td><td class="n">'+Math.round(x)+' ס״מ</td>'+
-      '<td class="n">'+area+' מ״ר</td>';
-    if(x<20) tr.style.color='var(--ink3)';
-    tb.appendChild(tr);
-  });
-}
+/* how far the space in front of a block stays clear (for the mirror) */
+function clearRun(b){const r=R(b);let d;const os=B.filter(o=>o!==b&&!o.a).map(R);
+  if(b.f==='S'){d=L-(r.y+r.h);os.forEach(o=>{if(o.x<r.x+r.w&&r.x<o.x+o.w&&o.y>=r.y+r.h-.05)d=Math.min(d,o.y-(r.y+r.h))})}
+  if(b.f==='N'){d=r.y-(r.x+r.w>WT?DT:0);os.forEach(o=>{if(o.x<r.x+r.w&&r.x<o.x+o.w&&o.y+o.h<=r.y+.05)d=Math.min(d,r.y-(o.y+o.h))})}
+  if(b.f==='E'){d=(r.y<DT?WT:W)-(r.x+r.w);os.forEach(o=>{if(o.y<r.y+r.h&&r.y<o.y+o.h&&o.x>=r.x+r.w-.05)d=Math.min(d,o.x-(r.x+r.w))})}
+  if(b.f==='W'){d=r.x;os.forEach(o=>{if(o.y<r.y+r.h&&r.y<o.y+o.h&&o.x+o.w<=r.x+.05)d=Math.min(d,r.x-(o.x+o.w))})}
+  return Math.max(0,d)}
 
-function tick(svg,x,y){const d=4.5;
-  svg.appendChild(el('line',{x1:x-d,y1:y+d,x2:x+d,y2:y-d,class:'dln'}));}
-function dimH(svg,xa,xb,y,label,yGeomA,yGeomB){
-  svg.appendChild(el('line',{x1:xa,y1:yGeomA,x2:xa,y2:y+(y<yGeomA?-7:7)*-1,class:'ext'}));
-  svg.appendChild(el('line',{x1:xb,y1:yGeomB,x2:xb,y2:y+(y<yGeomB?-7:7)*-1,class:'ext'}));
-  svg.appendChild(el('line',{x1:xa,y1:y,x2:xb,y2:y,class:'dln'}));
-  tick(svg,xa,y); tick(svg,xb,y);
-  const t=el('text',{x:(xa+xb)/2,y:y-7,class:'dtx'}); t.textContent=label; svg.appendChild(t);
-}
-function dimV(svg,ya,yb,x,label,xGeom){
-  svg.appendChild(el('line',{x1:xGeom,y1:ya,x2:x+7,y2:ya,class:'ext'}));
-  svg.appendChild(el('line',{x1:xGeom,y1:yb,x2:x+7,y2:yb,class:'ext'}));
-  svg.appendChild(el('line',{x1:x,y1:ya,x2:x,y2:yb,class:'dln'}));
-  tick(svg,x,ya); tick(svg,x,yb);
-  const cy=(ya+yb)/2;
-  const t=el('text',{x:x-7,y:cy,class:'dtx',transform:'rotate(-90 '+(x-7)+' '+cy+')'});
-  t.textContent=label; svg.appendChild(t);
-}
+/* clearance from the selected block to the nearest wall/block, each direction */
+function gaps(b){const r=R(b),os=B.filter(o=>o!==b&&!o.a&&!under(b,o)).map(R),g={};
+  const yo=o=>o.y<r.y+r.h-.05&&r.y<o.y+o.h-.05, xo=o=>o.x<r.x+r.w-.05&&r.x<o.x+o.w-.05;
+  let w=r.x,ws=0; os.forEach(o=>{if(yo(o)&&o.x+o.w<=r.x+.05&&r.x-(o.x+o.w)<w){w=r.x-(o.x+o.w);ws=o.x+o.w}}); g.W=[w,ws];
+  const eW=(r.y<DT&&r.x<WT)?WT:W;let e=eW-(r.x+r.w),es=eW; os.forEach(o=>{if(yo(o)&&o.x>=r.x+r.w-.05&&o.x-(r.x+r.w)<e){e=o.x-(r.x+r.w);es=o.x}}); g.E=[e,es];
+  const nW=(r.x+r.w>WT+.05)?DT:0;let n=r.y-nW,ns=nW; os.forEach(o=>{if(xo(o)&&o.y+o.h<=r.y+.05&&r.y-(o.y+o.h)<n){n=r.y-(o.y+o.h);ns=o.y+o.h}}); g.N=[n,ns];
+  let s=L-(r.y+r.h),ss=L; os.forEach(o=>{if(xo(o)&&o.y>=r.y+r.h-.05&&o.y-(r.y+r.h)<s){s=o.y-(r.y+r.h);ss=o.y}}); g.S=[s,ss];
+  return g}
+
+/* ===== ציור התוכנית ===== */
+const svg=document.getElementById('plan'),NS='http://www.w3.org/2000/svg';
+function E(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+function T(x,y,s,c,p,extra){const e=E('text',Object.assign({x,y,class:c},extra||{}),p);e.textContent=s;return e}
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const rotAttr=b=>{const c=ctr(b);return b.a?{transform:`rotate(${b.a} ${c[0]} ${c[1]})`}:{}};
 
 function drawPlan(){
-  const svg=document.getElementById('plan'); svg.innerHTML='';
-  const S=1.14, OX=150, OY=92;
-  const px=v=>OX+v*S, py=v=>OY+v*S;
-
-  // outline — the notch (the narrow 195.7 part) is at the top
-  const pts=[[0,0],[Wt,0],[Wt,Dt],[W,Dt],[W,L],[0,L]];
-  svg.appendChild(el('polygon',{class:'room',
-    points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
-
-  [[FLAT1,'171.5 מהקיר הגבוה — כאן מתחיל השיפוע · מרחק, לא גובה · 70 מתחת לבליטה']].forEach(m=>{
-    const yy=py(m[0]);
-    const xa=m[0]<Dt?px(0):px(0), xb=m[0]<Dt?px(Wt):px(W);
-    svg.appendChild(el('line',{x1:xa,y1:yy,x2:xb,y2:yy,
-      stroke:'var(--warn)','stroke-width':1.3,'stroke-dasharray':'8 5'}));
-    const t=el('text',{x:(xa+xb)/2,y:yy-7,class:'dtx'});
-    t.setAttribute('fill','var(--warn)'); t.textContent=m[1]; svg.appendChild(t);
-  });
-
-  const rl=el('text',{x:px(W/2),y:py(L-54),class:'rlbl'});
-  rl.textContent='חדר ארונות'; svg.appendChild(rl);
-
-  // slope arrow — the direction of fall, with the gradient
-  const sx=px(42), sy1=py(FLAT1+26), sy2=py(L-34);
-  svg.appendChild(el('line',{x1:sx,y1:sy1,x2:sx,y2:sy2,stroke:'var(--warn)','stroke-width':1.6}));
-  svg.appendChild(el('path',{d:'M'+(sx-5)+' '+(sy2-11)+' L'+sx+' '+sy2+' L'+(sx+5)+' '+(sy2-11),
-    fill:'none',stroke:'var(--warn)','stroke-width':1.6}));
-  const sl=el('text',{x:sx-11,y:(sy1+sy2)/2,class:'dtx',
-    transform:'rotate(-90 '+(sx-11)+' '+((sy1+sy2)/2)+')'});
-  sl.setAttribute('fill','var(--warn)');
-  sl.textContent='שיפוע '+(SLOPE*100).toFixed(0)+'% · 1:'+(1/SLOPE).toFixed(1)+' · '+(Math.atan(SLOPE)*180/Math.PI).toFixed(1)+'°';
-  svg.appendChild(sl);
-  const hw=el('text',{x:px(TOP_A/2),y:OY+22,class:'dtx'});
-  hw.setAttribute('fill','var(--ink)'); hw.textContent='הקיר הגבוה — 233.4 ס״מ'; svg.appendChild(hw);
-
-  // the double-door opening in the high wall, flush to the right
-  const yT=py(0), tx1=px(TOP_A), tx2=px(Wt);
-  svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx2,y2:yT,stroke:'var(--surface)','stroke-width':5}));
-  [tx1,tx2].forEach(xx=>svg.appendChild(el('line',{x1:xx,y1:yT-9,x2:xx,y2:yT+9,
-    stroke:'var(--ink)','stroke-width':2})));
-  // two frosted-glass shower doors, hinged on the jambs, opening into the room
-  const leaf=(TOP_W/2)*S;
-  svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx1,y2:yT+leaf,class:'glass'}));
-  svg.appendChild(el('path',{d:'M'+(tx1+leaf)+' '+yT+' A'+leaf+' '+leaf+' 0 0 1 '+tx1+' '+(yT+leaf),class:'swing'}));
-  svg.appendChild(el('line',{x1:tx2,y1:yT,x2:tx2,y2:yT+leaf,class:'glass'}));
-  svg.appendChild(el('path',{d:'M'+(tx2-leaf)+' '+yT+' A'+leaf+' '+leaf+' 0 0 0 '+tx2+' '+(yT+leaf),class:'swing'}));
-  const tt=el('text',{x:(tx1+tx2)/2,y:yT+leaf+20,class:'dtx'});
-  tt.setAttribute('fill','#6f93a8'); tt.textContent='שתי דלתות זכוכית גלינה'; svg.appendChild(tt);
-  dimH(svg,px(0),tx1,OY-16,TOP_A.toFixed(1),yT,yT);
-  dimH(svg,tx1,tx2,OY-16,'80',yT,yT);
-
-  // the opening, in the right wall
-  const xR=px(W), y1=py(OP_A), y2=py(OP_B);
-  svg.appendChild(el('line',{x1:xR,y1:y1,x2:xR,y2:y2,stroke:'var(--surface)','stroke-width':5}));
-  [y1,y2].forEach(yy=>svg.appendChild(el('line',{x1:xR-9,y1:yy,x2:xR+9,y2:yy,
-    stroke:'var(--ink)','stroke-width':2})));
-  const ot=el('text',{x:xR-30,y:(y1+y2)/2,class:'dtx',
-    transform:'rotate(-90 '+(xR-30)+' '+((y1+y2)/2)+')'});
-  ot.setAttribute('fill','var(--accent)'); ot.textContent='פתח'; svg.appendChild(ot);
-
-  // right chain, exactly how it was measured: 101.5 / 80 / opening / 200
-  const xr=xR+48;
-  dimV(svg,py(0),py(Dt),xr,'101.5',px(Wt));
-  dimV(svg,py(Dt),y1,xr,'80',xR);
-  dimV(svg,y1,y2,xr,(OP_B-OP_A).toFixed(0),xR);
-  dimV(svg,y2,py(L),xr,'200',xR);
-
-  // left: the overall depth
-  dimV(svg,py(0),py(L),px(0)-46,'460.5',px(0));
-
-  // widths
-  dimH(svg,px(0),px(Wt),OY-44,'195.7',py(0),py(0));
-  dimH(svg,px(Wt),px(W),OY-44,'89.5',py(0),py(Dt));
-  dimH(svg,px(0),px(W),OY-78,'285.2',py(0),py(Dt));
-  dimH(svg,px(0),px(W),py(L)+40,'285.2',py(L),py(L));
-}
-
-const C={drw:'#4a6a52',hang:'#3f5f68',shelf:'#6b8a63',shoe:'#8a6f52',
-         low:'#b98f7a',van:'#7a6a86',misc:'#9aa877'};
-const LOW={x:0,y:400,w:285.2,h:60.5,c:C.low,t:'מזוודות · מצעים · שמיכות',s:'285 רוחב · גובה 90'};
-const SCHEMES={
- a:{name:'פינת איפור בפינה',
-    idea:'הפינה הימנית הופכת לעמדת איפור עם ישיבה: שולחן על חזית הבליטה, מדפים שחוזרים לאורך הקיר ופונים אל היושבת, והמראה הגדולה מעל.',
-    seat:[233,168],
-    u:[{x:0,y:0,w:115.7,h:60,c:C.drw,t:'מגירות + מדפים',s:'תחתונים למטה · מקופלים מעל'},
-       {x:0,y:60,w:60,h:180,c:C.hang,t:'תליה',s:'כ-270 ס״מ מוט'},
-       {x:0,y:240,w:60,h:160,c:C.shelf,t:'מדפים',s:'160 אורך'},
-       {x:195.7,y:101.5,w:89.5,h:40,c:C.van,t:'שולחן איפור',s:'גובה 75'},
-       {x:255.2,y:141.5,w:30,h:40,c:C.misc,t:'מדפים',s:''},
-       {x:225.2,y:260.5,w:60,h:80,c:C.shoe,t:'נעליים',s:'40 זוגות'},
-       {x:225.2,y:340,w:60,h:60,c:C.shelf,t:'מדפים',s:'60'},
-       LOW]},
- b:{name:'הפן צמוד למקלחת',
-    idea:'יוצאים מהמקלחת ישר אל עמדת הפן — 115 ס״מ בגובה מלא, עם מגירות ומראה. הוויתור הוא הקיר הכי גבוה בחדר.',
-    seat:[58,88],
-    u:[{x:0,y:0,w:115.7,h:60,c:C.van,t:'עמדת פן ואיפור',s:'שולחן 75 · מגירות'},
-       {x:165.7,y:45,w:30,h:56.5,c:C.drw,t:'מגירות',s:''},
-       {x:0,y:60,w:60,h:180,c:C.hang,t:'תליה',s:'כ-270 ס״מ מוט'},
-       {x:0,y:240,w:60,h:160,c:C.shelf,t:'מדפים',s:'160 אורך'},
-       {x:195.7,y:101.5,w:89.5,h:25,c:C.shelf,t:'מדפים פתוחים',s:'עומק 25 · מראה מעל'},
-       {x:225.2,y:260.5,w:60,h:80,c:C.shoe,t:'נעליים',s:'40 זוגות'},
-       {x:225.2,y:340,w:60,h:60,c:C.shelf,t:'מדפים',s:'60'},
-       LOW]},
- c:{name:'תליה על שני קירות',
-    idea:'הכי הרבה תליה — קיר לכל אחד, פלוס פינת האיפור. דורש שדלתות הזכוכית ייפתחו החוצה אל המקלחת.',
-    seat:[233,168],
-    u:[{x:0,y:0,w:115.7,h:60,c:C.drw,t:'מגירות + מדפים',s:'תחתונים למטה · מקופלים מעל'},
-       {x:0,y:60,w:60,h:140,c:C.hang,t:'תליה כפולה',s:'כ-280 ס״מ מוט'},
-       {x:165.7,y:45,w:30,h:56.5,c:C.hang,t:'תליה',s:''},
-       {x:0,y:200,w:60,h:200,c:C.shelf,t:'מדפים',s:'200 אורך'},
-       {x:195.7,y:101.5,w:89.5,h:40,c:C.van,t:'שולחן איפור',s:'גובה 75'},
-       {x:255.2,y:141.5,w:30,h:40,c:C.misc,t:'מדפים',s:''},
-       {x:225.2,y:260.5,w:60,h:80,c:C.shoe,t:'נעליים',s:'40 זוגות'},
-       {x:225.2,y:340,w:60,h:60,c:C.shelf,t:'מדפים',s:'60'},
-       LOW]}
-};
-let SCH='a';
-function drawJoinery(){
-  const svg=document.getElementById('joinery'); if(!svg)return;
   svg.innerHTML='';
-  const S=1.14, OX=130, OY=74;
-  const px=v=>OX+v*S, py=v=>OY+v*S;
-  const pts=[[0,0],[Wt,0],[Wt,Dt],[W,Dt],[W,L],[0,L]];
-  svg.appendChild(el('polygon',{class:'room',
-    points:pts.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}));
-
-  const yT=py(0), tx1=px(Wt-TOP_W), tx2=px(Wt);
-  svg.appendChild(el('line',{x1:tx1,y1:yT,x2:tx2,y2:yT,stroke:'var(--surface)','stroke-width':5}));
-  const dt=el('text',{x:(tx1+tx2)/2,y:yT-9,class:'dtx'});
-  dt.setAttribute('fill','#6f93a8'); dt.textContent='אל המקלחת'; svg.appendChild(dt);
-  const xR=px(W);
-  svg.appendChild(el('line',{x1:xR,y1:py(OP_A),x2:xR,y2:py(OP_B),stroke:'var(--surface)','stroke-width':5}));
-  const oi=el('text',{x:xR+16,y:(py(OP_A)+py(OP_B))/2,class:'dtx',
-    transform:'rotate(-90 '+(xR+16)+' '+((py(OP_A)+py(OP_B))/2)+')'});
-  oi.setAttribute('fill','var(--accent)'); oi.textContent='הכניסה'; svg.appendChild(oi);
-
-  SCHEMES[SCH].u.forEach(u=>{
-    svg.appendChild(el('rect',{x:px(u.x),y:py(u.y),width:u.w*S,height:u.h*S,fill:u.c,class:'unit',rx:2}));
-    const cx=px(u.x)+u.w*S/2, cy=py(u.y)+u.h*S/2;
-    const vert=u.h>u.w*1.3;
-    const along=(vert?u.h:u.w)*S;          // space along the text direction
-    const g=el('g',{});
-    if(vert) g.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
-    const two=u.s && along>96;
-    const t=el('text',{x:cx,y:two?cy-4:cy+4,class:'utx'});
-    if(u.t.length*5.6>along-8) t.setAttribute('font-size',Math.max(8,(along-8)/(u.t.length*0.56)).toFixed(1));
-    t.textContent=u.t; g.appendChild(t);
-    if(two){
-      const s2=el('text',{x:cx,y:cy+11,class:'usb'});
-      s2.textContent=u.s; g.appendChild(s2);
-    }
-    svg.appendChild(g);
+  E('polygon',{class:'room',points:[[0,0],[WT,0],[WT,DT],[W,DT],[W,L],[0,L]].map(p=>p.join(',')).join(' ')});
+  [200,180,160,140,120].forEach(h=>{const y=yAt(h);E('line',{x1:0,y1:y,x2:W,y2:y,class:'contour'});T(W+16,y+2,h+'','ctx')});
+  E('line',{x1:0,y1:FLAT,x2:W,y2:FLAT,class:'flatln'});T(W+16,FLAT+2,'233.4','ctx');
+  T(100,FLAT-2.5,'171.5 ס״מ מהקיר הגבוה — מרחק, לא גובה · מכאן התקרה יורדת','ctx',null,{style:'fill:var(--warn)'});
+  T(W+16,-6,'תקרה','ctx');T(W+16,L+2,'95.5','ctx');
+  E('line',{x1:TOP_A,y1:0,x2:WT,y2:0,stroke:cssv('--room'),'stroke-width':3});
+  E('line',{x1:W,y1:OP_A,x2:W,y2:OP_B,stroke:cssv('--room'),'stroke-width':3});
+  E('line',{x1:TOP_A,y1:0,x2:TOP_A,y2:40,class:'door'});E('path',{d:`M${TOP_A+40} 0 A40 40 0 0 1 ${TOP_A} 40`,class:'swing'});
+  E('line',{x1:WT,y1:0,x2:WT,y2:40,class:'door'});E('path',{d:`M${WT-40} 0 A40 40 0 0 0 ${WT} 40`,class:'swing'});
+  KEEP.forEach(k=>{E('rect',{x:k.x,y:k.y,width:k.w,height:k.h,class:'keep'});
+    T(k.x+k.w/2,k.y+k.h/2-1,k.n,'keeptx');T(k.x+k.w/2,k.y+k.h/2+6,k.s,'keeptx',null,{style:'font-weight:400'})});
+  T(TOP_A/2,-8,'הקיר הגבוה · 115.7','wtx');T((TOP_A+WT)/2,-8,'אל המקלחת','wtx',null,{fill:cssv('--glass')});
+  T(W/2,L+12,'הקיר הרחוק · 95.5 גובה','wtx');
+  T(-10,L/2,'קיר שמאל · 460.5','wtx',null,{transform:`rotate(-90 -10 ${L/2})`});
+  T(W+8,(OP_A+OP_B)/2,'אל חדר השינה','wtx',null,{transform:`rotate(90 ${W+8} ${(OP_A+OP_B)/2})`,fill:cssv('--accent')});
+  T(WT+44.75,DT-6,'בליטה 89.5','wtx');
+  // zones
+  B.forEach(b=>{const z=FZ(b);if(z)E('rect',Object.assign({x:z.x,y:z.y,width:z.w,height:z.h,class:'zone'+(TYPES[b.t].view?' view':'')},rotAttr(b)))});
+  // blocks: floor-standing first, wall-hung on top
+  [...B].sort((a,b)=>zOf(a)-zOf(b)).forEach(b=>{
+    const r=R(b),Ty=TYPES[b.t],a=analyse(b),hung=zOf(b)>0;
+    const g=E('g',Object.assign({'data-id':b.id},rotAttr(b)));
+    let rx=r.x,ry=r.y,rw=Math.max(r.w,1.2),rh=Math.max(r.h,1.2);
+    if(b.t==='mirrorW'||b.t==='mirror'){if(b.f==='S'||b.f==='N'){rh=3;if(b.f==='N')ry=r.y-2}else{rw=3;if(b.f==='W')rx=r.x-2}}
+    E('rect',Object.assign({x:rx,y:ry,width:rw,height:rh,rx:1.2,fill:colOf(b),'data-id':b.id,
+      class:'blk'+(b.id===sel?' sel':'')+(a.lvl==='bad'?' ring-bad':a.lvl==='warn'?' ring-warn':'')},
+      hung?{'fill-opacity':.55,'stroke-dasharray':'3 2'}:{}),g);
+    const fe={S:[r.x,r.y+r.h,r.x+r.w,r.y+r.h],N:[r.x,r.y,r.x+r.w,r.y],E:[r.x+r.w,r.y,r.x+r.w,r.y+r.h],W:[r.x,r.y,r.x,r.y+r.h]}[b.f];
+    if(b.t!=='mirrorW')E('line',{x1:fe[0],y1:fe[1],x2:fe[2],y2:fe[3],stroke:'rgba(255,255,255,.7)','stroke-width':1.4,'pointer-events':'none'},g);
+    if(b.t==='mirrorW'||b.t==='mirror'){T(r.x+r.w/2,r.y+12,bname(b),'dimtx',g,{style:'fill:var(--glass)'});return}
+    const vert=r.h>r.w*1.15,along=vert?r.h:r.w,cross=vert?r.w:r.h,cx=r.x+r.w/2,cy=r.y+r.h/2;
+    // a hung block sits over others: put its label near its front edge so both stay readable
+    const off=hung?(cross/2-4)*({E:1,W:-1,S:1,N:-1}[b.f])*(vert?1:1):0;
+    const lx=vert?cx+off:cx,ly=vert?cy:cy+off;
+    const lg=E('g',vert?{transform:`rotate(-90 ${lx} ${ly})`}:{},g);
+    const nm=bname(b),fs=Math.min(6.2,(along-4)/(nm.length*.55)),two=cross>16&&!hung;
+    const t1=T(lx,two?ly-1:ly+2,nm,'btx',lg);t1.style.fontSize=Math.max(3.4,fs)+'px';
+    const hx6=colOf(b).replace('#',''),lum=(parseInt(hx6.slice(0,2),16)*.299+parseInt(hx6.slice(2,4),16)*.587+parseInt(hx6.slice(4,6),16)*.114)/255;
+    if(hung||lum>.62)t1.style.fill=hung?'var(--ink)':'#24211c';
+    if(two){const t2=T(lx,ly+6,f1(b.w)+'×'+f1(b.d)+' · '+f1(a.cmin)+(a.cmax-a.cmin>.05?'–'+f1(a.cmax):''),'bsb',lg);t2.style.fontSize=Math.min(5,(along-4)/16)+'px';if(lum>.62)t2.style.fill='#3a342b'}
   });
-
-  const st=SCHEMES[SCH].seat;
-  if(st){
-    svg.appendChild(el('circle',{cx:px(st[0]),cy:py(st[1]),r:17*S,
-      fill:'none',stroke:'var(--ink2)','stroke-width':1.4,'stroke-dasharray':'5 4'}));
-    const sl=el('text',{x:px(st[0]),y:py(st[1])+4,class:'dtx'});
-    sl.textContent='שרפרף'; svg.appendChild(sl);
+  const sb=B.find(b=>b.id===sel);
+  if(sb){
+    if(!sb.a){const r=R(sb),g=gaps(sb),cy=r.y+r.h/2,cx=r.x+r.w/2;
+      const dl=(x1,y1,x2,y2,v,tx,ty)=>{if(v<.5)return;E('line',{x1,y1,x2,y2,class:'dimln'});T(tx,ty,f1(v),'dimtx')};
+      dl(r.x,cy,g.W[1],cy,g.W[0],(r.x+g.W[1])/2,cy-2);
+      dl(r.x+r.w,cy,g.E[1],cy,g.E[0],(r.x+r.w+g.E[1])/2,cy-2);
+      dl(cx,r.y,cx,g.N[1],g.N[0],cx+1,(r.y+g.N[1])/2+2);
+      dl(cx,r.y+r.h,cx,g.S[1],g.S[0],cx+1,(r.y+r.h+g.S[1])/2+2)}
+    const [hx,hy]=P(sb)[1],hg=E('g',{'data-rot':1,style:'cursor:pointer'});
+    E('circle',{cx:hx,cy:hy,r:7,fill:cssv('--ink'),stroke:cssv('--surface'),'stroke-width':1.2},hg);
+    E('path',{d:`M${hx-3.2} ${hy+1.2} A3.4 3.4 0 1 1 ${hx+1.4} ${hy+3.1}`,fill:'none',stroke:cssv('--surface'),'stroke-width':1.1},hg);
+    E('path',{d:`M${hx-4.8} ${hy-.4} L${hx-3.2} ${hy+1.6} L${hx-1.2} ${hy}`,fill:'none',stroke:cssv('--surface'),'stroke-width':1.1},hg);
+    E('title',{},hg).textContent='סיבוב 90°';
   }
-  svg.appendChild(el('line',{x1:px(Wt)+3,y1:py(Dt),x2:px(W)-3,y2:py(Dt),class:'mir'}));
-  const mt=el('text',{x:(px(Wt)+px(W))/2,y:py(Dt)-9,class:'dtx'});
-  mt.setAttribute('fill','#7fa6bd'); mt.textContent='מראה 89.5'; svg.appendChild(mt);
-
-  const wx=px(142), wy1=py(90), wy2=py(390);
-  svg.appendChild(el('line',{x1:wx,y1:wy1,x2:wx,y2:wy2,stroke:'var(--ink3)','stroke-width':1,'stroke-dasharray':'7 6'}));
-  const wt=el('text',{x:wx,y:py(225),class:'dtx',transform:'rotate(-90 '+wx+' '+py(225)+')'});
-  wt.textContent='פרוזדור 165'; svg.appendChild(wt);
-
-  dimH(svg,px(0),px(W),OY-26,'285.2',py(0),py(Dt));
-  dimV(svg,py(0),py(L),px(0)-40,'460.5',px(0));
-  document.getElementById('schemeSub').textContent=SCHEMES[SCH].idea;
 }
 
-const PROG=[
- ['תליה — לפחות 2.5 מ׳','270 ס״מ','270 ס״מ','336 ס״מ'],
- ['מדפים לבגדים — כ-3 מ׳','335 ס״מ','310 ס״מ','375 ס״מ'],
- ['נעליים — כ-40 זוגות','80 רוחב · 10 מדפים','80 רוחב · 10 מדפים','80 רוחב · 10 מדפים'],
- ['מגירות תחתונים, פיג׳מות ואביזרים','115 ס״מ עם מדפים מעל','56 ס״מ + מתחת לשולחן','115 ס״מ עם מדפים מעל'],
- ['עמדת איפור עם ישיבה','פינתית · שולחן 89.5 + מדפים פונים','115 ס״מ על הקיר הגבוה','פינתית · שולחן 89.5 + מדפים פונים'],
- ['מראה גדולה','מעל עמדת הפן','על חזית הבליטה','מעל עמדת הפן'],
- ['מזוודות ואחסון מת','285 ס״מ ברצועה הנמוכה','285 ס״מ','285 ס״מ'],
- ['מה מוותרים','העמדה רחוקה מהמקלחת','115 ס״מ מהקיר הגבוה · אין פינה','תלוי בכיוון פתיחת הדלתות']
-];
-function drawProg(){
-  const tb=document.querySelector('#prog tbody'); if(!tb)return;
-  tb.innerHTML='';
-  PROG.forEach((r,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n">'+r[3]+'</td>';
-    if(i===PROG.length-1) tr.style.color='var(--ink3)';
-    tb.appendChild(tr);
-  });
+/* ===== גרירה וסיבוב ===== */
+let drag=null;
+function svgPt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+function rotateB(b){const nx={N:'E',E:'S',S:'W',W:'N'},r0=R(b);b.f=nx[b.f];const r1=R(b);
+  b.x=+(r0.x+(r0.w-r1.w)/2).toFixed(1);b.y=+(r0.y+(r0.h-r1.h)/2).toFixed(1);touch();renderAll()}
+function setAngle(b,a){a=((a%360)+540)%360-180;b.a=Math.abs(a)<.05?0:+a.toFixed(1);if(!b.a)delete b.a;touch();renderAll()}
+svg.addEventListener('dblclick',e=>{const id=+(e.target.closest('[data-id]')||{}).dataset?.id;const b=B.find(x=>x.id===id);if(b){sel=id;rotateB(b)}});
+addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;
+  const b=B.find(x=>x.id===sel);if(!b)return;
+  if(e.key==='r'||e.key==='R'||e.key==='ר'){rotateB(b);e.preventDefault()}
+  if(e.key==='['||e.key===']'){setAngle(b,(b.a||0)+(e.key===']'?5:-5));e.preventDefault()}
+  if(e.key==='Delete'||e.key==='Backspace'){B=B.filter(x=>x!==b);sel=null;touch();renderAll();e.preventDefault()}});
+svg.addEventListener('pointerdown',e=>{
+  if(e.target.closest('[data-rot]')){const b=B.find(x=>x.id===sel);if(b)rotateB(b);e.preventDefault();return}
+  PTR.set(e.pointerId,[e.clientX,e.clientY]);
+  if(PTR.size===2){ // two fingers: pinch to zoom, cancel any drag
+    if(drag){drag.b.x=drag.ox;drag.b.y=drag.oy;drag=null}
+    const [p,q]=[...PTR.values()];pinch={d:Math.hypot(p[0]-q[0],p[1]-q[1]),z:ZM};pan=null;return}
+  const id=+(e.target.closest('[data-id]')||{}).dataset?.id;
+  if(!id){pan={x:e.clientX,y:e.clientY,c:[...VC],moved:false};svg.setPointerCapture(e.pointerId);return}
+  const b=B.find(x=>x.id===id);sel=id;
+  const p=svgPt(e);drag={b,px:p.x,py:p.y,ox:b.x,oy:b.y,moved:false};
+  svg.setPointerCapture(e.pointerId);renderAll(true);e.preventDefault();
+});
+svg.addEventListener('pointermove',e=>{
+  if(PTR.has(e.pointerId))PTR.set(e.pointerId,[e.clientX,e.clientY]);
+  if(pinch&&PTR.size===2){const [p,q]=[...PTR.values()],c=svgPt({clientX:(p[0]+q[0])/2,clientY:(p[1]+q[1])/2});
+    zoomTo(pinch.z*Math.hypot(p[0]-q[0],p[1]-q[1])/pinch.d,c.x,c.y);return}
+  if(pan){const k=VB0[2]/ZM/svg.clientWidth,dx=e.clientX-pan.x,dy=e.clientY-pan.y;
+    if(Math.abs(dx)+Math.abs(dy)>3)pan.moved=true;
+    if(ZM>1){VC=[pan.c[0]-dx*k,pan.c[1]-dy*k];applyVB()}return}
+  if(!drag)return;const p=svgPt(e),b=drag.b,r=R(b);
+  let nx=Math.round((drag.ox+p.x-drag.px)*2)/2,ny=Math.round((drag.oy+p.y-drag.py)*2)/2;
+  if(!b.a){ // magnet to walls and to other blocks' edges, only when square to the room
+    const xs=[0,W,WT,TOP_A],yv=[0,DT,L,OP_A,OP_B];
+    B.forEach(o=>{if(o===b||o.a)return;const q=R(o);xs.push(q.x,q.x+q.w);yv.push(q.y,q.y+q.h)});
+    const M=5;let bx=M,by=M;
+    xs.forEach(v=>{if(Math.abs(nx-v)<bx){bx=Math.abs(nx-v);nx=v}else if(Math.abs(nx+r.w-v)<bx){bx=Math.abs(nx+r.w-v);nx=v-r.w}});
+    yv.forEach(v=>{if(Math.abs(ny-v)<by){by=Math.abs(ny-v);ny=v}else if(Math.abs(ny+r.h-v)<by){by=Math.abs(ny+r.h-v);ny=v-r.h}});
+  }
+  nx=Math.max(-40,Math.min(W+40-r.w,nx));ny=Math.max(-40,Math.min(L+40-r.h,ny));
+  if(nx!==b.x||ny!==b.y){b.x=+nx.toFixed(1);b.y=+ny.toFixed(1);drag.moved=true;drawPlan()}
+});
+/* ===== זום והזזה של התוכנית ===== */
+const PTR=new Map();let pinch=null,pan=null,ZM=1;
+const VB0=[-34,-40,360,548];let VC=[VB0[0]+VB0[2]/2,VB0[1]+VB0[3]/2];
+function applyVB(){const w=VB0[2]/ZM,h=VB0[3]/ZM;
+  let x=Math.max(VB0[0],Math.min(VB0[0]+VB0[2]-w,VC[0]-w/2)),y=Math.max(VB0[1],Math.min(VB0[1]+VB0[3]-h,VC[1]-h/2));
+  VC=[x+w/2,y+h/2];svg.setAttribute('viewBox',`${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
+  document.getElementById('zv').textContent=Math.round(ZM*100)+'%'}
+function zoomTo(z,px,py){const nz=Math.max(1,Math.min(5,z));if(px!=null)VC=[px+(VC[0]-px)*ZM/nz,py+(VC[1]-py)*ZM/nz];ZM=nz;applyVB()}
+document.getElementById('zi').onclick=()=>zoomTo(ZM*1.4);
+document.getElementById('zo').onclick=()=>zoomTo(ZM/1.4);
+document.getElementById('zr').onclick=()=>{ZM=1;applyVB()};
+svg.addEventListener('wheel',e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();const p=svgPt(e);zoomTo(ZM*Math.exp(-e.deltaY*.01),p.x,p.y)},{passive:false});
+function endPtr(e){PTR.delete(e.pointerId);if(PTR.size<2)pinch=null;
+  if(pan){const tap=!pan.moved;pan=null;if(tap&&sel){sel=null;renderAll(true)}}}
+svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',endPtr);
+function endDrag(){if(!drag)return;if(drag.moved)touch();drag=null;renderAll()}
+svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
+
+/* after a drop against a wall, turn the block's front away from it */
+function autoFace(b){const r=R(b),tw=[];
+  if(Math.abs(r.x)<.1)tw.push('W');if(Math.abs(r.x+r.w-W)<.1||(r.y<DT&&Math.abs(r.x+r.w-WT)<.1))tw.push('E');
+  if(Math.abs(r.y)<.1||(r.x>=WT-.1&&Math.abs(r.y-DT)<.1))tw.push('N');if(Math.abs(r.y+r.h-L)<.1)tw.push('S');
+  const opp={W:'E',E:'W',N:'S',S:'N'},ns=x=>x==='S'||x==='N';
+  if(tw.length===1&&b.f===tw[0])setFace(b,opp[b.f]);
+  else if(tw.length===1&&ns(opp[tw[0]])!==ns(b.f))setFace(b,opp[tw[0]]);
 }
-document.getElementById('scheme').onclick=e=>{
-  const b=e.target.closest('button'); if(!b)return;
-  SCH=b.dataset.k;
-  [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c===b));
-  drawJoinery();
-};
-function redraw(){drawSection();drawTable();drawPlan();drawJoinery();drawProg();}
-redraw();
-</script>
-<script>
-/* --chrome הוא הגובה שהכותרת שמעל התוכנית תופסת. מודדים את הכותרת
-   עצמה ולא את המרחק מראש העמוד — אחרת כל גלילה מכווצת את השרטוט. */
-(function(){
-  const on=document.getElementById('fitOn'), off=document.getElementById('fitOff'),
-        note=document.getElementById('fitNote');
-  function measure(){
-    /* לכל תוכנית כותרת משלה, וגם הכרטיס עצמו תופס גובה — ריפוד, מסגרת
-       ושוליים. מודדים את שניהם לכל כרטיס בנפרד במקום להעריך 70 פיקסלים. */
-    document.querySelectorAll('.card').forEach(c=>{
-      let head=0, n=c.previousElementSibling;
-      for(let i=0;i<2&&n;i++,n=n.previousElementSibling){
-        if(/^(H2|P|DIV)$/.test(n.tagName)&&!n.classList.contains('card'))
-          head+=n.getBoundingClientRect().height+8;
-      }
-      const sv=c.querySelector('svg');
-      const pad=sv?Math.max(0,c.getBoundingClientRect().height-sv.getBoundingClientRect().height):30;
-      c.style.setProperty('--chrome', Math.round(head+pad+26)+'px');
+function setFace(b,f){const r0=R(b);b.f=f;const r1=R(b);
+  b.x=+(r0.x+(r0.w-r1.w)/2).toFixed(1);b.y=+(r0.y+(r0.h-r1.h)/2).toFixed(1);
+  if(Math.abs(r0.x)<.1)b.x=0;if(Math.abs(r0.y)<.1)b.y=0;if(Math.abs(r0.x+r0.w-W)<.1)b.x=+(W-r1.w).toFixed(1);if(Math.abs(r0.y+r0.h-L)<.1)b.y=+(L-r1.h).toFixed(1)}
+
+/* ===== לוח בלוק ===== */
+const panel=document.getElementById('panel');
+const FACES=[['N','פונה למעלה'],['S','פונה למטה'],['E','פונה ימינה'],['W','פונה שמאלה']];
+function insideHtml(b){
+  if(!b.cfg)return`<div class="inside"><h3>פנים הרהיט</h3><p class="muted" style="margin:0 0 6px">כרגע ברירת המחדל של ${TYPES[b.t].n}. אפשר לחלק לתאים, ולקבוע לכל תא מדפים, מגירות, סלסלות או מוט, ודלת או חזית פתוחה.</p><button class="btn pri" id="cfgOn">לעצב את הפנים</button></div>`;
+  const Lr=lay(b);
+  const row=r=>`<div class="crow" data-i="${r.i}"><select data-f="k" aria-label="סוג התא">${KINDS.map(([k,t])=>`<option value="${k}"${k===r.k?' selected':''}>${t}</option>`).join('')}</select>
+    <label>גובה<input data-f="h" type="number" step="0.5" min="5" value="${r.h??''}" placeholder="${f1(r.z1-r.z0)}" aria-label="גובה התא"></label>
+    ${['shelves','drawers','baskets','shoes'].includes(r.k)?`<label>${r.k==='drawers'?'מגירות':r.k==='baskets'?'סלסלות':'מדפים'}<input data-f="n" type="number" min="${r.k==='drawers'||r.k==='baskets'?1:0}" max="20" step="1" value="${r.n|0}"></label>`:''}
+    ${r.k!=='drawers'&&r.k!=='baskets'?`<label><input data-f="door" type="checkbox"${r.door?' checked':''}> דלת</label>`:''}
+    <button class="btn sm danger" data-x="1" title="להסיר את התא" aria-label="להסיר את התא">✕</button><span class="span">${f1(r.z0)}–${f1(r.z1)}</span></div>`;
+  return`<div class="inside"><h3>פנים הרהיט</h3><p class="muted" style="margin:0">גובה פנימי ${f1(Lr.top-Lr.base)}, מ-${f1(Lr.base)} עד ${f1(Lr.top)}. תא בלי גובה מקבל את מה שנשאר. בין תא לתא מדף קבוע של 1.8. מלמעלה למטה:</p>
+    <div class="rows" id="crows">${Lr.rows.slice().reverse().map(row).join('')}</div>
+    <div class="bar"><button class="btn sm" id="cAdd">+ תא למעלה</button><button class="btn sm" id="cOpen">הכל פתוח</button><button class="btn sm" id="cDoor">הכל עם דלתות</button><button class="btn sm" id="cDef">חזרה לברירת המחדל</button></div></div>`}
+function wireInside(b){const $=id=>document.getElementById(id),go=()=>{touch();renderAll()};
+  if($('cfgOn'))$('cfgOn').onclick=()=>{b.cfg=defCfg(b);go()};
+  if(!$('crows'))return;
+  $('crows').addEventListener('change',e=>{const rw=e.target.closest('[data-i]'),f=e.target.dataset.f;if(!rw||!f)return;const r=b.cfg[+rw.dataset.i];
+    if(f==='k'){r.k=e.target.value;if(['shelves','shoes'].includes(r.k)&&r.n==null)r.n=2;if(['drawers','baskets'].includes(r.k)){r.n=Math.max(1,r.n|0||3);delete r.door}}
+    if(f==='h'){const v=parseFloat(e.target.value);r.h=isNaN(v)?null:Math.max(5,v)}
+    if(f==='n')r.n=Math.max(0,parseInt(e.target.value)||0);
+    if(f==='door')r.door=e.target.checked||undefined;go()});
+  $('crows').addEventListener('click',e=>{if(!e.target.closest('[data-x]'))return;const i=+e.target.closest('[data-i]').dataset.i;
+    if(b.cfg.length>1){b.cfg.splice(i,1);go()}});
+  $('cAdd').onclick=()=>{b.cfg.push({k:'shelves',h:null,n:1});go()};
+  $('cOpen').onclick=()=>{b.cfg.forEach(r=>delete r.door);go()};
+  $('cDoor').onclick=()=>{b.cfg.forEach(r=>{if(r.k!=='drawers'&&r.k!=='baskets')r.door=true});go()};
+  $('cDef').onclick=()=>{delete b.cfg;go()}}
+function drawPanel(){
+  const b=B.find(x=>x.id===sel);
+  if(!b){
+    const an=B.map(analyse),bad=an.filter(a=>a.lvl==='bad').length,warn=an.filter(a=>a.lvl==='warn').length;
+    panel.innerHTML=`<h2>לבחור בלוק</h2><p class="muted">לוחצים על בלוק בתוכנית כדי לראות את הגובה בנקודה, לשנות ייעוד וגודל, להזיז במדויק, לסובב או למחוק.</p>
+    <ul class="facts">
+     <li class="${bad?'bad':'ok'}">${bad?bad+' בלוקים חוסמים או חופפים':'אף בלוק לא חוסם מעבר'}</li>
+     <li class="${warn?'warn':'ok'}">${warn?warn+' בלוקים בגובה גבולי':'כל הבלוקים בגובה שמתאים להם'}</li>
+     <li>הקווים המקווקווים לרוחב החדר הם קווי גובה תקרה: 200, 180, 160, 140, 120.</li>
+     <li>קצה לבן על בלוק = הצד שממנו פותחים אותו. בלוק מקווקו = תלוי על הקיר.</li>
+    </ul>`;return}
+  const Ty=TYPES[b.t],a=analyse(b),r=R(b),hung=zOf(b)>0;
+  panel.innerHTML=`<h2>${bname(b)}</h2><p class="muted" style="margin:0">${Ty.info}</p>
+   <div class="fields">
+    <label class="wide">שם הבלוק<input id="fl" type="text" value="${(b.lb||'').replace(/"/g,'&quot;')}" placeholder="${Ty.n}"></label>
+    <div class="wide"><span style="font-size:12.5px;color:var(--ink2)">צבע</span>
+      <div class="sw" id="fsw">${SWATCH.map(c=>`<button type="button" data-c="${c}" class="${colOf(b).toLowerCase()===c?'on':''}" style="background:${c}" aria-label="צבע ${c}"></button>`).join('')}
+        <input id="fc" type="color" value="${colOf(b)}" aria-label="צבע אחר"><button type="button" class="btn sm" id="fc0">צבע מקורי</button></div></div>
+    <label class="wide">ייעוד<select id="ft">${ORDER.map(k=>`<option value="${k}"${k===b.t?' selected':''}>${TYPES[k].n}</option>`).join('')}</select></label>
+    <label>רוחב (לאורך הקיר)<input id="fw" type="number" step="0.5" min="1" value="${b.w}"></label>
+    <label>עומק<input id="fd" type="number" step="0.5" min="1" value="${b.d}"></label>
+    <label>${hung?'עד גובה — ריק = התקרה':'גובה — ריק = עד התקרה'}<input id="fh" type="number" step="0.5" min="1" value="${b.hh!=null?b.hh:(Ty.h<999?Ty.h:'')}" placeholder="עד התקרה"></label>
+    <label>מגובה — 0 = מהרצפה<input id="fz" type="number" step="0.5" min="0" value="${zOf(b)}"></label>
+    <label>גובה נדרש (הנחה)<input id="fr" type="number" step="1" value="${reqOf(b)}"></label>
+    <label>מהקיר השמאלי<input id="fx" type="number" step="0.5" value="${r.x}"></label>
+    <label>מהקיר הגבוה<input id="fy" type="number" step="0.5" value="${r.y}"></label>
+    <label class="wide">זווית — 0 = ישר לקירות
+      <span class="ang"><button class="btn sm" id="am" type="button">−15°</button><input id="far" type="range" min="-180" max="180" step="1" value="${b.a||0}" aria-label="זווית"><button class="btn sm" id="ap" type="button">+15°</button><input id="fa" type="number" step="0.5" value="${b.a||0}" aria-label="זווית במעלות"></span></label>
+   </div>
+   ${CFGT.includes(b.t)&&!hung?`<div class="std">מסגרת מוכנה, בהשראת PAX (מידות קטלוג — לאמת):
+     <button class="btn sm" data-sw="50">50</button><button class="btn sm" data-sw="75">75</button><button class="btn sm" data-sw="100">100</button> רוחב ·
+     <button class="btn sm" data-sd="35">35</button><button class="btn sm" data-sd="58">58</button> עומק ·
+     <button class="btn sm" data-sh="201">201</button><button class="btn sm" data-sh="236">236</button> גובה</div>`:''}
+   <div class="seg" id="fface">${FACES.map(([k,t])=>`<button data-f="${k}" class="${b.f===k?'on':''}">${t}</button>`).join('')}</div>
+   ${CFGT.includes(b.t)?insideHtml(b):''}
+   <ul class="facts">${a.out.map(([c,t])=>`<li class="${c}">${t}</li>`).join('')}
+    <li>תופס ברצפה ${f1(r.w)}×${f1(r.h)}${b.a?'':' · מעומק '+f1(r.y)+' עד '+f1(r.y+r.h)+' מהקיר הגבוה'}</li></ul>
+   <div class="bar"><button class="btn pri" id="rot">↻ סיבוב 90°</button>${b.a?'<button class="btn" id="a0">ישר לקירות</button>':''}<button class="btn" id="dup">שכפול</button><button class="btn danger" id="del">מחיקה</button></div>`;
+  const $=id=>document.getElementById(id);
+  const num=(id,fn)=>$(id)?.addEventListener('change',e=>{const v=parseFloat(e.target.value);fn(isNaN(v)?null:v);touch();renderAll()});
+  num('fw',v=>{if(v)b.w=Math.max(1,v)});num('fd',v=>{if(v)b.d=Math.max(1,v)});
+  num('fx',v=>{if(v!=null)b.x=v});num('fy',v=>{if(v!=null)b.y=v});
+  num('fr',v=>{b.rq=v==null||v===TYPES[b.t].req?null:v});
+  num('fh',v=>{b.hh=v==null||v===TYPES[b.t].h?null:v});
+  num('fz',v=>{b.zz=v==null||v===(TYPES[b.t].z0||0)?null:Math.max(0,v)});
+  $('fsw').onclick=e=>{const c=e.target.closest('[data-c]')?.dataset.c;if(c){b.c=c===TYPES[b.t].c?undefined:c;touch();renderAll()}};
+  $('fc').addEventListener('input',e=>{b.c=e.target.value;drawPlan();sched3()});
+  $('fc').addEventListener('change',e=>{b.c=e.target.value;touch();renderAll()});
+  $('fc0').onclick=()=>{delete b.c;touch();renderAll()};
+  panel.querySelectorAll('[data-sw],[data-sd],[data-sh]').forEach(bt=>bt.onclick=()=>{const v=+(bt.dataset.sw||bt.dataset.sd||bt.dataset.sh);
+    if(bt.dataset.sw)b.w=v;else if(bt.dataset.sd)b.d=v;else b.hh=v;touch();renderAll()});
+  wireInside(b);
+  $('ft').onchange=e=>{b.t=e.target.value;b.rq=null;touch();renderAll()};
+  $('fl').addEventListener('change',e=>{b.lb=e.target.value.trim()||undefined;touch();renderAll()});
+  $('fa').addEventListener('change',e=>{const v=parseFloat(e.target.value);if(!isNaN(v))setAngle(b,v)});
+  // the slider redraws live but keeps the panel, so the thumb stays under the finger
+  $('far').addEventListener('input',e=>{b.a=+e.target.value||0;if(!b.a)delete b.a;$('fa').value=b.a||0;drawPlan();sched3()});
+  $('far').addEventListener('change',e=>setAngle(b,+e.target.value));
+  $('am').onclick=()=>setAngle(b,(b.a||0)-15);$('ap').onclick=()=>setAngle(b,(b.a||0)+15);
+  if($('a0'))$('a0').onclick=()=>setAngle(b,0);
+  $('fface').onclick=e=>{const f=e.target.closest('button')?.dataset.f;if(f){setFace(b,f);touch();renderAll()}};
+  $('rot').onclick=()=>rotateB(b);
+  $('del').onclick=()=>{B=B.filter(x=>x!==b);sel=null;touch();renderAll()};
+  $('dup').onclick=()=>{const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});const q=R(b);
+    if(b.f==='E'||b.f==='W')c.y=+(q.y+q.h).toFixed(1);else c.x=+(q.x+q.w).toFixed(1);B.push(c);sel=c.id;touch();renderAll()};
+}
+
+/* ===== טבלה וסיכום ===== */
+function stats(list){let rod=0,dr=0,bad=0,warn=0;
+  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
+  B=keep;return{rod,dr,bad,warn}}
+function drawList(){
+  const tb=document.getElementById('list');tb.innerHTML='';
+  const col={ok:'var(--ok)',warn:'var(--warn)',bad:'var(--bad)'},word={ok:'תקין',warn:'גובה גבולי',bad:'חוסם / חופף'};
+  [...B].sort((a,b)=>ys(P(a))[0]-ys(P(b))[0]).forEach(b=>{const a=analyse(b);const tr=document.createElement('tr');
+    if(b.id===sel)tr.className='sel';
+    tr.innerHTML=`<td><span class="dot" style="background:${colOf(b)}"></span>${bname(b)}${b.a?' · '+f1(b.a)+'°':''}</td><td class="n">${f1(b.w)}×${f1(b.d)}</td>
+      <td class="n">${f1(a.cmin)}${a.cmax-a.cmin>.05?'–'+f1(a.cmax):''}</td><td style="color:${col[a.lvl]}">${word[a.lvl]}</td>`;
+    tr.onclick=()=>{sel=b.id;renderAll(true)};tb.appendChild(tr)});
+  const s=stats(B);
+  document.getElementById('totals').textContent=`סך הכל מוטות תליה: ${f1(s.rod)} ס״מ · מגירות: ${s.dr}`;
+}
+
+/* ===== גרסאות ===== */
+function touch(){cur.dirty=true}
+function drawCur(){document.getElementById('cur').innerHTML=`<span>על המסך:</span><b>${cur.name||'גרסה בלי שם'}</b>${cur.dirty?'<span class="dirty">· שונה מאז שנפתחה — לשמור כגרסה חדשה או לעדכן</span>':''}`}
+function openList(list,nm,doors){B=clone(list);sel=null;if(doors!=null){doorsOn=!!doors;document.getElementById('doors').checked=doorsOn}cur={name:nm,dirty:false};renderAll()}
+let armed=null;
+function drawVersions(){
+  const tb=document.getElementById('vlist');tb.innerHTML='';
+  const row=(nm,list,acts,isCur,sub)=>{const s=stats(list),tr=document.createElement('tr');
+    tr.innerHTML=`<td>${nm}${isCur?'<span class="tag on">על המסך</span>':''}${sub?'<div class="muted">'+sub+'</div>':''}</td><td class="n">${f1(s.rod)}</td>
+      <td style="color:${s.bad?'var(--bad)':s.warn?'var(--warn)':'var(--ok)'}">${s.bad?s.bad+' חוסמים':s.warn?s.warn+' גבוליים':'תקין'}</td><td><div class="acts"></div></td>`;
+    acts.forEach(([t,fn,cls])=>{const bt=document.createElement('button');bt.className='btn sm '+(cls||'');bt.textContent=t;bt.onclick=fn;tr.querySelector('.acts').appendChild(bt)});
+    tb.appendChild(tr)};
+  PRESETS.forEach(p=>row(p.name,p.B,[['פתיחה',()=>openList(p.B,p.name)]],cur.name===p.name&&!cur.dirty,'הצעה שלי · לא משתנה'));
+  V.forEach((v,i)=>{const when=new Date(v.at).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'});
+    row(v.name,v.B,[
+      ['פתיחה',()=>openList(v.B,v.name,v.doors)],
+      ['עדכון',()=>{v.B=strip(B);v.doors=doorsOn;v.at=Date.now();cur={name:v.name,dirty:false};renderAll()}],
+      [armed===i?'בטוח? למחוק':'מחיקה',()=>{if(armed===i){V.splice(i,1);armed=null}else{armed=i;setTimeout(()=>{if(armed===i){armed=null;drawVersions()}},4000)}renderAll()},'danger']
+    ],cur.name===v.name&&!cur.dirty,'נשמרה '+when)});
+}
+document.getElementById('vsave').onclick=()=>{const inp=document.getElementById('vname');
+  let nm=inp.value.trim()||(cur.name&&!PRESETS.some(p=>p.name===cur.name)?cur.name:'')||('גרסה '+(V.length+1));
+  if(PRESETS.some(p=>p.name===nm))nm+=' · עותק';
+  const ex=V.find(v=>v.name===nm),data={name:nm,at:Date.now(),B:strip(B),doors:doorsOn};
+  if(ex)Object.assign(ex,data);else V.push(data);
+  inp.value='';cur={name:nm,dirty:false};renderAll()};
+document.getElementById('vname').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('vsave').click()});
+
+/* ===== מדף הבלוקים ===== */
+const shelf=document.getElementById('shelf');
+ORDER.forEach(k=>{const t=TYPES[k],bt=document.createElement('button');bt.innerHTML=`<i style="background:${t.c}"></i>${t.n}`;
+  bt.onclick=()=>{const b={id:uid++,t:k,x:90,y:200,w:t.w,d:t.d,f:'S'};B.push(b);sel=b.id;touch();renderAll();
+    svg.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})};shelf.appendChild(bt)});
+document.getElementById('doors').onchange=e=>{doorsOn=e.target.checked;touch();renderAll()};
+document.getElementById('clear').onclick=()=>{B=[];sel=null;cur={name:'חדר ריק',dirty:true};renderAll()};
+
+/* ===== העתקה וטעינה ===== */
+const io=document.getElementById('io'),ioMsg=document.getElementById('ioMsg');
+function pack(list){const keep=B;B=list;const out=list.map(b=>{const r=R(b),a=analyse(b);
+  return{type:b.t,name:bname(b),w:b.w,d:b.d,face:b.f,x:r.x,y:r.y,...(b.a?{angle:b.a}:{}),ceiling:[+f1(a.cmin),+f1(a.cmax)],status:a.lvl,
+    ...(b.rq!=null?{req:b.rq}:{}),...(b.hh!=null?{height:b.hh}:{}),...(b.zz!=null?{from:b.zz}:{}),...(b.c?{color:b.c}:{}),...(b.cfg?{inside:b.cfg}:{})}});B=keep;return out}
+function unpack(bl){return bl.map(o=>{const t=o.type||o.t;if(!TYPES[t])return null;
+  const b={t,w:o.w,d:o.d,f:o.face||o.f||'S',x:o.x,y:o.y};
+  if(o.name&&o.name!==TYPES[t].n)b.lb=o.name;else if(o.lb)b.lb=o.lb;
+  if(o.angle||o.a)b.a=o.angle||o.a;if(o.req!=null)b.rq=o.req;if(o.height!=null)b.hh=o.height;if(o.from!=null)b.zz=o.from;if(o.color)b.c=o.color;if(Array.isArray(o.inside))b.cfg=o.inside;
+  return b}).filter(Boolean)}
+function copyOut(text){io.value=text;
+  const fallback=()=>{io.select();ioMsg.textContent='סימנתי את הטקסט — להעתיק ידנית.'};
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text).then(()=>ioMsg.textContent='הועתק. אפשר להדביק בשיחה.',fallback);else fallback()}
+document.getElementById('copy').onclick=()=>copyOut(JSON.stringify({room:'אשל 57 · חדר ארונות',version:cur.name||'',doors:doorsOn,blocks:pack(B)}));
+document.getElementById('copyAll').onclick=()=>copyOut(JSON.stringify({room:'אשל 57 · חדר ארונות',versions:V.map(v=>({name:v.name,doors:!!v.doors,blocks:pack(v.B)}))}));
+document.getElementById('load').onclick=()=>{try{const s=JSON.parse(io.value);
+  if(Array.isArray(s.versions)){let n=0;s.versions.forEach(v=>{const bl=unpack(v.blocks||[]);if(!bl.length)return;
+      const data={name:v.name||('גרסה '+(V.length+1)),at:Date.now(),B:bl,doors:!!v.doors},ex=V.find(x=>x.name===data.name);
+      if(ex)Object.assign(ex,data);else V.push(data);n++});
+    renderAll();ioMsg.textContent='נטענו '+n+' גרסאות לרשימה.';return}
+  const bl=unpack(s.blocks||s.B||[]);if(!bl.length)throw 0;
+  openList(bl,s.version||'תוכנית שהודבקה',s.doors);ioMsg.textContent='נטען.'}
+  catch(e){ioMsg.textContent='הטקסט בתיבה לא נראה כמו תוכנית. להדביק אותו שוב בשלמותו.'}};
+
+/* ===== תלת-ממד ===== */
+let R3=null,MODE='real',FINISH='oak',CLOTHES=true;
+const FINS={oak:'#c9a274',white:'#efebe4',walnut:'#6e4b33'};
+const GARM=['#e9e3d8','#c9b8a0','#8e9aa8','#3d4a5c','#b7735a','#d8c8b2','#6d7b63','#2f2f33','#f2ede4','#a3887a','#556270','#c4a484','#7d5a50','#9fb3c8'];
+const SHOE=['#2f2a26','#7a5236','#e8e4dc','#a8885f','#3c4a5c','#8e2f2f'];
+const BAG=['#3d4a5c','#8e2f2f','#2f2f33','#6d7b63','#b7735a'];
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const TEX={},MATS={};
+function woodTex(hex){if(TEX[hex])return TEX[hex];
+  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d'),r=rng(7);
+  x.fillStyle=hex;x.fillRect(0,0,256,256);
+  for(let i=0;i<70;i++){const y=r()*256,a=.04+r()*.08;
+    x.strokeStyle=r()<.5?`rgba(60,35,15,${a})`:`rgba(255,240,220,${a*.8})`;x.lineWidth=.6+r()*1.8;
+    x.beginPath();x.moveTo(0,y);for(let k=0;k<=256;k+=16)x.lineTo(k,y+Math.sin(k/40+i)*2.2+r()*1.2);x.stroke()}
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/60,1/60);return TEX[hex]=t}
+function floorTex(){if(TEX.floor)return TEX.floor;
+  const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d'),r=rng(3);
+  for(let i=0;i<8;i++){const l=200+r()*20|0;x.fillStyle=`rgb(${l},${l-22},${l-52})`;x.fillRect(0,i*64,512,64);
+    x.fillStyle='rgba(80,55,30,.28)';x.fillRect(0,i*64,512,1.5);x.fillRect(r()*512,i*64,1.5,64);
+    for(let k=0;k<6;k++){x.strokeStyle=`rgba(90,60,30,${.05+r()*.07})`;x.beginPath();const yy=i*64+r()*64;
+      x.moveTo(0,yy);x.bezierCurveTo(170,yy+3,340,yy-3,512,yy+r()*3);x.stroke()}}
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/160,1/160);return TEX.floor=t}
+const mat=(k,mk)=>MATS[k]||(MATS[k]=mk());
+function finMat(b,shade){const plain=FINISH==='block'||FINISH==='white',hex=FINISH==='block'?colOf(b):FINS[FINISH];
+  return mat('f'+hex+(shade||1),()=>{const col=plain?new THREE.Color(hex):new THREE.Color(0xffffff);if(shade)col.multiplyScalar(shade);
+    return new THREE.MeshStandardMaterial({color:col,map:plain?null:woodTex(hex),roughness:.72})})}
+const MFAB=c=>mat('fab'+c,()=>new THREE.MeshStandardMaterial({color:new THREE.Color(c),roughness:.95}));
+const MLED=()=>mat('led',()=>new THREE.MeshBasicMaterial({color:0xfff2d6}));
+const MMET=()=>mat('met',()=>new THREE.MeshStandardMaterial({color:0xb8b6b0,metalness:.85,roughness:.3}));
+const MGL=()=>mat('gl',()=>new THREE.MeshStandardMaterial({color:0xd6e6ef,metalness:.2,roughness:.08,emissive:0x1d2a30}));
+
+/* a prism standing on the floor plan: x0..x1 × y0..y1, bottom and top may follow the plan-y (the slope runs along y) */
+function addPrism(G,x0,x1,y0,y1,zb,zt,m,cap){
+  if(x1-x0<.05||y1-y0<.05)return;
+  const fb=typeof zb==='function'?zb:()=>zb,ft0=typeof zt==='function'?zt:()=>zt,ft=cap?y=>Math.min(ft0(y),cap(y)):ft0;
+  const yv=[y0,y1];[FLAT,...((cap&&cap.br)||[])].forEach(v=>{if(v>y0+.01&&v<y1-.01)yv.push(v)});yv.sort((a,b)=>a-b);
+  const bt=yv.map(fb),tp=yv.map(ft);if(tp.every((t,i)=>t-bt[i]<.05))return;
+  const pts=yv.map((y,i)=>[y,bt[i]]);for(let i=yv.length-1;i>=0;i--)pts.push([yv[i],Math.max(bt[i]+.05,tp[i])]);
+  const g=new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))),{depth:x1-x0,bevelEnabled:false});
+  g.applyMatrix4(new THREE.Matrix4().set(0,0,1,x0, 0,1,0,0, 1,0,0,0, 0,0,0,1));
+  const ms=new THREE.Mesh(g,m);ms.castShadow=ms.receiveShadow=true;G.add(ms);return ms}
+/* block-local frame: u runs left→right as you face the unit, v from the wall (0) to the front (d) */
+function frame(b){const r=R(b),w=b.w,d=b.d;
+  return(u0,u1,v0,v1)=>{switch(b.f){
+    case 'S':return[r.x+u0,r.x+u1,r.y+v0,r.y+v1];
+    case 'N':return[r.x+w-u1,r.x+w-u0,r.y+d-v1,r.y+d-v0];
+    case 'E':return[r.x+v0,r.x+v1,r.y+w-u1,r.y+w-u0];
+    default:return[r.x+d-v1,r.x+d-v0,r.y+u0,r.y+u1]}}}
+function cyl(G,F,u0,u1,v,z,rad,m){const q=F(u0,u1,v-rad,v+rad),alongX=(q[1]-q[0])>(q[3]-q[2]),len=alongX?q[1]-q[0]:q[3]-q[2];
+  const g=new THREE.CylinderGeometry(rad,rad,len,14);g.rotateZ(Math.PI/2);if(!alongX)g.rotateY(Math.PI/2);
+  const ms=new THREE.Mesh(g,m);ms.position.set((q[0]+q[1])/2,z,(q[2]+q[3])/2);ms.castShadow=true;G.add(ms)}
+
+const DRW=[20,20,17,17,15,15];   // panel thickness, plinth, drawer fronts bottom→top — design values
+function joinery(b,G){
+  const a=analyse(b),z0=zOf(b),w=b.w,d=b.d,F=frame(b),hb=hOf(b);
+  const cap=y=>Math.min(hb,hAt(y)-2);cap.br=[yAt(hb+2)];
+  const topMin=Math.min(hb,a.cmin-2),Cm=finMat(b),Fr=finMat(b,.93),Dk=finMat(b,.62),seed=b.id*97;
+  const P=(u0,u1,v0,v1,zb,zt,m)=>{const q=F(u0,u1,v0,v1);addPrism(G,q[0],q[1],q[2],q[3],zb,zt,m||Cm,cap)};
+  const carcass=(zb,plinth)=>{const fl=zb+(plinth?PL:0);
+    P(0,TK,0,d,zb,cap);P(w-TK,w,0,d,zb,cap);P(TK,w-TK,0,.8,zb,cap);
+    P(TK,w-TK,.8,d,y=>cap(y)-TK,cap);P(TK,w-TK,.8,d,fl,fl+TK);
+    if(plinth)P(TK,w-TK,d-5,d-3.2,0,PL,Dk);return fl+TK};
+  const led=z=>P(TK,w-TK,d-4,d-2.6,z-.7,z,MLED());
+  const garments=(rodZ,len,floorZ,s)=>{if(!CLOTHES)return;const r=rng(s);
+    for(let u=TK+2;u<w-TK-3;u+=4.4+r()*1.6){const L2=len*(.8+r()*.2),bot=Math.max(floorZ+2,rodZ-3-L2),dep=Math.min(d-6,34+r()*10);
+      P(u,u+1.3,d/2-dep/2,d/2+dep/2,bot,rodZ-3,MFAB(GARM[r()*GARM.length|0]))}};
+  const stacks=(z,gap,s)=>{if(!CLOTHES)return;const r=rng(s);
+    for(let u=TK+2;u+24<w-TK;u+=28){const h=Math.min(gap-6,9+r()*12);if(h<4)continue;
+      P(u,u+24+r()*2,d-34,d-5,z,z+h,MFAB(GARM[r()*GARM.length|0]))}};
+  const shelves=(from,to,step,fill)=>{for(let z=from+step;z<to-12;z+=step){P(TK,w-TK,.8,d-1,z,z+TK);if(fill)fill(z+TK,step-TK)}if(fill)fill(from,step)};
+  const hangs={hangS:95,hangM:112,hangL:140};
+  const shoesAt=(zz,g,s)=>{if(!CLOTHES||g<6)return;const r=rng(s);for(let u=TK+2;u+19<w-TK;u+=21){const c=SHOE[r()*SHOE.length|0],t=zz+Math.min(g-4,9);
+    P(u,u+8,d-29,d-4,zz,t,MFAB(c));P(u+9.5,u+17.5,d-29,d-4,zz,t,MFAB(c))}};
+  if(b.cfg&&CFGT.includes(b.t)){carcass(z0,!z0);const Lr=lay(b),nr=Lr.rows.length;
+    Lr.rows.forEach((r,i)=>{const flex=i===nr-1&&r.h==null,topN=flex?Lr.top:r.z1,hh=topN-r.z0;if(hh<2)return;
+      if(i<nr-1)P(TK,w-TK,.8,d,r.z1,r.z1+TK);
+      if(r.k==='shelves'||r.k==='shoes'){const n=Math.max(0,r.n|0),st=hh/(n+1);
+        for(let k=0;k<=n;k++){const zz=r.z0+k*st;if(k)P(TK,w-TK,.8,d-1,zz,zz+TK);
+          if(r.k==='shelves')stacks(zz+(k?TK:0),st-TK,seed+i*31+k);else shoesAt(zz+(k?TK:0),st-TK,seed+i*31+k)}}
+      if(r.k==='drawers'){const n=Math.max(1,r.n|0),dh=hh/n;
+        for(let k=0;k<n;k++){const zz=r.z0+k*dh;P(.2,w-.2,d,d+1.9,zz+.15,zz+dh-.15,Fr);P(w/2-14,w/2+14,d+1.9,d+3,zz+dh-4.4,zz+dh-3.4,MMET())}}
+      if(r.k==='baskets'){const n=Math.max(1,r.n|0),dh=hh/n,mm=mat('mesh',()=>new THREE.MeshStandardMaterial({color:0xc9c7c2,metalness:.6,roughness:.4,transparent:true,opacity:.55}));
+        for(let k=0;k<n;k++){const zz=r.z0+k*dh,bh=Math.min(dh-3,18);P(TK+1,w-TK-1,2,d-2,zz+1,zz+1.6,MMET());P(TK+1,w-TK-1,d-2.6,d-2,zz+1,zz+bh,mm);
+          P(TK+1,TK+1.6,2,d-2,zz+1,zz+bh,mm);P(w-TK-1.6,w-TK-1,2,d-2,zz+1,zz+bh,mm);if(CLOTHES)stacks(zz+1.6,bh-1,seed+i*7+k)}}
+      if(r.k==='rod'){const rz=topN-5;cyl(G,F,TK,w-TK,d/2,rz,1.2,MMET());garments(rz,Math.min(140,hh-8),r.z0,seed+i*13)}
+      if(r.door&&r.k!=='drawers'&&r.k!=='baskets'){const n=Math.max(1,Math.ceil(w/50)),dw=w/n,zt=flex?(y=>cap(y)-.2):topN-.2;
+        for(let k=0;k<n;k++){P(k*dw+.2,(k+1)*dw-.2,d,d+1.9,r.z0+.2,zt,Fr);const ku=k%2?k*dw+3:(k+1)*dw-4,kz=hh>60?r.z0+hh/2:r.z0+hh-9;P(ku,ku+1,d+1.9,d+3.4,kz,kz+7,MMET())}}
     });
-    const card=document.querySelector('.card'); if(!card)return;
-    const svg=card.querySelector('svg');
-    if(svg&&!document.body.classList.contains('nofit')){
-      const r=svg.getBoundingClientRect();
-      note.textContent=Math.round(r.width)+'×'+Math.round(r.height)+' פיקסלים';
-    } else note.textContent='';
+    if(z0>0)P(TK,w-TK,d-5,d-3.6,z0-.6,z0,MLED());else led(topMin-TK);return}
+  switch(b.t){
+    case 'drawers':{carcass(0,true);let z=PL;
+      DRW.forEach(h=>{if(z+h>topMin+.5)return;P(.2,w-.2,d,d+1.9,z+.15,z+h-.15,Fr);P(w/2-14,w/2+14,d+1.9,d+3,z+h-4.4,z+h-3.4,MMET());z+=h});
+      if(topMin>z+15){P(TK,w-TK,.8,d,z,z+TK);shelves(z+TK,topMin-TK,34,(zz,g)=>stacks(zz,g,seed+zz|0));led(topMin-TK)}
+      break}
+    case 'hang2':case 'hangL':case 'hangM':case 'hangS':{const fl=carcass(z0,!z0),rodZ=topMin-TK-5;
+      cyl(G,F,TK,w-TK,d/2,rodZ,1.2,MMET());led(topMin-TK);
+      if(b.t==='hang2'){const low=Math.min(rodZ/2+3,rodZ-3-92-6);cyl(G,F,TK,w-TK,d/2,low,1.2,MMET());
+        garments(rodZ,92,low+4,seed);garments(low,90,fl,seed+1)}
+      else garments(rodZ,hangs[b.t],fl,seed);
+      break}
+    case 'shelves':{const fl=carcass(z0,!z0);shelves(fl,topMin-TK,34,(zz,g)=>stacks(zz,g,seed+zz|0));led(topMin-TK);break}
+    case 'deep':{const fl=carcass(z0,!z0),r=rng(seed);
+      shelves(fl,topMin-TK,40,(zz,g)=>{if(!CLOTHES)return;for(let u=TK+2;u+32<w-TK;u+=35)P(u,u+32,2,d-3,zz,zz+Math.min(g-5,28),MFAB(['#d9cdb8','#c9bba3','#e6ddcc'][r()*3|0]))});break}
+    case 'shoes':{const fl=carcass(z0,!z0),r=rng(seed);
+      shelves(fl,topMin-TK,19,(zz,g)=>{if(!CLOTHES)return;for(let u=TK+2;u+19<w-TK;u+=21){const c=SHOE[r()*SHOE.length|0];
+        P(u,u+8,d-29,d-4,zz,zz+Math.min(g-4,9),MFAB(c));P(u+9.5,u+17.5,d-29,d-4,zz,zz+Math.min(g-4,9),MFAB(c))}});break}
+    case 'vanity':{P(0,w,0,d,73.2,75);P(0,TK,0,d,0,73.2);P(w-TK,w,0,d,0,73.2);
+      P(TK,w-TK,d-1.9,d,61,72.9,Fr);P(w/2-8,w/2+8,d,d+1,66,67,MMET());
+      const q=F(w/2-1,w/2+1,d+25,d+27),g=new THREE.CylinderGeometry(17,15,46,24),st=new THREE.Mesh(g,MFAB('#cdbfa8'));
+      st.position.set((q[0]+q[1])/2,23,(q[2]+q[3])/2);st.castShadow=true;G.add(st);break}
+    case 'wallShelf':{carcass(z0,false);const mid=(z0+topMin)/2;P(TK,w-TK,.8,d-1,mid,mid+TK);
+      const n=Math.max(1,Math.ceil(w/50)),dw=w/n;
+      for(let i=0;i<n;i++){P(i*dw+.2,(i+1)*dw-.2,d,d+1.9,z0+.2,y=>cap(y)-.2,Fr);
+        const ku=i%2?i*dw+3:(i+1)*dw-4;P(ku,ku+1,d+1.9,d+3.4,z0+4,z0+10,MMET())}
+      P(TK,w-TK,d-5,d-3.6,z0-.6,z0,MLED());break}
+    case 'mirror':{const t=Math.min(hb,topMin),dd=Math.max(.6,d);P(0,w,0,dd,z0,t);P(1.2,w-1.2,dd,dd+.4,z0+1.2,t-1.2,MGL());P(2,w-2,0,.4,z0-.5,z0,MLED());break}
+    case 'mirrorW':{const t=Math.min(hb,topMin);P(0,w,0,1.2,20,t);P(1.5,w-1.5,1.2,1.6,21.5,t-1.5,MGL());break}
+    case 'mirrorS':{const t=Math.min(hb,topMin);P(2,7,3,d-3,0,3);P(w-7,w-2,3,d-3,0,3);
+      P(0,w,d/2-1.5,d/2+1.5,3,t);P(2,w-2,d/2+1.5,d/2+1.9,5,t-2,MGL());break}
+    case 'suit':{const r=rng(seed),t=Math.min(hb,topMin);
+      for(let u=1;u+44<=w;u+=48){P(u,u+44,Math.max(0,d-30),d-1,1.5,t-2,MFAB(BAG[r()*BAG.length|0]));P(u+16,u+28,d-17,d-13,t-2,t+.5,MMET())}break}
+    case 'bench':{P(2,6,2,d-2,0,34);P(w-6,w-2,2,d-2,0,34);P(0,w,0,d,34,38);P(1,w-1,1,d-1,38,45,MFAB('#cdbfa8'));break}
+    default:carcass(z0,!z0);
   }
-  let zoom=1;
-  try{ const v=parseFloat(localStorage.getItem('cp_zoom')); if(v>=.5&&v<=1.5)zoom=v; }catch(e){}
-  const zv=document.getElementById('zVal');
-  const applyZoom=()=>{
-    document.documentElement.style.setProperty('--zoom',zoom);
-    zv.textContent=Math.round(zoom*100)+'%';
-    try{ localStorage.setItem('cp_zoom',zoom); }catch(e){}
-    measure();
-  };
-  document.getElementById('zOut').onclick=()=>{ zoom=Math.max(.5,+(zoom-.1).toFixed(2)); applyZoom(); };
-  document.getElementById('zIn').onclick=()=>{ zoom=Math.min(1.5,+(zoom+.1).toFixed(2)); applyZoom(); };
-  applyZoom();
-  on.onclick=()=>{document.body.classList.remove('nofit');on.classList.add('on');off.classList.remove('on');measure();};
-  off.onclick=()=>{document.body.classList.add('nofit');off.classList.add('on');on.classList.remove('on');note.textContent='';};
-  addEventListener('resize',measure); addEventListener('load',measure); setTimeout(measure,300);
-})();
+}
+function schem(b,G,real){const Ty=TYPES[b.t],r=R(b),a=analyse(b),z0=zOf(b);
+  let g;
+  if(b.a){const hgt=Math.max(2,Math.min(hOf(b),a.cmin-2)-z0);
+    g=new THREE.BoxGeometry(r.w,hgt,Math.max(r.h,.8));g.applyMatrix4(new THREE.Matrix4().makeRotationY(-b.a*D2R));g.translate(r.x+r.w/2,z0+hgt/2,r.y+r.h/2);
+  }else{const top=y=>Math.max(z0+2,Math.min(hOf(b),hAt(y)-2));
+    const yv=[r.y,r.y+r.h];if(r.y<FLAT&&r.y+r.h>FLAT)yv.splice(1,0,FLAT);
+    const pts=[[r.y,z0],[r.y+r.h,z0]];for(let i=yv.length-1;i>=0;i--)pts.push([yv[i],top(yv[i])]);
+    g=new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))),{depth:Math.max(r.w,.8),bevelEnabled:false});
+    g.applyMatrix4(new THREE.Matrix4().set(0,0,1,r.x, 0,1,0,0, 1,0,0,0, 0,0,0,1))}
+  const m=real?new THREE.Mesh(g,finMat(b)):new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:new THREE.Color(colOf(b)),side:THREE.DoubleSide,
+    emissive:new THREE.Color(b.id===sel?0x553311:0x000000),transparent:!!(Ty.view||Ty.rod),opacity:Ty.view?.85:Ty.rod?.55:1}));
+  m.castShadow=true;
+  m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:a.lvl==='bad'?0xd2462f:a.lvl==='warn'?0xd29a2a:0x2a241c})));
+  G.add(m);
+  if(!real&&Ty.rod&&!b.a){const rod=Math.min(a.cmin,hOf(b))-6,hs=[rod];if(Ty.rod===2)hs.push(rod/2+3);
+    const ns=b.f==='S'||b.f==='N';
+    hs.forEach(hh=>{const p1=ns?new THREE.Vector3(r.x+2,hh,r.y+r.h/2):new THREE.Vector3(r.x+r.w/2,hh,r.y+2),
+      p2=ns?new THREE.Vector3(r.x+r.w-2,hh,r.y+r.h/2):new THREE.Vector3(r.x+r.w/2,hh,r.y+r.h-2);
+      G.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p1,p2]),new THREE.LineBasicMaterial({color:0xffffff})))})}
+}
+function init3(){
+  if(!window.THREE||!THREE.OrbitControls){document.querySelector('#three .ph').textContent='התלת-ממד לא נטען. התוכנית למעלה עובדת גם בלעדיו.';return}
+  const host=document.getElementById('three');host.innerHTML='';
+  const ren=new THREE.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(2,devicePixelRatio));
+  ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(ren.domElement);
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9e5dc);
+  const cam=new THREE.PerspectiveCamera(42,1,1,6000);
+  const ctl=new THREE.OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
+  scene.add(new THREE.HemisphereLight(0xfffaf0,0x8a7a66,.55),new THREE.AmbientLight(0xffffff,.2));
+  const dl=new THREE.DirectionalLight(0xfff4e6,.65);dl.position.set(W/2-160,620,L/2-260);dl.target.position.set(W/2,0,L/2);
+  dl.castShadow=true;dl.shadow.mapSize.set(2048,2048);Object.assign(dl.shadow.camera,{left:-420,right:420,top:420,bottom:-420,near:50,far:1600});dl.shadow.bias=-.0006;
+  scene.add(dl,dl.target);
+  [[W/2,205,80],[W/2,170,290]].forEach(p=>{const pl=new THREE.PointLight(0xffe2b8,.32,650);pl.position.set(p[0],p[1],p[2]);scene.add(pl)});
+  const room=new THREE.Group(),blocks=new THREE.Group(),ceil=new THREE.Group();scene.add(room,blocks,ceil);
+  const C=(x,y,z)=>new THREE.Vector3(x,y,z),mid=C(W/2,110,L/2);
+  function plane(pts,map,color,opa,inward,m){
+    const g=new THREE.ShapeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))));
+    const pa=g.attributes.position;for(let i=0;i<pa.count;i++){const v=map(pa.getX(i),pa.getY(i));pa.setXYZ(i,v[0],v[1],v[2])}
+    g.computeVertexNormals();let side=THREE.DoubleSide;
+    if(inward){const nm=g.attributes.normal,n=C(nm.getX(0),nm.getY(0),nm.getZ(0)),p=C(pa.getX(0),pa.getY(0),pa.getZ(0));
+      side=n.dot(mid.clone().sub(p))>0?THREE.FrontSide:THREE.BackSide}
+    const ms=new THREE.Mesh(g,m||new THREE.MeshStandardMaterial({color,side,transparent:opa<1,opacity:opa,roughness:.95}));ms.receiveShadow=true;return ms}
+  const wc=0xefebe4;
+  room.add(plane([[0,0],[WT,0],[WT,DT],[W,DT],[W,L],[0,L]],(u,v)=>[u,0,v],0,1,0,new THREE.MeshStandardMaterial({map:floorTex(),roughness:.8})));
+  room.add(plane([[0,0],[L,0],[L,HMIN],[FLAT,H],[0,H]],(u,v)=>[0,v,u],wc,1,1));
+  room.add(plane([[DT,0],[OP_A,0],[OP_A,180],[OP_B,180],[OP_B,0],[L,0],[L,HMIN],[FLAT,H],[DT,H]],(u,v)=>[W,v,u],wc,1,1));
+  room.add(plane([[0,0],[DT,0],[DT,H],[0,H]],(u,v)=>[WT,v,u],wc,1,1));
+  room.add(plane([[0,0],[TOP_A,0],[TOP_A,200],[WT,200],[WT,H],[0,H]],(u,v)=>[u,v,0],wc,1,1));
+  room.add(plane([[WT,0],[W,0],[W,H],[WT,H]],(u,v)=>[u,v,DT],wc,1,1));
+  room.add(plane([[0,0],[235.2,0],[235.2,50],[W,50],[W,HMIN],[0,HMIN]],(u,v)=>[u,v,L],wc,1,1));
+  const keeps=new THREE.Group();room.add(keeps);
+  KEEP.forEach(k=>keeps.add(plane([[k.x,k.y],[k.x+k.w,k.y],[k.x+k.w,k.y+k.h],[k.x,k.y+k.h]],(u,v)=>[u,.4,v],0xc76b3a,.3)));
+  ceil.add(plane([[0,0],[WT,0],[WT,DT],[W,DT],[W,FLAT],[0,FLAT]],(u,v)=>[u,H,v],0xf2eee6,.35));
+  ceil.add(plane([[0,FLAT],[W,FLAT],[W,L],[0,L]],(u,v)=>[u,hAt(v),v],0xf2eee6,.35));
+  room.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([C(0,H,0),C(0,H,FLAT),C(0,HMIN,L),C(W,HMIN,L),C(W,H,FLAT),C(0,H,FLAT)]),
+    new THREE.LineBasicMaterial({color:0x8a5a2b})));
+  ceil.visible=false;
+  R3={ren,scene,cam,ctl,blocks,ceil,keeps,host};
+  view('top');size();
+  (function loop(){requestAnimationFrame(loop);ctl.update();ren.render(scene,cam)})();
+  addEventListener('resize',size);
+  build3();
+}
+function size(){if(!R3)return;const w=R3.host.clientWidth,h=R3.host.clientHeight;R3.ren.setSize(w,h);R3.cam.aspect=w/h;R3.cam.updateProjectionMatrix()}
+function view(k){if(!R3)return;const c=R3.cam,t=R3.ctl.target;
+  if(k==='top'){c.position.set(W/2+330,640,L+330);t.set(W/2,40,L/2)}
+  if(k==='in'){c.position.set(155,165,6);t.set(120,95,330)}
+  if(k==='bed'){c.position.set(W-4,160,221);t.set(40,95,250)}
+  if(k==='niche'){c.position.set(110,160,265);t.set(245,105,135)}
+  R3.ctl.update()}
+function build3(){
+  if(!R3)return;const G=R3.blocks;
+  G.traverse(o=>{if(o.geometry)o.geometry.dispose()});while(G.children.length)G.remove(G.children[0]);
+  R3.keeps.visible=MODE!=='real';
+  B.forEach(b=>{const g=new THREE.Group();G.add(g);
+    if(MODE==='real'&&!b.a)joinery(b,g);else schem(b,g,MODE==='real');
+    if(MODE==='real'){const lv=analyse(b).lvl;
+      if(b.id===sel||lv==='bad'){const bx=new THREE.Box3().setFromObject(g);if(!bx.isEmpty())G.add(new THREE.Box3Helper(bx,new THREE.Color(b.id===sel?0x8a5a2b:0xd2462f)))}}
+  });
+}
+let t3=0;function sched3(){clearTimeout(t3);t3=setTimeout(build3,90)}
+document.getElementById('ceil').onchange=e=>{if(R3)R3.ceil.visible=e.target.checked};
+document.getElementById('clothes').onchange=e=>{CLOTHES=e.target.checked;build3()};
+document.getElementById('mode3').onclick=e=>{const m=e.target.closest('button')?.dataset.m;if(!m)return;MODE=m;
+  [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c.dataset.m===m));build3()};
+document.getElementById('fin3').onclick=e=>{const f=e.target.closest('button')?.dataset.f;if(!f)return;FINISH=f;
+  [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c.dataset.f===f));build3();drawElev()};
+[['camTop','top'],['camIn','in'],['camBed','bed'],['camNiche','niche']].forEach(([id,k])=>document.getElementById(id).onclick=()=>view(k));
+
+/* ===== פריסות קירות ===== */
+const WALLS=[
+  {n:'הקיר השמאלי — קיר חיצוני מבלוקים',ax:'y',at:0,face:'E',a:0,b:L,rev:true,ops:[],ends:['הקיר הרחוק','הקיר הגבוה']},
+  {n:'הקיר הגבוה — ליד היציאה מהמקלחת',ax:'x',at:0,face:'S',a:0,b:WT,rev:false,ops:[[TOP_A,WT,'פתח למקלחת · 80']],ends:['קיר שמאל','דופן הבליטה']},
+  {n:'הנישה — פאת הבליטה',ax:'x',at:DT,face:'S',a:WT,b:W,rev:false,ops:[],ends:['','הקיר הימני']},
+  {n:'הקיר הימני',ax:'y',at:W,face:'W',a:DT,b:L,rev:false,ops:[[OP_A,OP_B,'פתח לחדר השינה · 79']],ends:['הבליטה','הקיר הרחוק']},
+  {n:'הקיר הרחוק',ax:'x',at:L,face:'N',a:0,b:W,rev:true,ops:[[235.2,W,'פתח לגג · מיקום למדוד',50]],ends:['הקיר הימני','קיר שמאל']},
+  {n:'דופן הבליטה — ליד דלתות המקלחת',ax:'y',at:WT,face:'W',a:0,b:DT,rev:false,ops:[],ends:['הקיר הגבוה',''],opt:1}
+];
+let EZ=1;
+document.getElementById('ezo').onclick=()=>{EZ=Math.max(.5,+(EZ-.25).toFixed(2));drawElev()};
+document.getElementById('ezi').onclick=()=>{EZ=Math.min(3,+(EZ+.25).toFixed(2));drawElev()};
+function onWall(b,wl){if(b.a||b.f!==wl.face)return false;const r=R(b);
+  const back={E:r.x,W:r.x+r.w,S:r.y,N:r.y+r.h}[b.f];if(Math.abs(back-wl.at)>1.5)return false;
+  const s0=wl.ax==='y'?r.y:r.x,s1=wl.ax==='y'?r.y+r.h:r.x+r.w;return s0>=wl.a-1&&s1<=wl.b+1}
+function drawElev(){
+  const host=document.getElementById('elev');if(!host)return;host.innerHTML='';const used=new Set(),K=1.6*EZ;
+  document.getElementById('ezv').textContent=Math.round(EZ*100)+'%';
+  WALLS.forEach(wl=>{const bs=B.filter(b=>onWall(b,wl)).sort((p,q)=>zOf(p)-zOf(q));if(!bs.length&&wl.opt)return;
+    bs.forEach(b=>used.add(b));
+    const len=wl.b-wl.a,X=t=>wl.rev?wl.b-t:t-wl.a,Z=z=>H-z,ceil=t=>wl.ax==='y'?hAt(t):hAt(wl.at);
+    const box=document.createElement('div');box.className='ev';
+    box.innerHTML=`<h3>${wl.n}</h3><div class="muted">${f1(len)} ס״מ · ${bs.length?bs.length+' יחידות':'אין יחידות צמודות לקיר הזה'}</div>`;
+    const s=document.createElementNS(NS,'svg'),vw=len+60,vh=H+56;
+    s.setAttribute('viewBox',`-30 -18 ${vw} ${vh}`);s.setAttribute('width',Math.round(vw*K));s.setAttribute('height',Math.round(vh*K));
+    s.setAttribute('role','img');s.setAttribute('aria-label','פריסת '+wl.n);box.appendChild(s);host.appendChild(box);
+    const bps=(t0,t1,extra)=>{const v=[t0,t1];if(wl.ax==='y')[FLAT,...(extra||[])].forEach(q=>{if(q>t0+.01&&q<t1-.01)v.push(q)});return v.sort((p,q)=>p-q)};
+    // wall with its ceiling line
+    const wt=bps(wl.a,wl.b).map(t=>[X(t),Z(ceil(t))]).sort((p,q)=>p[0]-q[0]);
+    E('polygon',{class:'ewall',points:[[0,Z(0)],...wt,[len,Z(0)]].map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')},s);
+    E('polyline',{class:'eceil',points:wt.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')},s);
+    T(X(wl.a),Z(ceil(wl.a))-4,'תקרה '+f1(ceil(wl.a)),'ehtx',s);T(X(wl.b),Z(ceil(wl.b))-4,'תקרה '+f1(ceil(wl.b)),'ehtx',s);
+    if(wl.ax==='y'&&FLAT>wl.a&&FLAT<wl.b){const xf=X(FLAT);E('line',{x1:xf,y1:Z(H),x2:xf,y2:Z(0),class:'eceil','stroke-dasharray':'3 2','stroke-width':.5},s);
+      T(xf,Z(H)-4,'171.5 מהקיר הגבוה · מכאן יורד','ehtx',s)}
+    wl.ends.forEach((e,i)=>{if(e)T(i?len+14:-14,Z(0)-6,e,'esm',s,{transform:`rotate(-90 ${i?len+14:-14} ${Z(0)-6})`,style:'text-anchor:start'})});
+    wl.ops.forEach(o=>{const x0=Math.min(X(o[0]),X(o[1])),x1=Math.max(X(o[0]),X(o[1])),ht=o[3]||Math.min(200,Math.min(ceil(o[0]),ceil(o[1]))-6);
+      E('rect',{x:x0,y:Z(ht),width:x1-x0,height:ht,class:'eop'},s);T((x0+x1)/2,Z(ht/2),o[2],'esm',s);T((x0+x1)/2,Z(ht/2)+7,'גובה הפתח לא נמדד','esm',s)});
+    // units
+    bs.forEach(b=>{const r=R(b),a=analyse(b),hb=hOf(b),z0=zOf(b),Tyt=b.t;
+      const t0=wl.ax==='y'?r.y:r.x,t1=wl.ax==='y'?r.y+r.h:r.x+r.w,x0=Math.min(X(t0),X(t1)),x1=Math.max(X(t0),X(t1)),uw=x1-x0;
+      const topAt=t=>wl.ax==='y'?Math.min(hb,hAt(t)-2):Math.min(hb,a.cmin-2),topMin=Math.min(hb,a.cmin-2);
+      const tp=bps(t0,t1,[yAt(hb+2)]).map(t=>[X(t),Z(topAt(t))]).sort((p,q)=>p[0]-q[0]);
+      const g=E('g',{},s);
+      if(Tyt==='mirrorW'||Tyt==='mirrorS'||Tyt==='mirror'){const zt=Math.min(hb,topMin),zb=Tyt==='mirror'?z0:Tyt==='mirrorW'?20:3;
+        E('rect',{x:x0,y:Z(zt),width:uw,height:zt-zb,class:'eglass'},g);
+      }else if(Tyt==='vanity'){
+        E('rect',{x:x0,y:Z(75),width:uw,height:1.8,fill:colOf(b),class:'eunit'},g);
+        E('rect',{x:x0,y:Z(73.2),width:1.8,height:73.2,fill:colOf(b),class:'eunit'},g);E('rect',{x:x1-1.8,y:Z(73.2),width:1.8,height:73.2,fill:colOf(b),class:'eunit'},g);
+        E('rect',{x:x0+1.8,y:Z(72.9),width:uw-3.6,height:11.9,class:'ein'},g);
+      }else{
+        E('polygon',{points:[[x0,Z(z0)],...tp,[x1,Z(z0)]].map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' '),fill:colOf(b),'fill-opacity':.16,class:'eunit'},g);
+        const line=(z,u0,u1)=>E('line',{x1:u0??x0+1.8,y1:Z(z),x2:u1??x1-1.8,y2:Z(z),class:'ein'},g);
+        const floorZ=z0>0?z0+1.8:PL+1.8;
+        if(z0===0&&Tyt!=='suit'&&Tyt!=='bench')line(PL,x0,x1);
+        const gar=(rodZ,len,fz)=>{line(rodZ);for(let u=x0+3;u<x1-4;u+=4.6){const bot=Math.max(fz+2,rodZ-3-len*(.85+((u*7)%10)/70));E('rect',{x:u,y:Z(rodZ-3),width:3.2,height:rodZ-3-bot,class:'egar'},g)}};
+        const rodZ=topMin-1.8-5;
+        if(b.cfg&&CFGT.includes(Tyt)){const Lr=lay(b),nr=Lr.rows.length;
+          Lr.rows.forEach((r,i)=>{const topN=i===nr-1&&r.h==null?Lr.top:r.z1,hh=topN-r.z0;if(hh<2)return;
+            if(i<nr-1)line(r.z1+.9,x0,x1);
+            if(r.k==='shelves'||r.k==='shoes'){const n=r.n|0,st=hh/(n+1);for(let k=1;k<=n;k++)line(r.z0+k*st)}
+            if(r.k==='drawers'||r.k==='baskets'){const n=Math.max(1,r.n|0),dh=hh/n;for(let k=1;k<=n;k++){const zz=r.z0+k*dh;if(k<n)line(zz,x0,x1);
+              E('line',{x1:x0+uw/2-10,y1:Z(zz-3.9),x2:x0+uw/2+10,y2:Z(zz-3.9),class:'ein','stroke-width':1.2,'stroke-dasharray':r.k==='baskets'?'1 1':'none'},g)}}
+            if(r.k==='rod'){gar(topN-5,Math.min(140,hh-8),r.z0);T(x0+uw/2,Z(topN-5)+5,'מוט '+f1(topN-5),'esm',g)}
+            if(r.door&&r.k!=='drawers'&&r.k!=='baskets'){const n=Math.max(1,Math.ceil(b.w/50)),dw=uw/n;
+              for(let k=0;k<n;k++){const a0=x0+k*dw,a1=a0+dw,hinge=k%2?a1:a0,hand=k%2?a0:a1;
+                E('rect',{x:a0+.3,y:Z(topN),width:dw-.6,height:hh,class:'ein'},g);
+                E('polyline',{points:`${hand},${Z(topN)} ${hinge},${Z(r.z0+hh/2)} ${hand},${Z(r.z0)}`,class:'ein','stroke-dasharray':'2 1.5'},g)}}
+            T(x1-3,Z(r.z0+hh/2)+2,f1(hh),'esm',g,{style:'text-anchor:end'})})}
+        else if(Tyt==='hang2'){const low=Math.min(rodZ/2+3,rodZ-3-92-6);gar(rodZ,92,low+4);gar(low,90,floorZ);
+          T(x0+uw/2,Z(rodZ)+5,'מוט '+f1(rodZ),'esm',g);T(x0+uw/2,Z(low)+5,'מוט '+f1(low),'esm',g)}
+        else if(Tyt==='hangS'||Tyt==='hangM'||Tyt==='hangL'){gar(rodZ,{hangS:95,hangM:112,hangL:140}[Tyt],floorZ);T(x0+uw/2,Z(rodZ)+5,'מוט '+f1(rodZ),'esm',g)}
+        else if(Tyt==='drawers'){let z=PL;DRW.forEach(h=>{if(z+h>topMin+.5)return;line(z+h,x0,x1);E('line',{x1:x0+uw/2-10,y1:Z(z+h-3.9),x2:x0+uw/2+10,y2:Z(z+h-3.9),class:'ein','stroke-width':1.2},g);z+=h});
+          for(let q=z+34;q<topMin-12;q+=34)line(q);T(x0+uw/2,Z(z)+ -3,'6 מגירות · עד '+f1(z),'esm',g)}
+        else if(Tyt==='shelves'||Tyt==='deep'||Tyt==='shoes'){const st={shelves:34,deep:40,shoes:19}[Tyt];for(let q=floorZ+st;q<topMin-12;q+=st)line(q)}
+        else if(Tyt==='wallShelf'){const n=Math.max(1,Math.ceil(b.w/50)),dw=uw/n;for(let i=1;i<n;i++)E('line',{x1:x0+i*dw,y1:Z(z0),x2:x0+i*dw,y2:Z(topMin),class:'ein'},g);
+          E('line',{x1:x0+.5,y1:Z((z0+topMin)/2),x2:x1-.5,y2:Z((z0+topMin)/2),class:'ein','stroke-dasharray':'2 1.5'},g);T(x0+uw/2,Z(z0)+6,'מגובה '+f1(z0),'esm',g)}
+        else if(Tyt==='suit'){for(let u=x0+1;u+44<=x1;u+=48)E('rect',{x:u,y:Z(topMin-2),width:44,height:topMin-3.5,class:'ein'},g)}
+      }
+      // name and heights
+      const ly=Z(Math.max(z0,0)+Math.min(topMin-z0,90)/2)-(Tyt==='vanity'?60:0);
+      T(x0+uw/2,ly,bname(b),'etx',g);T(x0+uw/2,ly+7,f1(b.w)+' רוחב · '+f1(b.d)+' עומק','esm',g);
+      if(Tyt!=='vanity'){const hl=topAt(wl.rev?t1:t0),hr=topAt(wl.rev?t0:t1);
+        T(x0+5,Z(hl)+6,f1(hl),'ehtx',g);if(Math.abs(hl-hr)>.05)T(x1-5,Z(hr)+6,f1(hr),'ehtx',g)}
+    });
+    // dimension chains: every unit edge, and the full wall
+    const edges=[0,len];bs.forEach(b=>{const r=R(b),t0=wl.ax==='y'?r.y:r.x,t1=wl.ax==='y'?r.y+r.h:r.x+r.w;edges.push(X(t0),X(t1))});
+    wl.ops.forEach(o=>edges.push(X(o[0]),X(o[1])));
+    const ed=[...new Set(edges.map(v=>+v.toFixed(1)))].sort((p,q)=>p-q),yd=Z(0)+12,yt=Z(0)+25;
+    E('line',{x1:0,y1:yd,x2:len,y2:yd,class:'edim'},s);
+    ed.forEach((v,i)=>{E('line',{x1:v,y1:yd-3,x2:v,y2:yd+3,class:'edim'},s);if(i&&v-ed[i-1]>=4)T((v+ed[i-1])/2,yd-2,f1(v-ed[i-1]),'edtx',s)});
+    E('line',{x1:0,y1:yt,x2:len,y2:yt,class:'edim'},s);[0,len].forEach(v=>E('line',{x1:v,y1:yt-3,x2:v,y2:yt+3,class:'edim'},s));
+    T(len/2,yt-2,f1(len)+' — כל הקיר','edtx',s);
+  });
+  const rest=B.filter(b=>!used.has(b));
+  if(rest.length){const p=document.createElement('p');p.className='muted';p.style.marginTop='12px';
+    p.textContent='לא בפריסות, כי הם עומדים בחדר או מסובבים: '+rest.map(b=>bname(b)+' '+f1(b.w)+'×'+f1(b.d)).join(' · ');host.appendChild(p)}
+}
+
+/* a wall mirror centred over a dressing table, clear of low wall cabinets, under any cabinet above */
+function mirrorOver(v,list){if(v.a)return null;const vr=R(v),f=v.f,ax=(f==='E'||f==='W')?'y':'x';
+  let s0=ax==='y'?vr.y:vr.x,s1=s0+v.w,top=160;const back={E:vr.x,W:vr.x+vr.w,S:vr.y,N:vr.y+vr.h}[f];
+  list.forEach(o=>{const zo=zOf(o);if(o===v||zo<=0)return;const q=R(o),o0=ax==='y'?q.y:q.x,o1=ax==='y'?q.y+q.h:q.x+q.w;
+    const near=ax==='y'?(q.x<=back+1&&q.x+q.w>=back-1):(q.y<=back+1&&q.y+q.h>=back-1);if(!near||o1<=s0||o0>=s1)return;
+    if(zo>=130)top=Math.min(top,zo-2);else if(o0-s0>s1-o1)s1=Math.min(s1,o0);else s0=Math.max(s0,o1)});
+  const mw=Math.min(70,s1-s0-6);if(mw<30)return null;const st=+((s0+s1-mw)/2).toFixed(1);
+  const m={t:'mirror',w:+mw.toFixed(1),d:1,f,lb:'מראה איפור'};if(top!==160)m.hh=+top.toFixed(1);
+  if(f==='E'){m.x=back;m.y=st}else if(f==='W'){m.x=+(back-1).toFixed(1);m.y=st}else if(f==='S'){m.y=back;m.x=st}else{m.y=+(back-1).toFixed(1);m.x=st}
+  return m}
+(function(){let mm=false;try{mm=localStorage.getItem('closet_mig_mirror')==='1';localStorage.setItem('closet_mig_mirror','1')}catch(e){}
+  if(!mm&&!B.some(b=>b.t==='mirror'))B.filter(b=>b.t==='vanity').forEach(v=>{const m=mirrorOver(v,B);if(m)B.push(Object.assign({id:uid++},m))})})();
+function renderAll(light){drawPlan();drawPanel();drawList();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
+renderAll();
+if(document.readyState==='complete')init3();else addEventListener('load',init3);
 </script>
 </body>
 </html>

@@ -194,7 +194,7 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
 <div class="shelf" id="shelf" aria-label="בלוקים להוספה"></div>
 <div class="card prod">
   <h2>מוצרים אמיתיים</h2>
-  <p class="muted" style="margin:0">רהיטים מוכנים במידות ובמחירים מאתר איקאה ישראל ומאורבן, נבדק 31.10.2026. לוחצים על מוצר כדי להוסיף אותו לחדר, ואז מזיזים, מסובבים ומעצבים כמו כל בלוק. ליד כל מוצר גבוה כתוב עד איפה הוא נכנס מתחת לשיפוע.</p>
+  <p class="muted" style="margin:0">רהיטים מוכנים במידות ובמחירים מאתר איקאה ישראל ומאורבן, נבדק 31.10.2026. לוחצים על מוצר כדי להוסיף אותו. אם בלוק בחור, המוצר החדש נכנס צמוד אליו מימין, על אותו קיר — כמו הוספת מסגרות במתכנן PAX. אחר כך מזיזים, מסובבים ומעצבים כמו כל בלוק. ליד כל מוצר גבוה כתוב עד איפה הוא נכנס מתחת לשיפוע.</p>
   <div class="ptabs" id="ptabs"></div>
   <div class="plist" id="plist"></div>
 </div>
@@ -245,7 +245,10 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
 <div class="section card">
   <h2>פריסות קירות</h2>
   <p class="muted" style="margin:0 0 8px">כל קיר כמו שהוא נראה כשעומדים מולו בתוך החדר, עם כל הארונות שצמודים אליו. המידות בס״מ: רוחב כל יחידה בשרשרת למטה, גובה היחידה בכל קצה, וקו התקרה מעל. בלוק שלא צמוד לקיר, או מסובב בזווית, מופיע ברשימה בסוף.</p>
+  <div class="bar" style="margin:0 0 4px"><span class="muted">כלי פנים, כמו במתכנן PAX — בוחרים כלי ולוחצים בתוך ארון בפריסה, בגובה שבו רוצים אותו. הגובה נצמד לחורים כל 3.2 ס״מ:</span></div>
+  <div class="seg" id="etool" style="margin:0 0 8px"><button data-t="sel" class="on">בחירה</button><button data-t="rod">+ מוט</button><button data-t="shelf">+ מדף</button><button data-t="drawers">+ מגירות מתחת</button><button data-t="baskets">+ סלסלות מתחת</button><button data-t="shoes">+ נעליים מתחת</button><button data-t="door">דלת לתא</button><button data-t="empty">לרוקן תא</button><button data-t="unshelf">− להסיר מדף</button></div>
   <div class="bar" style="margin:0"><span class="zoomg"><button class="btn sm" id="ezo" title="להקטין">−</button><span id="ezv" class="tnum">100%</span><button class="btn sm" id="ezi" title="להגדיל">+</button></span></div>
+  <p class="muted" id="etoolMsg" aria-live="polite" style="margin:4px 0 0;min-height:1.4em"></p>
   <div id="elev"></div>
 </div>
 
@@ -612,10 +615,14 @@ function drawPlan(){
   KEEP.forEach(k=>{E('rect',{x:k.x,y:k.y,width:k.w,height:k.h,class:'keep'});
     T(k.x+k.w/2,k.y+k.h/2-1,k.n,'keeptx');T(k.x+k.w/2,k.y+k.h/2+6,k.s,'keeptx',null,{style:'font-weight:400'})});
   T(TOP_A/2,-8,'הקיר הגבוה · 115.7','wtx');T((TOP_A+WT)/2,-8,'אל המקלחת','wtx',null,{fill:cssv('--glass')});
-  T(W/2,L+12,'הקיר הרחוק · 95.5 גובה','wtx');
+  T(W/2,L+13,'הקיר הרחוק · 95.5 גובה','wtx');
   T(-10,L/2,'קיר שמאל · 460.5','wtx',null,{transform:`rotate(-90 -10 ${L/2})`});
   T(W+8,(OP_A+OP_B)/2,'אל חדר השינה','wtx',null,{transform:`rotate(90 ${W+8} ${(OP_A+OP_B)/2})`,fill:cssv('--accent')});
   T(WT+44.75,DT-6,'בליטה 89.5','wtx');
+  // quiet wall lengths, outside the room outline
+  const wl2=(x,y,t,rotd)=>T(x,y,t,'ctx',null,rotd!=null?{transform:`rotate(${rotd} ${x} ${y})`}:{});
+  wl2((TOP_A+WT)/2,-2.5,'80');wl2(WT+3.5,DT/2,'101.5',90);wl2(W+3.5,(DT+OP_A)/2,'80',90);wl2(W+3.5,(OP_A+OP_B)/2+18,'79',90);wl2(W+3.5,(OP_B+L)/2,'200',90);
+  wl2(W/2,L+5.5,'285.2');wl2(TOP_A/2,4.5,'');
   // zones
   B.forEach(b=>{const z=FZP(b);if(z)E('polygon',{points:z.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' '),class:'zone'+(TYPES[b.t].view?' view':'')})});
   // blocks: floor-standing first, wall-hung on top
@@ -829,6 +836,7 @@ function drawPanel(){
   panel.innerHTML=`<h2>${bname(b)}</h2><p class="muted" style="margin:0">${Ty.info}</p>
    ${pd?`<div class="pcard"><b>${pd.n}</b> · ${pd.s||'IKEA'} · <b>₪${pd.price}</b>${pin?` + פנים ₪${pin.sum} (${pin.txt})`:''}<br>${pd.w}×${pd.d}×${pd.h} ס״מ${pd.note?' · '+pd.note:''}${(b.w!==pd.w||b.d!==pd.d||(b.hh??999)!==pd.h)?' · <span style="color:var(--warn)">המידות כאן שונו מהמוצר</span>':''}<br><a href="${pd.u}" target="_blank" rel="noopener">לעמוד המוצר</a></div>`:''}
    <div class="fields" style="margin-bottom:0">${pchoice}</div>
+   ${!b.a?`<div class="bar" style="margin-top:6px"><button class="btn sm" id="addL">+ עוד אחד צמוד משמאל</button><button class="btn sm" id="addR">+ עוד אחד צמוד מימין</button></div>`:''}
    <div class="fields">
     <label class="wide">שם הבלוק<input id="fl" type="text" value="${(b.lb||'').replace(/"/g,'&quot;')}" placeholder="${Ty.n}"></label>
     <div class="wide"><span style="font-size:12.5px;color:var(--ink2)">צבע</span>
@@ -869,6 +877,8 @@ function drawPanel(){
   panel.querySelectorAll('[data-sw],[data-sd],[data-sh]').forEach(bt=>bt.onclick=()=>{const v=+(bt.dataset.sw||bt.dataset.sd||bt.dataset.sh);
     if(bt.dataset.sw)b.w=v;else if(bt.dataset.sd)b.d=v;else b.hh=v;touch();renderAll()});
   wireInside(b);
+  const besideAdd=side=>{const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});placeInRun(c,b,side);B.push(c);sel=c.id;touch();renderAll()};
+  if($('addL'))$('addL').onclick=()=>besideAdd('L');if($('addR'))$('addR').onclick=()=>besideAdd('R');
   $('fp').onchange=e=>{const v=e.target.value;if(v)applyProduct(b,v);else{delete b.p}touch();renderAll()};
   $('ft').onchange=e=>{b.t=e.target.value;b.rq=null;touch();renderAll()};
   $('fl').addEventListener('change',e=>{b.lb=e.target.value.trim()||undefined;touch();renderAll()});
@@ -1201,7 +1211,37 @@ const WALLS=[
   {n:'הקיר הרחוק',ax:'x',at:L,face:'N',a:0,b:W,rev:true,ops:[[235.2,W,'פתח לגג · מיקום למדוד',50]],ends:['הקיר הימני','קיר שמאל']},
   {n:'דופן הבליטה — ליד דלתות המקלחת',ax:'y',at:WT,face:'W',a:0,b:DT,rev:false,ops:[],ends:['הקיר הגבוה',''],opt:1}
 ];
-let EZ=1;
+let EZ=1,ETOOL='sel';
+document.getElementById('etool').onclick=e=>{const t=e.target.closest('[data-t]')?.dataset.t;if(!t)return;ETOOL=t;
+  [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c.dataset.t===t))};
+/* fixed heights for every compartment, so one can be split where the click lands */
+function materialize(b){if(!b.cfg)b.cfg=defCfg(b);const L=lay(b),n=L.rows.length;
+  b.cfg=L.rows.map((r,i)=>{const o={k:r.k};if(r.n!=null)o.n=r.n;if(r.door)o.door=true;o.h=i===n-1?null:+(r.z1-r.z0).toFixed(1);return o});return lay(b)}
+function applyTool(b,z){const L=materialize(b),grid=3.2,zz=L.base+Math.round((z-L.base)/grid)*grid;
+  const i=L.rows.findIndex((r,j)=>z>=r.z0-.5&&z<=r.z1+TK+.5||(j===L.rows.length-1&&z>r.z1));if(i<0)return'';
+  const r=L.rows[i],row=b.cfg[i],T2=ETOOL;
+  if(T2==='door'){if(row.k==='drawers'||row.k==='baskets')return'למגירות אין דלת';row.door=row.door?undefined:true;return row.door?'נוספה דלת לתא':'הדלת הוסרה'}
+  if(T2==='empty'){row.k='empty';delete row.n;return'התא רוקן'}
+  if(T2==='unshelf'){let best=-1,bd=8;L.rows.forEach((q,j)=>{if(j<L.rows.length-1&&Math.abs(q.z1+TK/2-z)<bd){bd=Math.abs(q.z1+TK/2-z);best=j}});
+    if(best<0)return'אין מדף קרוב ללחיצה';const lo=b.cfg[best],up=b.cfg[best+1];if(up.h!=null)up.h=+(up.h+(lo.h||0)+TK).toFixed(1);b.cfg.splice(best,1);return'המדף הוסר'}
+  const sp=T2==='rod'?Math.min(r.z1,zz+5):zz,lowH=+(sp-r.z0).toFixed(1),upH=r.z1-sp-TK;
+  if(lowH<8||upH<6)return'קרוב מדי למדף קיים — לבחור גובה אחר';
+  const tot=r.z1-r.z0,upper=Object.assign({},row,{h:row.h==null?null:+upH.toFixed(1)});
+  let lower;
+  if(T2==='shelf'){lower=Object.assign({},row,{h:lowH});
+    if(row.k==='rod'){upper.k='shelves';upper.n=0;delete upper.door}  // a shelf over the hanging space
+    else if(row.n!=null){lower.n=Math.round((row.n|0)*lowH/tot);upper.n=Math.max(0,(row.n|0)-lower.n)}}
+  if(T2==='rod')lower={k:'rod',h:lowH};
+  if(T2==='drawers')lower={k:'drawers',h:lowH,n:Math.max(1,Math.round(lowH/20))};
+  if(T2==='baskets')lower={k:'baskets',h:lowH,n:Math.max(1,Math.round(lowH/20))};
+  if(T2==='shoes')lower={k:'shoes',h:lowH,n:Math.max(0,Math.round(lowH/19)-1)};
+  if(!lower)return'';b.cfg.splice(i,1,lower,upper);return'נוסף בגובה '+f1(sp)}
+document.getElementById('elev').addEventListener('click',e=>{const g=e.target.closest('[data-uid]');if(!g)return;
+  const b=B.find(x=>x.id===+g.dataset.uid);if(!b)return;sel=b.id;
+  if(ETOOL==='sel'){renderAll(true);return}
+  if(!CFGT.includes(b.t)){renderAll(true);return}
+  const sv=g.ownerSVGElement,pt=sv.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(sv.getScreenCTM().inverse());
+  const msg=applyTool(b,H-q.y);touch();renderAll();const m=document.getElementById('etoolMsg');if(m)m.textContent=msg||''});
 document.getElementById('ezo').onclick=()=>{EZ=Math.max(.5,+(EZ-.25).toFixed(2));drawElev()};
 document.getElementById('ezi').onclick=()=>{EZ=Math.min(3,+(EZ+.25).toFixed(2));drawElev()};
 function onWall(b,wl){if(b.a)return false;const r=R(b);
@@ -1239,7 +1279,7 @@ function drawElev(){
       const t0=wl.ax==='y'?r.y:r.x,t1=wl.ax==='y'?r.y+r.h:r.x+r.w,x0=Math.min(X(t0),X(t1)),x1=Math.max(X(t0),X(t1)),uw=x1-x0;
       const topAt=t=>wl.ax==='y'?Math.min(hb,hAt(t)-2):Math.min(hb,a.cmin-2),topMin=Math.min(hb,a.cmin-2);
       const tp=bps(t0,t1,[yAt(hb+2)]).map(t=>[X(t),Z(topAt(t))]).sort((p,q)=>p[0]-q[0]);
-      const g=E('g',{},s);
+      const g=E('g',{'data-uid':b.id,style:'cursor:pointer'},s);
       if(Tyt==='mirrorW'||Tyt==='mirrorS'||Tyt==='mirror'){const zt=Math.min(hb,topMin),zb=Tyt==='mirror'?z0:Tyt==='mirrorW'?20:3;
         E('rect',{x:x0,y:Z(zt),width:uw,height:zt-zb,class:'eglass'},g);
       }else if(Tyt==='vanity'){
@@ -1276,6 +1316,7 @@ function drawElev(){
           E('line',{x1:x0+.5,y1:Z((z0+topMin)/2),x2:x1-.5,y2:Z((z0+topMin)/2),class:'ein','stroke-dasharray':'2 1.5'},g);T(x0+uw/2,Z(z0)+6,'מגובה '+f1(z0),'esm',g)}
         else if(Tyt==='suit'){for(let u=x0+1;u+44<=x1;u+=48)E('rect',{x:u,y:Z(topMin-2),width:44,height:topMin-3.5,class:'ein'},g)}
       }
+      if(b.id===sel)E('rect',{x:x0-1.5,y:Z(topMin)-1.5,width:uw+3,height:topMin-z0+3,fill:'none',stroke:cssv('--accent'),'stroke-width':1.4,'stroke-dasharray':'4 2'},g);
       // name and heights
       const ly=Z(Math.max(z0,0)+Math.min(topMin-z0,90)/2)-(Tyt==='vanity'?60:0);
       T(x0+uw/2,ly,bname(b),'etx',g);T(x0+uw/2,ly+7,f1(b.w)+' רוחב · '+f1(b.d)+' עומק','esm',g);
@@ -1308,6 +1349,20 @@ function mirrorOver(v,list){if(v.a)return null;const vr=R(v),f=v.f,ax=(f==='E'||
   return m}
 (function(){let mm=false;try{mm=localStorage.getItem('closet_mig_mirror')==='1';localStorage.setItem('closet_mig_mirror','1')}catch(e){}
   if(!mm&&!B.some(b=>b.t==='mirror'))B.filter(b=>b.t==='vanity').forEach(v=>{const m=mirrorOver(v,B);if(m)B.push(Object.assign({id:uid++},m))})})();
+/* put a unit right next to another along the same wall: R/L as you stand facing it */
+function placeBeside(nb,ref,side){const r=R(ref),f=ref.f;nb.f=f;delete nb.a;const nw=nb.w,nd=nb.d;
+  if(TYPES[nb.t].corner||TYPES[ref.t].corner){nb.x=+(side==='R'?r.x+r.w:r.x-R(nb).w).toFixed(1);nb.y=r.y;return}
+  let x=r.x,y=r.y;
+  if(f==='S'){x=side==='R'?r.x+r.w:r.x-nw;y=r.y}
+  if(f==='N'){x=side==='R'?r.x-nw:r.x+r.w;y=r.y+r.h-nd}
+  if(f==='E'){y=side==='R'?r.y-nw:r.y+r.h;x=r.x}
+  if(f==='W'){y=side==='R'?r.y+r.h:r.y-nw;x=r.x+r.w-nd}
+  nb.x=+x.toFixed(1);nb.y=+y.toFixed(1)}
+/* add to the end of the run: hop over units already standing there; if the wall ends, go the other way */
+function placeInRun(nb,ref,side){for(const sd of [side,side==='R'?'L':'R']){let at=ref;
+  for(let k=0;k<20;k++){placeBeside(nb,at,sd);if(outRoom(P(nb)))break;
+    const hitB=B.find(o=>o!==nb&&!o.a&&!under(nb,o)&&hit(P(nb),P(o)));if(!hitB)return;at=hitB}}
+  placeBeside(nb,ref,side)}
 /* ===== קטלוג המוצרים ===== */
 let PTAB='pax';
 function drawCatalog(){const tabs=document.getElementById('ptabs'),list=document.getElementById('plist');if(!tabs)return;
@@ -1316,7 +1371,7 @@ function drawCatalog(){const tabs=document.getElementById('ptabs'),list=document
     return`<button class="pitem" data-p="${p.id}"><b>${p.n}</b><span>${p.w}×${p.d}×${p.h} · ${p.s||'IKEA'}</span><span class="pr">₪${p.price}</span>${ft?`<span class="fit${ft.startsWith('לא')?' no':''}">${ft}</span>`:''}</button>`}).join('')}
 document.getElementById('ptabs').onclick=e=>{const g=e.target.closest('[data-g]')?.dataset.g;if(g){PTAB=g;drawCatalog()}};
 document.getElementById('plist').onclick=e=>{const id=e.target.closest('[data-p]')?.dataset.p;if(!id)return;
-  const b={id:uid++,x:90,y:200,f:'S'};applyProduct(b,id);B.push(b);sel=b.id;touch();renderAll();
+  const ref=B.find(x=>x.id===sel&&!x.a),b={id:uid++,x:90,y:200,f:'S'};applyProduct(b,id);if(ref)placeInRun(b,ref,'R');B.push(b);sel=b.id;touch();renderAll();
   svg.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})};
 function drawShop(){const tb=document.getElementById('shop');if(!tb)return;const rows={};let tot=0;
   B.forEach(b=>{const p=b.p&&PMAP[b.p];if(!p)return;(rows[p.id]=rows[p.id]||{p,n:0}).n++;tot+=p.price;const pi=paxInside(b);if(pi&&pi.sum){(rows['in'+b.id]={p:{n:'פנים KOMPLEMENT ל'+bname(b),price:pi.sum,u:IKS('KOMPLEMENT'),s:pi.txt},n:1});tot+=pi.sum}});

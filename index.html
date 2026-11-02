@@ -1587,7 +1587,11 @@ function drawRsPrev(rm){const sv=document.getElementById('rsPrev');if(!sv)return
     const a=[p[0]+dir[0]*o.off,p[1]+dir[1]*o.off],b=[a[0]+dir[0]*o.w,a[1]+dir[1]*o.w];
     add('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:o.k==='window'?cssv('--glass'):cssv('--keep'),'stroke-width':fs*.6})})}
 
-function renderAll(light){B.forEach(keepInView);if(!light)track();setTimeout(drawHist);drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
+/* a unit never opens into a wall: if its front stands closer to a wall than its back does, turn it around */
+const OPP={N:'S',S:'N',E:'W',W:'E'};
+function fixFacing(b){if(b.a||TYPES[b.t].corner||['bench','box','suit','rack'].includes(b.t))return;
+  const r=R(b),fd=wallRay(r,b.f)[0],bd=wallRay(r,OPP[b.f])[0];if(fd<15&&bd>fd+.5)b.f=OPP[b.f]}
+function renderAll(light){B.forEach(keepInView);if(!light)B.forEach(fixFacing);if(!light)track();setTimeout(drawHist);drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
 drawCatalog();drawProj();
 renderAll();
 if(document.readyState==='complete')init3();else addEventListener('load',init3);

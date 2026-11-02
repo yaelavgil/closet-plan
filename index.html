@@ -214,7 +214,7 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
       <span class="zoomg" aria-label="זום"><button class="btn sm" id="zo" title="להקטין">−</button><span id="zv" class="tnum">100%</span><button class="btn sm" id="zi" title="להגדיל">+</button><button class="btn sm" id="zr">כל החדר</button></span>
       <label class="chk"><input type="checkbox" id="doors"> ארונות עם דלתות ציר</label>
       <span style="flex:1"></span>
-      <button class="btn" id="undo" title="ביטול (⌘Z)">↶ ביטול</button><button class="btn" id="redo" title="שחזור (⇧⌘Z)">↷ שחזור</button>
+      <button class="btn" id="undo" title="ביטול (⌘Z)">↶ ביטול</button><button class="btn" id="redo" title="שחזור (⇧⌘Z)">↷ שחזור</button><select id="hist" aria-label="לחזור כמה צעדים אחורה" style="font:500 13px var(--body);padding:6px 8px;border:1px solid var(--line2);border-radius:9px;background:var(--surface);color:var(--ink2);max-width:100%"></select>
       <button class="btn" id="clear">חדר ריק</button>
     </div>
     <p class="keys">קיצורים, כשבלוק בחור: <kbd>R</kbd> סיבוב · <kbd>[</kbd> <kbd>]</kbd> זווית ±5° · חצים הזזה ב-1 ס״מ, עם <kbd>Shift</kbd> ב-10 · <kbd>⌘/Ctrl D</kbd> שכפול · <kbd>⌘/Ctrl C</kbd> <kbd>V</kbd> העתקה והדבקה · <kbd>Delete</kbd> מחיקה · <kbd>Esc</kbd> ביטול בחירה · <kbd>⌘/Ctrl Z</kbd> ביטול פעולה</p>
@@ -853,6 +853,7 @@ function drawPanel(){
    ${CFGT.includes(b.t)?insideHtml(b):''}
    <ul class="facts">${a.out.map(([c,t])=>`<li class="${c}">${t}</li>`).join('')}
     <li>תופס ברצפה ${f1(r.w)}×${f1(r.h)}${b.a?'':' · מעומק '+f1(r.y)+' עד '+f1(r.y+r.h)+' מהקיר הגבוה'}</li></ul>
+   ${outRoom(P(b))?'<div class="bar"><button class="btn pri" id="inroom">להחזיר לתוך החדר</button></div>':''}
    <div class="bar"><button class="btn pri" id="rot">↻ סיבוב 90°</button>${b.a?'<button class="btn" id="a0">ישר לקירות</button>':''}<button class="btn" id="dup">שכפול</button><button class="btn danger" id="del">מחיקה</button></div>`;
   const $=id=>document.getElementById(id);
   const num=(id,fn)=>$(id)?.addEventListener('change',e=>{const v=parseFloat(e.target.value);fn(isNaN(v)?null:v);touch();renderAll()});
@@ -879,6 +880,7 @@ function drawPanel(){
   if($('a0'))$('a0').onclick=()=>setAngle(b,0);
   $('fface').onclick=e=>{const f=e.target.closest('button')?.dataset.f;if(f){setFace(b,f);touch();renderAll()}};
   $('rot').onclick=()=>rotateB(b);
+  if($('inroom'))$('inroom').onclick=()=>{intoRoom(b);touch();renderAll()};
   $('del').onclick=()=>{B=B.filter(x=>x!==b);sel=null;touch();renderAll()};
   $('dup').onclick=()=>{const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});const q=R(b);
     if(b.f==='E'||b.f==='W')c.y=+(q.y+q.h).toFixed(1);else c.x=+(q.x+q.w).toFixed(1);B.push(c);sel=c.id;touch();renderAll()};
@@ -894,8 +896,8 @@ function drawList(){
   [...B].sort((a,b)=>ys(P(a))[0]-ys(P(b))[0]).forEach(b=>{const a=analyse(b);const tr=document.createElement('tr');
     if(b.id===sel)tr.className='sel';
     tr.innerHTML=`<td><span class="dot" style="background:${colOf(b)}"></span>${bname(b)}${b.a?' · '+f1(b.a)+'°':''}</td><td class="n">${f1(b.w)}×${f1(b.d)}</td>
-      <td class="n">${f1(a.cmin)}${a.cmax-a.cmin>.05?'–'+f1(a.cmax):''}</td><td style="color:${col[a.lvl]}">${word[a.lvl]}</td>`;
-    tr.onclick=()=>{sel=b.id;renderAll(true)};tb.appendChild(tr)});
+      <td class="n">${f1(a.cmin)}${a.cmax-a.cmin>.05?'–'+f1(a.cmax):''}</td><td style="color:${col[a.lvl]}">${outRoom(P(b))?'מחוץ לחדר <button class="btn sm" data-in="1">להחזיר</button>':word[a.lvl]}</td>`;
+    tr.onclick=e=>{if(e.target.closest('[data-in]')){intoRoom(b);touch();sel=b.id;renderAll();return}sel=b.id;renderAll(true)};tb.appendChild(tr)});
   const s=stats(B);
   document.getElementById('totals').textContent=`סך הכל מוטות תליה: ${f1(s.rod)} ס״מ · מגירות: ${s.dr}`;
 }
@@ -1323,14 +1325,29 @@ function drawShop(){const tb=document.getElementById('shop');if(!tb)return;const
   document.getElementById('shopTot').textContent=list.length?'סך הכל ₪'+tot.toLocaleString('he-IL')+' · בלי דלתות, משלוח והרכבה':''}
 
 /* ===== ביטול ושחזור ===== */
+/* every change is a step; the steps survive a reload, so you can always walk back */
 let HIST=[],FUT=[],LAST=null;
-function track(){const now=JSON.stringify(strip(B));if(LAST===null){LAST=now;return}if(now!==LAST){HIST.push(LAST);if(HIST.length>100)HIST.shift();FUT=[];LAST=now}}
-function restore(snap){B=clone(JSON.parse(snap));LAST=snap;sel=null;touch();renderAll()}
-function undo(){if(!HIST.length)return;FUT.push(LAST);restore(HIST.pop())}
-function redo(){if(!FUT.length)return;HIST.push(LAST);restore(FUT.pop())}
+try{const h=JSON.parse(localStorage.getItem('closet_hist'));if(Array.isArray(h))HIST=h.filter(x=>x&&x.s)}catch(e){}
+function saveHist(){try{localStorage.setItem('closet_hist',JSON.stringify(HIST.slice(-80)))}catch(e){}}
+function track(){const now=JSON.stringify(strip(B));if(LAST===null){LAST=now;return}
+  if(now!==LAST){HIST.push({s:LAST,t:Date.now(),n:JSON.parse(LAST).length});if(HIST.length>80)HIST.shift();FUT=[];LAST=now;saveHist()}}
+function restore(snap){B=clone(JSON.parse(snap));LAST=snap;sel=null;touch();renderAll();saveHist()}
+function stepBack(k){let snap=null;for(let i=0;i<k&&HIST.length;i++){FUT.push({s:LAST,t:Date.now()});const h=HIST.pop();LAST=h.s;snap=h.s}if(snap)restore(snap)}
+function undo(){stepBack(1)}
+function redo(){if(!FUT.length)return;HIST.push({s:LAST,t:Date.now(),n:JSON.parse(LAST).length});restore(FUT.pop().s)}
 document.getElementById('undo').onclick=undo;document.getElementById('redo').onclick=redo;
+function drawHist(){const el=document.getElementById('hist');if(!el)return;
+  const opts=HIST.map((h,i)=>({k:HIST.length-i,h})).reverse().slice(0,40);
+  el.innerHTML=`<option value="">${HIST.length?'לחזור אחורה — '+HIST.length+' צעדים שמורים':'אין עדיין צעדים לחזור אליהם'}</option>`+
+    opts.map(({k,h})=>`<option value="${k}">${k} ${k===1?'צעד':'צעדים'} אחורה · ${new Date(h.t).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})} · ${h.n??''} בלוקים</option>`).join('');
+  el.disabled=!HIST.length;document.getElementById('undo').disabled=!HIST.length;document.getElementById('redo').disabled=!FUT.length}
+document.getElementById('hist').onchange=e=>{const k=parseInt(e.target.value);if(k)stepBack(k)};
 
-function renderAll(light){if(!light)track();drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
+/* nothing may leave the drawing: a block that wandered out is pulled back to the edge where it can be grabbed */
+function keepInView(b){const r=R(b),cx=r.x+r.w/2,cy=r.y+r.h/2,nx=Math.max(-15,Math.min(W+15,cx)),ny=Math.max(-25,Math.min(L+25,cy));
+  if(Math.abs(nx-cx)>.01||Math.abs(ny-cy)>.01){b.x=+(b.x+nx-cx).toFixed(1);b.y=+(b.y+ny-cy).toFixed(1)}}
+function intoRoom(b){const r=R(b);let x=Math.max(0,Math.min(W-r.w,r.x)),y=Math.max(0,Math.min(L-r.h,r.y));if(x+r.w>WT&&y<DT)y=DT;b.x=+x.toFixed(1);b.y=+y.toFixed(1);delete b.a}
+function renderAll(light){B.forEach(keepInView);if(!light)track();setTimeout(drawHist);drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
 drawCatalog();
 renderAll();
 if(document.readyState==='complete')init3();else addEventListener('load',init3);

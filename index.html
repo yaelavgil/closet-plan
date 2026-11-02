@@ -101,6 +101,19 @@ label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .pcard a{color:var(--accent)}
 .keys{font-size:12.5px;color:var(--ink2);margin:6px 0 0}
 .keys kbd{font:600 11.5px ui-monospace,Menlo,monospace;border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--surface);color:var(--ink)}
+.projbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 0;padding:8px 12px}
+.projbar select{font:600 14px var(--body);padding:6px 8px;border:1px solid var(--line2);border-radius:8px;background:var(--bg);color:var(--ink);max-width:100%}
+.rs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:860px){.rs{grid-template-columns:minmax(0,1fr)}}
+.rs h3{font:600 14.5px var(--body);margin:12px 0 4px}
+.rs label{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.rs input,.rs select,.rs textarea{font:500 14px var(--body);padding:6px 8px;border:1px solid var(--line2);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.rs textarea{min-height:110px;font:12.5px ui-monospace,Menlo,monospace;direction:ltr}
+.rs .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.rs .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.oprow{display:grid;grid-template-columns:1.3fr .8fr .8fr 1.1fr 1.3fr auto;gap:6px;align-items:end;margin-top:6px}
+@media (max-width:560px){.oprow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#rsPrev{width:100%;height:auto;max-height:420px;display:block;background:var(--surface2);border-radius:10px}
 .std{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;color:var(--ink2);margin:4px 0 8px}
 .ang input[type=range]{flex:1;accent-color:var(--accent)}
 .ang input[type=number]{width:78px;flex:none}
@@ -190,6 +203,12 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
 </ol>
 <p class="muted" style="margin:6px 0 0">השרטוט הקודם, עם חתך התקרה וטבלת הגבהים: <a href="measurements.html" style="color:var(--accent)">חתך ומידות</a></p>
 
+<div class="card projbar">
+  <span class="muted">פרויקט</span><select id="projSel" aria-label="פרויקט"></select>
+  <button class="btn sm" id="projEdit">הגדרות החדר</button><button class="btn sm" id="projNew">+ פרויקט חדש</button>
+  <span class="muted" id="projInfo"></span>
+</div>
+<div class="card section" id="roomSet" hidden></div>
 <div class="cur" id="cur"></div>
 <div class="shelf" id="shelf" aria-label="בלוקים להוספה"></div>
 <div class="card prod">
@@ -239,7 +258,7 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
   </div>
   <div id="three"><div class="ph">טוען את התלת-ממד…</div></div>
   <div class="bar"><label class="chk"><input type="checkbox" id="ceil"> להראות את התקרה</label><label class="chk"><input type="checkbox" id="clothes" checked> בגדים על המוטות</label>
-    <button class="btn" id="camTop">מבט על</button><button class="btn" id="camIn">מבט מהמקלחת</button><button class="btn" id="camBed">מבט מחדר השינה</button><button class="btn" id="camNiche">מבט לנישה</button></div>
+    <button class="btn" id="camTop">מבט על</button><span id="camOps" style="display:contents"></span></div>
 </div>
 
 <div class="section card">
@@ -272,7 +291,7 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
   <div class="bar"><button class="btn pri" id="copy">העתקת התוכנית שעל המסך</button><button class="btn" id="copyAll">העתקת כל הגרסאות</button><button class="btn" id="load">טעינה מהתיבה</button><span id="ioMsg"></span></div>
 </div>
 
-<div class="note">
+<div class="note" id="eshelNotes">
   <b>מה נמדד ומה הנחה.</b><br>
   החדר, הגבהים, השיפוע ושני הפתחים — מדידה של יעל, 4.10 ו-16–17.10.2026.<br>
   <b>הנישה — 89.5 × 80, נמדדה</b>, ואומתה גם במדידה של רועי מיולי. 89.5 היא פאת הבליטה, ו-80 הן מהבליטה עד הפתח לחדר השינה.<br>
@@ -292,17 +311,52 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-/* ===== החדר — מדידות ===== */
-const H=233.4,HMIN=95.5,FLAT=171.5,L=460.5,W=285.2,WT=195.7,DT=101.5;
-const SL=(H-HMIN)/(L-FLAT);                       // 0.477 ס״מ לכל ס״מ
-const hAt=y=>y<=FLAT?H:Math.max(HMIN,H-(y-FLAT)*SL);
-const yAt=h=>h>=H?FLAT:FLAT+(H-h)/SL;
-const OP_A=181.5,OP_B=260.5,TOP_A=115.7;
-const KEEP=[
-  {x:115.7,y:0,w:80,h:80,n:'יציאה מהמקלחת',s:'2 דלתות × 40 + עמידה'},
-  {x:205.2,y:OP_A,w:80,h:OP_B-OP_A,n:'כניסה מחדר השינה',s:'פתח 79'},
-  {x:235.2,y:400.5,w:50,h:60,n:'פתח לגג',s:'50×50 · למדוד'}
-];
+/* ===== החדר — נתוני הפרויקט. אפשר לשנות אותם רק מהגדרות החדר ===== */
+const ESHEL_ROOM={name:'חדר הארונות · אשל 57',
+  poly:[[0,0],[195.7,0],[195.7,101.5],[285.2,101.5],[285.2,460.5],[0,460.5]],
+  h:233.4,slope:{dir:'S',start:171.5,len:289,h0:233.4,h1:95.5,from:'הקיר הגבוה'},
+  walls:[{n:'הקיר הגבוה — ליד היציאה מהמקלחת',s:'הקיר הגבוה'},{n:'דופן הבליטה — ליד דלתות המקלחת',s:'דופן הבליטה'},{n:'הנישה — פאת הבליטה',s:'בליטה'},
+         {n:'הקיר הימני',s:'הקיר הימני'},{n:'הקיר הרחוק',s:'הקיר הרחוק'},
+         {n:'הקיר השמאלי — קיר חיצוני מבלוקים',s:'קיר שמאל',load:'תלוי על הקיר השמאלי — קיר חיצוני מבלוקים, לפי יעל. אפשר לתלות עליו, עם דיבלים לבלוק'}],
+  ops:[{e:0,off:115.7,w:80,k:'double',n:'יציאה מהמקלחת',s:'2 דלתות × 40 + עמידה',keep:80,lbl:'אל המקלחת'},
+       {e:3,off:80,w:79,k:'opening',n:'כניסה מחדר השינה',s:'פתח 79',keep:80,lbl:'אל חדר השינה'},
+       {e:4,off:0,w:50,k:'hatch',n:'פתח לגג',s:'50×50 · למדוד',keep:60,ht:50,lbl:'פתח לגג · מיקום למדוד'}],
+  drywall:'הקירות כאן גבס. צריך לוודא מול ברק שהקיר נושא את זה.'};
+/* projects: the measured room is the first; more rooms live beside it */
+let PROJ=[];try{PROJ=JSON.parse(localStorage.getItem('closet_projects'))||[]}catch(e){}
+if(!Array.isArray(PROJ))PROJ=[];
+let PID='eshel';try{PID=localStorage.getItem('closet_pid')||'eshel'}catch(e){}
+if(PID!=='eshel'&&!PROJ.some(p=>p.id===PID))PID='eshel';
+const K=n=>PID==='eshel'?'closet_'+n:'cp_'+PID+'_'+n;
+function eshelRoom(){try{const o=JSON.parse(localStorage.getItem('closet_room_eshel'));if(o&&o.poly)return o}catch(e){}return ESHEL_ROOM}
+let ROOM=PID==='eshel'?eshelRoom():PROJ.find(p=>p.id===PID).room;
+let POLY,W,L,H,AX=null,SA=0,SB=0,HS0=0,HS1=0,ORIG=0,SBR=[],EDGES=[],KEEP=[],SNX=[],SNY=[];
+const NRMF=n=>n[1]>.5?'S':n[1]<-.5?'N':n[0]>.5?'E':'W';
+function setupRoom(rm){ROOM=rm;POLY=rm.poly.map(p=>[+p[0],+p[1]]);
+  W=Math.max(...POLY.map(p=>p[0]));L=Math.max(...POLY.map(p=>p[1]));
+  const sl=rm.slope;
+  if(sl&&+sl.len>0&&+sl.h0!==+sl.h1){AX=(sl.dir==='S'||sl.dir==='N')?'y':'x';const ext=AX==='y'?L:W,pos=sl.dir==='S'||sl.dir==='E';
+    SA=pos?+sl.start:ext-sl.start;SB=pos?+sl.start+ +sl.len:ext-sl.start-sl.len;ORIG=pos?0:ext;HS0=+sl.h0;HS1=+sl.h1;H=Math.max(HS0,HS1)}
+  else{AX=null;H=+rm.h;HS0=HS1=H}
+  SBR=AX?[SA,SB]:[];
+  // walls, in order around the room; inward normal for a clockwise outline (screen y points down)
+  EDGES=POLY.map((p,i)=>{const q=POLY[(i+1)%POLY.length],len=Math.hypot(q[0]-p[0],q[1]-p[1]),dir=[(q[0]-p[0])/len,(q[1]-p[1])/len],nrm=[-dir[1],dir[0]];
+    const ax=Math.abs(dir[0])>.5?'x':'y';return{i,p,q,len,dir,nrm,ax,at:ax==='x'?p[1]:p[0],a:ax==='x'?Math.min(p[0],q[0]):Math.min(p[1],q[1]),b:ax==='x'?Math.max(p[0],q[0]):Math.max(p[1],q[1]),face:NRMF(nrm)}});
+  KEEP=(rm.ops||[]).filter(o=>o.k!=='window'&&EDGES[o.e]).map(o=>{const e=EDGES[o.e],a=[e.p[0]+e.dir[0]*o.off,e.p[1]+e.dir[1]*o.off],b=[a[0]+e.dir[0]*o.w,a[1]+e.dir[1]*o.w],
+    dp=+(o.keep||(o.k==='hatch'?60:80)),c=[b[0]+e.nrm[0]*dp,b[1]+e.nrm[1]*dp],xs=[a[0],b[0],c[0]],ys2=[a[1],b[1],c[1]];
+    return{x:Math.min(...xs),y:Math.min(...ys2),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys2)-Math.min(...ys2),n:o.n||'פתח',s:o.s||(o.w+' ס״מ'),op:o}});
+  SNX=[...new Set(POLY.map(p=>p[0]))];SNY=[...new Set(POLY.map(p=>p[1]))];
+  KEEP.forEach(k=>{SNX.push(k.x,k.x+k.w);SNY.push(k.y,k.y+k.h)})}
+setupRoom(ROOM);
+/* ceiling height at a coordinate along the slope axis, and back */
+function ceilC(c){if(!AX)return H;const t=(c-SA)/(SB-SA);return t<=0?HS0:t>=1?HS1:HS0+(HS1-HS0)*t}
+const ceilP=(x,y)=>ceilC(AX==='x'?x:y);
+function cAtH(h){if(!AX)return null;let t=(h-HS0)/(HS1-HS0);t=Math.max(0,Math.min(1,t));return SA+t*(SB-SA)}
+const fromTxt=()=>'מ'+((ROOM.slope&&ROOM.slope.from)||'הצד הגבוה');
+const distTo=h=>AX?f1(Math.abs(cAtH(h)-ORIG))+' '+fromTxt():'';
+function cRange(p){if(!AX)return[H,H];const cs=p.map(v=>AX==='x'?v[0]:v[1]),c0=Math.min(...cs),c1=Math.max(...cs),hs=[c0,c1,...SBR.filter(c=>c>c0&&c<c1)].map(ceilC);return[Math.min(...hs),Math.max(...hs)]}
+function pip(x,y){let ins=false;for(let i=0,j=POLY.length-1;i<POLY.length;j=i++){const[xi,yi]=POLY[i],[xj,yj]=POLY[j];
+  if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)ins=!ins}return ins}
 const f1=v=>(Math.round(v*10)/10).toString();
 
 /* ===== סוגי בלוקים — מידות ברירת מחדל והנחות גובה ===== */
@@ -414,7 +468,7 @@ function applyProduct(b,id){const p=PMAP[id];if(!p)return;
   if(p.zz!=null)b.zz=p.zz;else delete b.zz;
   if(p.cfg)b.cfg=JSON.parse(JSON.stringify(p.cfg));else delete b.cfg;
   if(p.cols)b.cols=p.cols;else delete b.cols;delete b.lb;delete b.rq}
-const fitTxt=h=>h>=999?'':h+2>H?'לא נכנס בחדר — גבוה מ-233.4':h+2>yAt(h+2)*0+hAt(L)?'נכנס עד '+f1(yAt(h+2))+' מהקיר הגבוה':'נכנס בכל החדר';
+const fitTxt=h=>h>=999?'':h+2>H?'לא נכנס בחדר — גבוה מ-'+f1(H):AX&&h+2>Math.min(HS0,HS1)?'נכנס עד '+distTo(h+2):'נכנס בכל החדר';
 
 /* ===== הצעות הפתיחה ===== */
 const BACK=[
@@ -446,15 +500,16 @@ const PROP_B=[
   {t:'hangS',x:0,y:270,w:70,d:60,f:'E'},
   ...BACK
 ];
-const PRESETS=[{id:'pA',name:'הצעה א׳ · איפור בנישה',B:PROP_A},{id:'pB',name:'הצעה ב׳ · איפור ליד המגירות, ארונית רציפה מעל',B:PROP_B}];
+const PRESETS=PID!=='eshel'?[]:[{id:'pA',name:'הצעה א׳ · איפור בנישה',B:PROP_A},{id:'pB',name:'הצעה ב׳ · איפור ליד המגירות, ארונית רציפה מעל',B:PROP_B}];
 
 let B=[],sel=null,doorsOn=false,uid=1,V=[],cur={name:'',dirty:false};
 const clone=a=>a.map(({id,...r})=>Object.assign({id:uid++},JSON.parse(JSON.stringify(r))));
 const strip=a=>a.map(({id,...r})=>JSON.parse(JSON.stringify(r)));
-function save(){try{localStorage.setItem('closet_v1',JSON.stringify({B:strip(B),doorsOn,cur}));localStorage.setItem('closet_versions',JSON.stringify(V))}catch(e){}}
+function save(){try{localStorage.setItem(K('v1'),JSON.stringify({B:strip(B),doorsOn,cur}));localStorage.setItem(K('versions'),JSON.stringify(V))}catch(e){}}
 function boot(){
-  let s=null;try{s=JSON.parse(localStorage.getItem('closet_v1'));V=JSON.parse(localStorage.getItem('closet_versions'))||[]}catch(e){V=[]}
+  let s=null;try{s=JSON.parse(localStorage.getItem(K('v1')));V=JSON.parse(localStorage.getItem(K('versions')))||[]}catch(e){V=[]}
   if(!Array.isArray(V))V=[];
+  if(PID!=='eshel'){if(s&&Array.isArray(s.B)){B=clone(s.B);doorsOn=!!s.doorsOn;cur=s.cur||{name:'',dirty:false}}else{B=[];cur={name:ROOM.name||'',dirty:false}}return}
   let mig=false;try{mig=localStorage.getItem('closet_mig_b')==='1';localStorage.setItem('closet_mig_b','1')}catch(e){}
   if(s&&Array.isArray(s.B)&&s.B.length){
     if(!mig){ // 25.10: keep what was on screen as a version, then open proposal B
@@ -501,8 +556,11 @@ function hit(A,Bp){
     Bp.forEach(v=>{const d=(v[0]*nx+v[1]*ny)/len;b0=Math.min(b0,d);b1=Math.max(b1,d)});
     if(a1<=b0+.05||b1<=a0+.05)return false}
   return true}
-const NOTCH=rp({x:WT,y:-999,w:999,h:DT+999});
-const outRoom=p=>p.some(([x,y])=>x<-.05||y<-.05||x>W+.05||y>L+.05)||hit(p,NOTCH);
+/* outside the room: a corner falls outside the outline, or a corner of the room pokes into the shape */
+function outRoom(p){const c=[p.reduce((a,v)=>a+v[0],0)/p.length,p.reduce((a,v)=>a+v[1],0)/p.length];
+  if(p.some(([x,y])=>{const dx=c[0]-x,dy=c[1]-y,d=Math.hypot(dx,dy)||1;return!pip(x+dx/d*.06,y+dy/d*.06)}))return true;
+  return POLY.some(([x,y])=>{let ins=true;for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length],cr=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]),cc=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+    if(cr*cc<=.01*Math.abs(cc))ins=false}return ins})}
 const ys=p=>[Math.min(...p.map(v=>v[1])),Math.max(...p.map(v=>v[1]))];
 const reqOf=b=>b.rq!=null?b.rq:TYPES[b.t].req;
 const hOf=b=>b.hh!=null?b.hh:TYPES[b.t].h;
@@ -517,7 +575,7 @@ const SWATCH=['#7a5a3a','#a07457','#c9a27a','#8c7a55','#4f6e5a','#6f8f74','#3c5c
 const CFGT=['drawers','hang2','hangL','hangM','hangS','shelves','shoes','deep','wallShelf'];
 const KINDS=[['shelves','מדפים'],['drawers','מגירות'],['baskets','סלסלות רשת'],['rod','מוט תליה'],['shoes','מדפי נעליים'],['empty','חלל פתוח']];
 const TK=1.8,PL=8;   // panel thickness and plinth — design values
-function inner(b){const cmin=hAt(ys(P(b))[1]),topMin=Math.min(hOf(b),cmin-2),z0=zOf(b);return{base:z0>0?z0+TK:PL+TK,top:topMin-TK}}
+function inner(b){const cmin=cRange(P(b))[0],topMin=Math.min(hOf(b),cmin-2),z0=zOf(b);return{base:z0>0?z0+TK:PL+TK,top:topMin-TK}}
 function defCfg(b){const{base,top}=inner(b),av=top-base,n=s=>Math.max(0,Math.floor(av/s)-1);
   switch(b.t){
     case 'drawers':return av>130?[{k:'drawers',h:104,n:6},{k:'shelves',h:null,n:Math.max(0,Math.floor((av-106)/34)-1)}]:[{k:'drawers',h:null,n:6}];
@@ -534,7 +592,7 @@ function lay(b){const{base,top}=inner(b),cf=b.cfg||[];
   return{rows,base,top,rem:nul?0:rem,short:nul?share:rem}}
 function analyse(b){
   const T=TYPES[b.t],p=P(b),out=[];let lvl='ok';
-  const [y0,y1]=ys(p),cmin=hAt(y1),cmax=hAt(y0),req=reqOf(b);
+  const [cmin,cmax]=cRange(p),req=reqOf(b);
   if(outRoom(p)){out.push(['bad','יוצא מהקירות של החדר']);lvl='bad'}
   KEEP.forEach(k=>{if(hit(p,rp(k))){out.push(['bad','עומד בתוך '+k.n]);lvl='bad'}});
   B.forEach(o=>{if(o!==b&&!under(b,o)&&hit(p,P(o))){out.push(['bad','חופף ל'+bname(o)]);lvl='bad'}});
@@ -551,12 +609,12 @@ function analyse(b){
   }
   const hb=hOf(b),z0=zOf(b);
   if(hb<999&&hb+2>cmin){
-    if(hb+2>H)out.push(['bad','גובה '+hb+' לא נכנס בשום מקום בחדר — המקסימום 233.4, פחות 2 להתקנה']);
-    else out.push(['bad','גובה '+hb+' לא נכנס כאן: בקצה הרחוק התקרה '+f1(cmin)+'. רהיט בגובה הזה נכנס רק עד '+f1(yAt(hb+2))+' מהקיר הגבוה']);
+    if(hb+2>H)out.push(['bad','גובה '+hb+' לא נכנס בשום מקום בחדר — המקסימום '+f1(H)+', פחות 2 להתקנה']);
+    else out.push(['bad','גובה '+hb+' לא נכנס כאן: בקצה הרחוק התקרה '+f1(cmin)+'. רהיט בגובה הזה נכנס רק עד '+distTo(hb+2)]);
     lvl='bad'}
   if(cmin>=req)out.push(['ok','תקרה '+f1(cmin)+(cmax-cmin>.05?'–'+f1(cmax):'')+' · נדרש '+req]);
-  else{const yok=yAt(req);
-    if(cmax>=req){out.push(['warn','התקרה יורדת ל-'+f1(cmin)+' בקצה, נדרש '+req+'. עובד רק עד '+f1(yok)+' מהקיר הגבוה']);if(lvl==='ok')lvl='warn'}
+  else{
+    if(cmax>=req){out.push(['warn','התקרה יורדת ל-'+f1(cmin)+' בקצה, נדרש '+req+'. עובד רק עד '+distTo(req)]);if(lvl==='ok')lvl='warn'}
     else{out.push(['bad','התקרה כאן '+f1(cmin)+'–'+f1(cmax)+', נדרש '+req]);lvl='bad'}}
   const custom=b.cfg&&CFGT.includes(b.t);
   if(custom){const Lr=lay(b);
@@ -570,28 +628,38 @@ function analyse(b){
   if(b.t==='drawers'&&!custom){const top=Math.min(hb,cmin-2);out.push(['ok',top>114.5?'מעל המגירות: '+f1(top-114)+' ס״מ למקופלים':'שידה בגובה '+f1(top)+' — המשטח שלה פנוי לקיפול'])}
   if(z0>0&&b.t==='mirror')out.push(['ok','מראה מגובה '+f1(z0)+' עד '+f1(Math.min(hb,cmin-2))+' · '+f1(Math.min(hb,cmin-2)-z0)+' ס״מ גובה']);
   else if(z0>0)out.push(['ok','תלויה מגובה '+f1(z0)+' עד '+f1(Math.min(hb,cmin-2))+' · '+f1(Math.min(hb,cmin-2)-z0)+' ס״מ אחסון']);
-  const onLeft=!b.a&&Math.abs(R(b).x)<.1;
-  if((z0>0||b.t==='mirrorW')&&onLeft)out.push(['ok','תלוי על הקיר השמאלי — קיר חיצוני מבלוקים, לפי יעל. אפשר לתלות עליו, עם דיבלים לבלוק']);
-  else if(z0>0||b.t==='mirrorW')out.push(['warn','🔴 תלוי על הקיר, ולכן מותנה. הקירות כאן גבס. צריך לוודא מול ברק שהקיר נושא את זה. חלופה: '+(b.t==='mirrorW'||b.t==='mirror'?'מראה עומדת על הרצפה או על השולחן':'מדף עומד ברוחב ובעומק דומים')]);
+  const we=wallOf(b),wi=we&&ROOM.walls&&ROOM.walls[we.i];
+  if((z0>0||b.t==='mirrorW')&&wi&&wi.load)out.push(['ok',wi.load]);
+  else if(z0>0||b.t==='mirrorW')out.push(['warn','🔴 תלוי על הקיר, ולכן מותנה. '+(ROOM.drywall||'צריך לוודא שהקיר נושא את זה.')+' חלופה: '+(b.t==='mirrorW'||b.t==='mirror'?'מראה עומדת על הרצפה או על השולחן':'מדף עומד ברוחב ובעומק דומים')]);
   if(b.a)out.push(['ok','מסובב '+f1(b.a)+'° · נבדק לפי ארבע הפינות']);
   return{lvl,out,cmin,cmax}
 }
 
+/* the wall a block's back stands against */
+function wallOf(b){if(b.a)return null;const r=R(b),back={E:r.x,W:r.x+r.w,S:r.y,N:r.y+r.h}[b.f];
+  return EDGES.find(e=>e.face===b.f&&Math.abs(e.at-back)<1.5&&(e.ax==='x'?r.x<e.b&&r.x+r.w>e.a:r.y<e.b&&r.y+r.h>e.a))||null}
+/* distance from a rectangle edge to the nearest wall, looking one way */
+function wallRay(r,dir){let best=1e9,at=null;
+  EDGES.forEach(e=>{if(dir==='E'||dir==='W'){if(e.ax!=='y'||!(r.y<e.b-.05&&r.y+r.h>e.a+.05))return;
+      const d=dir==='E'?e.at-(r.x+r.w):r.x-e.at;if(d>-.05&&d<best){best=d;at=e.at}}
+    else{if(e.ax!=='x'||!(r.x<e.b-.05&&r.x+r.w>e.a+.05))return;const d=dir==='S'?e.at-(r.y+r.h):r.y-e.at;if(d>-.05&&d<best){best=d;at=e.at}}});
+  return[Math.max(0,best===1e9?0:best),at??(dir==='E'?W:dir==='W'?0:dir==='S'?L:0)]}
 /* how far the space in front of a block stays clear (for the mirror) */
 function clearRun(b){const r=R(b);let d;const os=B.filter(o=>o!==b&&!o.a).map(R);
-  if(b.f==='S'){d=L-(r.y+r.h);os.forEach(o=>{if(o.x<r.x+r.w&&r.x<o.x+o.w&&o.y>=r.y+r.h-.05)d=Math.min(d,o.y-(r.y+r.h))})}
-  if(b.f==='N'){d=r.y-(r.x+r.w>WT?DT:0);os.forEach(o=>{if(o.x<r.x+r.w&&r.x<o.x+o.w&&o.y+o.h<=r.y+.05)d=Math.min(d,r.y-(o.y+o.h))})}
-  if(b.f==='E'){d=(r.y<DT?WT:W)-(r.x+r.w);os.forEach(o=>{if(o.y<r.y+r.h&&r.y<o.y+o.h&&o.x>=r.x+r.w-.05)d=Math.min(d,o.x-(r.x+r.w))})}
-  if(b.f==='W'){d=r.x;os.forEach(o=>{if(o.y<r.y+r.h&&r.y<o.y+o.h&&o.x+o.w<=r.x+.05)d=Math.min(d,r.x-(o.x+o.w))})}
+  d=wallRay(r,b.f)[0];
+  if(b.f==='S'){os.forEach(o=>{if(o.x<r.x+r.w&&r.x<o.x+o.w&&o.y>=r.y+r.h-.05)d=Math.min(d,o.y-(r.y+r.h))})}
+  if(b.f==='N'){os.forEach(o=>{if(o.x<r.x+r.w&&r.x<o.x+o.w&&o.y+o.h<=r.y+.05)d=Math.min(d,r.y-(o.y+o.h))})}
+  if(b.f==='E'){os.forEach(o=>{if(o.y<r.y+r.h&&r.y<o.y+o.h&&o.x>=r.x+r.w-.05)d=Math.min(d,o.x-(r.x+r.w))})}
+  if(b.f==='W'){os.forEach(o=>{if(o.y<r.y+r.h&&r.y<o.y+o.h&&o.x+o.w<=r.x+.05)d=Math.min(d,r.x-(o.x+o.w))})}
   return Math.max(0,d)}
 
 /* clearance from the selected block to the nearest wall/block, each direction */
 function gaps(b){const r=R(b),os=B.filter(o=>o!==b&&!o.a&&!under(b,o)).map(R),g={};
   const yo=o=>o.y<r.y+r.h-.05&&r.y<o.y+o.h-.05, xo=o=>o.x<r.x+r.w-.05&&r.x<o.x+o.w-.05;
-  let w=r.x,ws=0; os.forEach(o=>{if(yo(o)&&o.x+o.w<=r.x+.05&&r.x-(o.x+o.w)<w){w=r.x-(o.x+o.w);ws=o.x+o.w}}); g.W=[w,ws];
-  const eW=(r.y<DT&&r.x<WT)?WT:W;let e=eW-(r.x+r.w),es=eW; os.forEach(o=>{if(yo(o)&&o.x>=r.x+r.w-.05&&o.x-(r.x+r.w)<e){e=o.x-(r.x+r.w);es=o.x}}); g.E=[e,es];
-  const nW=(r.x+r.w>WT+.05)?DT:0;let n=r.y-nW,ns=nW; os.forEach(o=>{if(xo(o)&&o.y+o.h<=r.y+.05&&r.y-(o.y+o.h)<n){n=r.y-(o.y+o.h);ns=o.y+o.h}}); g.N=[n,ns];
-  let s=L-(r.y+r.h),ss=L; os.forEach(o=>{if(xo(o)&&o.y>=r.y+r.h-.05&&o.y-(r.y+r.h)<s){s=o.y-(r.y+r.h);ss=o.y}}); g.S=[s,ss];
+  let [w,ws]=wallRay(r,'W'); os.forEach(o=>{if(yo(o)&&o.x+o.w<=r.x+.05&&r.x-(o.x+o.w)<w){w=r.x-(o.x+o.w);ws=o.x+o.w}}); g.W=[w,ws];
+  let [e,es]=wallRay(r,'E'); os.forEach(o=>{if(yo(o)&&o.x>=r.x+r.w-.05&&o.x-(r.x+r.w)<e){e=o.x-(r.x+r.w);es=o.x}}); g.E=[e,es];
+  let [n,ns]=wallRay(r,'N'); os.forEach(o=>{if(xo(o)&&o.y+o.h<=r.y+.05&&r.y-(o.y+o.h)<n){n=r.y-(o.y+o.h);ns=o.y+o.h}}); g.N=[n,ns];
+  let [s,ss]=wallRay(r,'S'); os.forEach(o=>{if(xo(o)&&o.y>=r.y+r.h-.05&&o.y-(r.y+r.h)<s){s=o.y-(r.y+r.h);ss=o.y}}); g.S=[s,ss];
   return g}
 
 /* ===== ציור התוכנית ===== */
@@ -603,26 +671,33 @@ const rotAttr=b=>{const c=ctr(b);return b.a?{transform:`rotate(${b.a} ${c[0]} ${
 
 function drawPlan(){
   svg.innerHTML='';setTimeout(()=>{if(typeof drawProbe==='function')drawProbe()});
-  E('polygon',{class:'room',points:[[0,0],[WT,0],[WT,DT],[W,DT],[W,L],[0,L]].map(p=>p.join(',')).join(' ')});
-  [200,180,160,140,120].forEach(h=>{const y=yAt(h);E('line',{x1:0,y1:y,x2:W,y2:y,class:'contour'});T(W+16,y+2,h+'','ctx')});
-  E('line',{x1:0,y1:FLAT,x2:W,y2:FLAT,class:'flatln'});T(W+16,FLAT+2,'233.4','ctx');
-  T(100,FLAT-2.5,'171.5 ס״מ מהקיר הגבוה — מרחק, לא גובה · מכאן התקרה יורדת','ctx',null,{style:'fill:var(--warn)'});
-  T(W+16,-6,'תקרה','ctx');T(W+16,L+2,'95.5','ctx');
-  E('line',{x1:TOP_A,y1:0,x2:WT,y2:0,stroke:cssv('--room'),'stroke-width':3});
-  E('line',{x1:W,y1:OP_A,x2:W,y2:OP_B,stroke:cssv('--room'),'stroke-width':3});
-  E('line',{x1:TOP_A,y1:0,x2:TOP_A,y2:40,class:'door'});E('path',{d:`M${TOP_A+40} 0 A40 40 0 0 1 ${TOP_A} 40`,class:'swing'});
-  E('line',{x1:WT,y1:0,x2:WT,y2:40,class:'door'});E('path',{d:`M${WT-40} 0 A40 40 0 0 0 ${WT} 40`,class:'swing'});
+  E('polygon',{class:'room',points:POLY.map(p=>p.join(',')).join(' ')});
+  if(AX){const ln=(c,cls)=>AX==='y'?E('line',{x1:0,y1:c,x2:W,y2:c,class:cls}):E('line',{x1:c,y1:0,x2:c,y2:L,class:cls});
+    const lb=(c,t)=>AX==='y'?T(W+16,c+2,t,'ctx'):T(c,-16,t,'ctx');
+    [200,180,160,140,120].filter(h=>h<Math.max(HS0,HS1)-.5&&h>Math.min(HS0,HS1)+.5).forEach(h=>{const c=cAtH(h);ln(c,'contour');lb(c,h+'')});
+    ln(SA,'flatln');lb(SA,f1(HS0));lb(SB,f1(HS1));
+    const ft=f1(ROOM.slope.start)+' ס״מ '+fromTxt()+' — מרחק, לא גובה · מכאן התקרה '+(HS1<HS0?'יורדת':'עולה');
+    if(AX==='y')T(Math.min(100,W/2),SA-2.5,ft,'ctx',null,{style:'fill:var(--warn)'});else T(SA-2.5,L/2,ft,'ctx',null,{style:'fill:var(--warn)',transform:`rotate(-90 ${SA-2.5} ${L/2})`});
+    if(AX==='y')T(W+16,-6,'תקרה','ctx');else T(-8,-16,'תקרה','ctx')}
+  // openings: a gap in the wall, door leaves, the space to keep free
+  (ROOM.ops||[]).forEach(o=>{const e=EDGES[o.e];if(!e)return;const a=[e.p[0]+e.dir[0]*o.off,e.p[1]+e.dir[1]*o.off],b=[a[0]+e.dir[0]*o.w,a[1]+e.dir[1]*o.w];
+    E('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:o.k==='window'?cssv('--glass'):cssv('--room'),'stroke-width':o.k==='window'?2:3});
+    const leaf=(h,len,sgn)=>{const t=[h[0]+e.nrm[0]*len,h[1]+e.nrm[1]*len],f=[h[0]+e.dir[0]*len*sgn,h[1]+e.dir[1]*len*sgn];
+      E('line',{x1:h[0],y1:h[1],x2:t[0],y2:t[1],class:'door'});
+      const cw=(e.dir[0]*sgn*e.nrm[1]-e.dir[1]*sgn*e.nrm[0])>0?1:0;E('path',{d:`M${f[0]} ${f[1]} A${len} ${len} 0 0 ${cw} ${t[0]} ${t[1]}`,class:'swing'})};
+    if(o.k==='door')leaf(a,o.w,1);if(o.k==='double'){leaf(a,o.w/2,1);leaf(b,o.w/2,-1)}
+    if(o.lbl){const m=[(a[0]+b[0])/2-e.nrm[0]*8,(a[1]+b[1])/2-e.nrm[1]*8];T(m[0],m[1]+2,o.lbl,'wtx',null,Object.assign({fill:o.k==='door'||o.k==='double'?cssv('--glass'):cssv('--accent')},e.ax==='y'?{transform:`rotate(${e.nrm[0]<0?90:-90} ${m[0]} ${m[1]+2})`}:{}))}});
   KEEP.forEach(k=>{E('rect',{x:k.x,y:k.y,width:k.w,height:k.h,class:'keep'});
     T(k.x+k.w/2,k.y+k.h/2-1,k.n,'keeptx');T(k.x+k.w/2,k.y+k.h/2+6,k.s,'keeptx',null,{style:'font-weight:400'})});
-  T(TOP_A/2,-8,'הקיר הגבוה · 115.7','wtx');T((TOP_A+WT)/2,-8,'אל המקלחת','wtx',null,{fill:cssv('--glass')});
-  T(W/2,L+13,'הקיר הרחוק · 95.5 גובה','wtx');
-  T(-10,L/2,'קיר שמאל · 460.5','wtx',null,{transform:`rotate(-90 -10 ${L/2})`});
-  T(W+8,(OP_A+OP_B)/2,'אל חדר השינה','wtx',null,{transform:`rotate(90 ${W+8} ${(OP_A+OP_B)/2})`,fill:cssv('--accent')});
-  T(WT+44.75,DT-6,'בליטה 89.5','wtx');
-  // quiet wall lengths, outside the room outline
-  const wl2=(x,y,t,rotd)=>T(x,y,t,'ctx',null,rotd!=null?{transform:`rotate(${rotd} ${x} ${y})`}:{});
-  wl2((TOP_A+WT)/2,-2.5,'80');wl2(WT+3.5,DT/2,'101.5',90);wl2(W+3.5,(DT+OP_A)/2,'80',90);wl2(W+3.5,(OP_A+OP_B)/2+18,'79',90);wl2(W+3.5,(OP_B+L)/2,'200',90);
-  wl2(W/2,L+5.5,'285.2');wl2(TOP_A/2,4.5,'');
+  // quiet wall lengths outside the outline, split where openings sit; wall names further out
+  EDGES.forEach(e=>{const cuts=[0,e.len];(ROOM.ops||[]).filter(o=>o.e===e.i).forEach(o=>cuts.push(o.off,o.off+o.w));
+    const cs=[...new Set(cuts.map(v=>+v.toFixed(1)))].sort((a,b)=>a-b);
+    for(let i=1;i<cs.length;i++){const u=(cs[i]+cs[i-1])/2,len=cs[i]-cs[i-1];if(len<8)continue;const x=e.p[0]+e.dir[0]*u-e.nrm[0]*3.5,y=e.p[1]+e.dir[1]*u-e.nrm[1]*3.5;
+      T(x,y+2,f1(len),'ctx',null,e.ax==='y'?{transform:`rotate(${e.nrm[0]<0?90:-90} ${x} ${y+2})`}:{})}
+    const wn=ROOM.walls&&ROOM.walls[e.i]&&ROOM.walls[e.i].s;
+    if(wn&&e.len>60&&!(ROOM.ops||[]).some(o=>o.e===e.i&&o.lbl&&o.w>e.len*.5)){const u=e.len/2,x=e.p[0]+e.dir[0]*u-e.nrm[0]*11,y=e.p[1]+e.dir[1]*u-e.nrm[1]*11;
+      const anyOp=(ROOM.ops||[]).find(o=>o.e===e.i&&o.lbl&&Math.abs(o.off+o.w/2-u)<o.w/2+30);if(anyOp)return;
+      T(x,y+2,wn,'wtx',null,e.ax==='y'?{transform:`rotate(${e.nrm[0]<0?90:-90} ${x} ${y+2})`}:{})}});
   // zones
   B.forEach(b=>{const z=FZP(b);if(z)E('polygon',{points:z.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' '),class:'zone'+(TYPES[b.t].view?' view':'')})});
   // blocks: floor-standing first, wall-hung on top
@@ -719,7 +794,7 @@ svg.addEventListener('pointermove',e=>{
   if(!drag)return;const p=svgPt(e),b=drag.b,r=R(b);
   let nx=Math.round((drag.ox+p.x-drag.px)*2)/2,ny=Math.round((drag.oy+p.y-drag.py)*2)/2;
   if(!b.a){ // magnet to walls and to other blocks' edges, only when square to the room
-    const xs=[0,W,WT,TOP_A],yv=[0,DT,L,OP_A,OP_B];
+    const xs=[...SNX],yv=[...SNY];
     B.forEach(o=>{if(o===b||o.a)return;const q=R(o);xs.push(q.x,q.x+q.w);yv.push(q.y,q.y+q.h)});
     const M=5;let bx=M,by=M;
     xs.forEach(v=>{if(Math.abs(nx-v)<bx){bx=Math.abs(nx-v);nx=v}else if(Math.abs(nx+r.w-v)<bx){bx=Math.abs(nx+r.w-v);nx=v-r.w}});
@@ -730,7 +805,7 @@ svg.addEventListener('pointermove',e=>{
 });
 /* ===== זום והזזה של התוכנית ===== */
 const PTR=new Map();let pinch=null,pan=null,ZM=1;
-const VB0=[-34,-40,360,548];let VC=[VB0[0]+VB0[2]/2,VB0[1]+VB0[3]/2];
+const VB0=[-34,-40,W+75,L+88];let VC=[VB0[0]+VB0[2]/2,VB0[1]+VB0[3]/2];
 function applyVB(){const w=VB0[2]/ZM,h=VB0[3]/ZM;
   let x=Math.max(VB0[0],Math.min(VB0[0]+VB0[2]-w,VC[0]-w/2)),y=Math.max(VB0[1],Math.min(VB0[1]+VB0[3]-h,VC[1]-h/2));
   VC=[x+w/2,y+h/2];svg.setAttribute('viewBox',`${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`);
@@ -747,7 +822,7 @@ svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',en
 /* ===== שינוי גודל בגרירה: צלע משנה כיוון אחד, פינה משנה את שניהם באותו יחס ===== */
 let rsz=null;
 function doResize(e){const p=svgPt(e),{b,k,r0}=rsz,MIN=5;
-  const xs=[0,W,WT,TOP_A],yv=[0,DT,L,OP_A,OP_B];B.forEach(o=>{if(o===b||o.a)return;const q=R(o);xs.push(q.x,q.x+q.w);yv.push(q.y,q.y+q.h)});
+  const xs=[...SNX],yv=[...SNY];B.forEach(o=>{if(o===b||o.a)return;const q=R(o);xs.push(q.x,q.x+q.w);yv.push(q.y,q.y+q.h)});
   const snap=(v,list)=>{v=Math.round(v*2)/2;let best=5,o=v;list.forEach(t=>{if(Math.abs(v-t)<best){best=Math.abs(v-t);o=t}});return o};
   let x0=r0.x,y0=r0.y,x1=r0.x+r0.w,y1=r0.y+r0.h,s=null;
   if(k.length===2){const ax=k.includes('e')?x0:x1,ay=k.includes('s')?y0:y1;
@@ -764,28 +839,22 @@ svg.addEventListener('pointercancel',()=>{if(rsz){rsz=null;renderAll()}});
 
 /* ===== גובה התקרה בנקודה ===== */
 let probe=null;
-const inRoomPt=(x,y)=>x>=0&&y>=0&&x<=W&&y<=L&&!(x>WT&&y<DT);
+const inRoomPt=(x,y)=>pip(x,y);
 function drawProbe(){svg.querySelector('#probe')?.remove();
   const out=document.getElementById('probeTx');
   if(!probe){if(out)out.textContent='מעבירים את העכבר על החדר, או מקישים על נקודה פנויה, כדי לראות את גובה התקרה שם.';return}
-  const {x,y}=probe,h=hAt(y),g=E('g',{id:'probe','pointer-events':'none'}),k=1/ZM;
-  E('line',{x1:0,y1:y,x2:W,y2:y,stroke:cssv('--accent'),'stroke-width':.6*k,'stroke-dasharray':`${3*k} ${2*k}`},g);
+  const {x,y}=probe,h=ceilP(x,y),g=E('g',{id:'probe','pointer-events':'none'}),k=1/ZM;
+  if(AX)E('line',AX==='y'?{x1:0,y1:y,x2:W,y2:y}:{x1:x,y1:0,x2:x,y2:L},g).setAttribute('style',`stroke:${cssv('--accent')};stroke-width:${.6*k};stroke-dasharray:${3*k} ${2*k}`);
   E('circle',{cx:x,cy:y,r:2.6*k,fill:cssv('--accent'),stroke:cssv('--surface'),'stroke-width':1*k},g);
   const t=T(Math.min(W-30,Math.max(30,x)),y-5*k,'תקרה '+f1(h),'dimtx',g);t.style.fontSize=(7.5*k)+'px';
-  if(out)out.innerHTML=`<b>תקרה ${f1(h)} ס״מ</b> · ${f1(y)} ס״מ מהקיר הגבוה, ${f1(x)} מהקיר השמאלי<br>`+
-    (y<=FLAT?`בתוך הקטע השטוח — 171.5 הס״מ הראשונים מהקיר הגבוה בגובה מלא 233.4`
-            :`233.4 − 0.477 × (${f1(y)} − 171.5) = ${f1(h)} · השיפוע מחושב מ-233.4 עד 95.5 על פני 289 ס״מ`)}
+  if(!out)return;const sl=ROOM.slope,c=AX==='x'?x:y,d=AX?Math.abs(c-ORIG):0,per=AX?Math.abs(HS0-HS1)/sl.len:0;
+  out.innerHTML=`<b>תקרה ${f1(h)} ס״מ</b> · ${AX?f1(d)+' ס״מ '+fromTxt()+', ':''}${f1(x)} מהקיר השמאלי, ${f1(y)} מהקיר העליון<br>`+
+    (!AX?`תקרה שטוחה בגובה ${f1(H)}`:d<=+sl.start?`בתוך הקטע השטוח — ${f1(sl.start)} הס״מ הראשונים ${fromTxt()} בגובה מלא ${f1(HS0)}`
+      :d>=+sl.start+ +sl.len?`אחרי סוף השיפוע — גובה קבוע ${f1(HS1)}`
+      :`${f1(HS0)} ${HS1<HS0?'−':'+'} ${per.toFixed(3)} × (${f1(d)} − ${f1(sl.start)}) = ${f1(h)} · השיפוע מחושב מ-${f1(HS0)} עד ${f1(HS1)} על פני ${f1(sl.len)} ס״מ`)}
 function endDrag(){if(!drag)return;if(drag.moved)touch();drag=null;renderAll()}
 svg.addEventListener('pointerup',endDrag);svg.addEventListener('pointercancel',endDrag);
 
-/* after a drop against a wall, turn the block's front away from it */
-function autoFace(b){const r=R(b),tw=[];
-  if(Math.abs(r.x)<.1)tw.push('W');if(Math.abs(r.x+r.w-W)<.1||(r.y<DT&&Math.abs(r.x+r.w-WT)<.1))tw.push('E');
-  if(Math.abs(r.y)<.1||(r.x>=WT-.1&&Math.abs(r.y-DT)<.1))tw.push('N');if(Math.abs(r.y+r.h-L)<.1)tw.push('S');
-  const opp={W:'E',E:'W',N:'S',S:'N'},ns=x=>x==='S'||x==='N';
-  if(tw.length===1&&b.f===tw[0])setFace(b,opp[b.f]);
-  else if(tw.length===1&&ns(opp[tw[0]])!==ns(b.f))setFace(b,opp[tw[0]]);
-}
 function setFace(b,f){const r0=R(b);b.f=f;const r1=R(b);
   b.x=+(r0.x+(r0.w-r1.w)/2).toFixed(1);b.y=+(r0.y+(r0.h-r1.h)/2).toFixed(1);
   if(Math.abs(r0.x)<.1)b.x=0;if(Math.abs(r0.y)<.1)b.y=0;if(Math.abs(r0.x+r0.w-W)<.1)b.x=+(W-r1.w).toFixed(1);if(Math.abs(r0.y+r0.h-L)<.1)b.y=+(L-r1.h).toFixed(1)}
@@ -1003,15 +1072,16 @@ const MLED=()=>mat('led',()=>new THREE.MeshBasicMaterial({color:0xfff2d6}));
 const MMET=()=>mat('met',()=>new THREE.MeshStandardMaterial({color:0xb8b6b0,metalness:.85,roughness:.3}));
 const MGL=()=>mat('gl',()=>new THREE.MeshStandardMaterial({color:0xd6e6ef,metalness:.2,roughness:.08,emissive:0x1d2a30}));
 
-/* a prism standing on the floor plan: x0..x1 × y0..y1, bottom and top may follow the plan-y (the slope runs along y) */
+/* a prism standing on the floor plan: x0..x1 × y0..y1; bottom and top may follow the slope axis (functions of that coordinate) */
 function addPrism(G,x0,x1,y0,y1,zb,zt,m,cap){
   if(x1-x0<.05||y1-y0<.05)return;
-  const fb=typeof zb==='function'?zb:()=>zb,ft0=typeof zt==='function'?zt:()=>zt,ft=cap?y=>Math.min(ft0(y),cap(y)):ft0;
-  const yv=[y0,y1];[FLAT,...((cap&&cap.br)||[])].forEach(v=>{if(v>y0+.01&&v<y1-.01)yv.push(v)});yv.sort((a,b)=>a-b);
+  const fb=typeof zb==='function'?zb:()=>zb,ft0=typeof zt==='function'?zt:()=>zt,ft=cap?c=>Math.min(ft0(c),cap(c)):ft0;
+  const ax=AX||'y',c0=ax==='y'?y0:x0,c1=ax==='y'?y1:x1;
+  const yv=[c0,c1];[...SBR,...((cap&&cap.br)||[])].forEach(v=>{if(v!=null&&v>c0+.01&&v<c1-.01)yv.push(v)});yv.sort((a,b)=>a-b);
   const bt=yv.map(fb),tp=yv.map(ft);if(tp.every((t,i)=>t-bt[i]<.05))return;
   const pts=yv.map((y,i)=>[y,bt[i]]);for(let i=yv.length-1;i>=0;i--)pts.push([yv[i],Math.max(bt[i]+.05,tp[i])]);
-  const g=new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))),{depth:x1-x0,bevelEnabled:false});
-  g.applyMatrix4(new THREE.Matrix4().set(0,0,1,x0, 0,1,0,0, 1,0,0,0, 0,0,0,1));
+  const g=new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))),{depth:ax==='y'?x1-x0:y1-y0,bevelEnabled:false});
+  if(ax==='y')g.applyMatrix4(new THREE.Matrix4().set(0,0,1,x0, 0,1,0,0, 1,0,0,0, 0,0,0,1));else g.translate(0,0,y0);
   const ms=new THREE.Mesh(g,m);ms.castShadow=ms.receiveShadow=true;G.add(ms);return ms}
 /* block-local frame: u runs left→right as you face the unit, v from the wall (0) to the front (d) */
 function frame(b){const r=R(b),w=b.w,d=b.d;
@@ -1027,7 +1097,7 @@ function cyl(G,F,u0,u1,v,z,rad,m){const q=F(u0,u1,v-rad,v+rad),alongX=(q[1]-q[0]
 const DRW=[20,20,17,17,15,15];   // panel thickness, plinth, drawer fronts bottom→top — design values
 function joinery(b,G){
   const a=analyse(b),z0=zOf(b),w=b.w,d=b.d,F=frame(b),hb=hOf(b);
-  const cap=y=>Math.min(hb,hAt(y)-2);cap.br=[yAt(hb+2)];
+  const cap=c=>Math.min(hb,ceilC(c)-2);cap.br=AX?[cAtH(hb+2)]:[];
   const topMin=Math.min(hb,a.cmin-2),Cm=finMat(b),Fr=finMat(b,.93),Dk=finMat(b,.62),seed=b.id*97;
   const P=(u0,u1,v0,v1,zb,zt,m)=>{const q=F(u0,u1,v0,v1);addPrism(G,q[0],q[1],q[2],q[3],zb,zt,m||Cm,cap)};
   const carcass=(zb,plinth)=>{const fl=zb+(plinth?PL:0);
@@ -1117,11 +1187,8 @@ function schem(b,G,real){const Ty=TYPES[b.t],r=R(b),a=analyse(b),z0=zOf(b);
   let g;
   if(b.a){const hgt=Math.max(2,Math.min(hOf(b),a.cmin-2)-z0);
     g=new THREE.BoxGeometry(r.w,hgt,Math.max(r.h,.8));g.applyMatrix4(new THREE.Matrix4().makeRotationY(-b.a*D2R));g.translate(r.x+r.w/2,z0+hgt/2,r.y+r.h/2);
-  }else{const top=y=>Math.max(z0+2,Math.min(hOf(b),hAt(y)-2));
-    const yv=[r.y,r.y+r.h];if(r.y<FLAT&&r.y+r.h>FLAT)yv.splice(1,0,FLAT);
-    const pts=[[r.y,z0],[r.y+r.h,z0]];for(let i=yv.length-1;i>=0;i--)pts.push([yv[i],top(yv[i])]);
-    g=new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(p=>new THREE.Vector2(p[0],p[1]))),{depth:Math.max(r.w,.8),bevelEnabled:false});
-    g.applyMatrix4(new THREE.Matrix4().set(0,0,1,r.x, 0,1,0,0, 1,0,0,0, 0,0,0,1))}
+  }else{const cap=c=>Math.max(z0+2,Math.min(hOf(b),ceilC(c)-2));cap.br=AX?[cAtH(hOf(b)+2)]:[];
+    const tmp=new THREE.Group();addPrism(tmp,r.x,r.x+Math.max(r.w,.8),r.y,r.y+Math.max(r.h,.8),z0,cap,null,cap);g=tmp.children[0]?tmp.children[0].geometry:new THREE.BoxGeometry(1,1,1)}
   const m=real?new THREE.Mesh(g,finMat(b)):new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:new THREE.Color(colOf(b)),side:THREE.DoubleSide,
     emissive:new THREE.Color(b.id===sel?0x553311:0x000000),transparent:!!(Ty.view||Ty.rod),opacity:Ty.view?.85:Ty.rod?.55:1}));
   m.castShadow=true;
@@ -1156,19 +1223,24 @@ function init3(){
       side=n.dot(mid.clone().sub(p))>0?THREE.FrontSide:THREE.BackSide}
     const ms=new THREE.Mesh(g,m||new THREE.MeshStandardMaterial({color,side,transparent:opa<1,opacity:opa,roughness:.95}));ms.receiveShadow=true;return ms}
   const wc=0xefebe4;
-  room.add(plane([[0,0],[WT,0],[WT,DT],[W,DT],[W,L],[0,L]],(u,v)=>[u,0,v],0,1,0,new THREE.MeshStandardMaterial({map:floorTex(),roughness:.8})));
-  room.add(plane([[0,0],[L,0],[L,HMIN],[FLAT,H],[0,H]],(u,v)=>[0,v,u],wc,1,1));
-  room.add(plane([[DT,0],[OP_A,0],[OP_A,180],[OP_B,180],[OP_B,0],[L,0],[L,HMIN],[FLAT,H],[DT,H]],(u,v)=>[W,v,u],wc,1,1));
-  room.add(plane([[0,0],[DT,0],[DT,H],[0,H]],(u,v)=>[WT,v,u],wc,1,1));
-  room.add(plane([[0,0],[TOP_A,0],[TOP_A,200],[WT,200],[WT,H],[0,H]],(u,v)=>[u,v,0],wc,1,1));
-  room.add(plane([[WT,0],[W,0],[W,H],[WT,H]],(u,v)=>[u,v,DT],wc,1,1));
-  room.add(plane([[0,0],[235.2,0],[235.2,50],[W,50],[W,HMIN],[0,HMIN]],(u,v)=>[u,v,L],wc,1,1));
+  room.add(plane(POLY,(u,v)=>[u,0,v],0,1,0,new THREE.MeshStandardMaterial({map:floorTex(),roughness:.8})));
+  // walls: each edge rises to the ceiling over it, with door-height cuts where openings reach the floor
+  EDGES.forEach(e=>{const us=[0,e.len];if(AX===e.ax)SBR.forEach(c=>{const u=(c-(e.ax==='x'?e.p[0]:e.p[1]))*(e.ax==='x'?e.dir[0]:e.dir[1]);if(u>.01&&u<e.len-.01)us.push(u)});
+    const hU=u=>ceilP(e.p[0]+e.dir[0]*u,e.p[1]+e.dir[1]*u);
+    const ops=(ROOM.ops||[]).filter(o=>o.e===e.i&&o.k!=='window').map(o=>({a:Math.max(0,o.off),b:Math.min(e.len,o.off+o.w),ht:o.k==='hatch'?(+o.ht||50):Math.min(200,Math.min(hU(o.off),hU(o.off+o.w))-6)})).sort((p,q)=>p.a-q.a);
+    const pts=[[0,0]];ops.forEach(o=>pts.push([o.a,0],[o.a,o.ht],[o.b,o.ht],[o.b,0]));pts.push([e.len,0]);
+    us.sort((p,q)=>q-p).forEach(u=>pts.push([u,hU(u)]));
+    const cl=pts.filter((p,i)=>i===0||Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1])>.01);
+    room.add(plane(cl,(u,v)=>[e.p[0]+e.dir[0]*u,v,e.p[1]+e.dir[1]*u],wc,1,1))});
   const keeps=new THREE.Group();room.add(keeps);
   KEEP.forEach(k=>keeps.add(plane([[k.x,k.y],[k.x+k.w,k.y],[k.x+k.w,k.y+k.h],[k.x,k.y+k.h]],(u,v)=>[u,.4,v],0xc76b3a,.3)));
-  ceil.add(plane([[0,0],[WT,0],[WT,DT],[W,DT],[W,FLAT],[0,FLAT]],(u,v)=>[u,H,v],0xf2eee6,.35));
-  ceil.add(plane([[0,FLAT],[W,FLAT],[W,L],[0,L]],(u,v)=>[u,hAt(v),v],0xf2eee6,.35));
-  room.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([C(0,H,0),C(0,H,FLAT),C(0,HMIN,L),C(W,HMIN,L),C(W,H,FLAT),C(0,H,FLAT)]),
-    new THREE.LineBasicMaterial({color:0x8a5a2b})));
+  // ceiling in bands between slope breaks, so each band is exactly flat or exactly sloped
+  const band=(lo,hi)=>{let pg=POLY.map(p=>[...p]);const ax=AX==='x'?0:1;
+    const clip=(pg,bd,isLo)=>{const keep=v=>isLo?v>=bd-1e-6:v<=bd+1e-6,out=[];for(let i=0;i<pg.length;i++){const a=pg[i],b=pg[(i+1)%pg.length],ia=keep(a[ax]),ib=keep(b[ax]);
+      if(ia)out.push(a);if(ia!==ib){const t=(bd-a[ax])/(b[ax]-a[ax]);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}}return out};
+    pg=clip(pg,lo,true);pg=clip(pg,hi,false);return pg};
+  const bands=AX?[-1e5,...[...SBR].sort((a,b)=>a-b),1e5]:[-1e5,1e5];
+  for(let i=1;i<bands.length;i++){const pg=band(bands[i-1],bands[i]);if(pg.length>=3)ceil.add(plane(pg,(u,v)=>[u,ceilP(u,v),v],0xf2eee6,.35))}
   ceil.visible=false;
   R3={ren,scene,cam,ctl,blocks,ceil,keeps,host};
   view('top');size();
@@ -1179,9 +1251,7 @@ function init3(){
 function size(){if(!R3)return;const w=R3.host.clientWidth,h=R3.host.clientHeight;R3.ren.setSize(w,h);R3.cam.aspect=w/h;R3.cam.updateProjectionMatrix()}
 function view(k){if(!R3)return;const c=R3.cam,t=R3.ctl.target;
   if(k==='top'){c.position.set(W/2+330,640,L+330);t.set(W/2,40,L/2)}
-  if(k==='in'){c.position.set(155,165,6);t.set(120,95,330)}
-  if(k==='bed'){c.position.set(W-4,160,221);t.set(40,95,250)}
-  if(k==='niche'){c.position.set(110,160,265);t.set(245,105,135)}
+  if(typeof k==='object'){c.position.set(k.c[0],k.c[1],k.c[2]);t.set(k.t[0],k.t[1],k.t[2])}
   R3.ctl.update()}
 function build3(){
   if(!R3)return;const G=R3.blocks;
@@ -1200,17 +1270,22 @@ document.getElementById('mode3').onclick=e=>{const m=e.target.closest('button')?
   [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c.dataset.m===m));build3()};
 document.getElementById('fin3').onclick=e=>{const f=e.target.closest('button')?.dataset.f;if(!f)return;FINISH=f;
   [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c.dataset.f===f));build3();drawElev()};
-[['camTop','top'],['camIn','in'],['camBed','bed'],['camNiche','niche']].forEach(([id,k])=>document.getElementById(id).onclick=()=>view(k));
+document.getElementById('camTop').onclick=()=>view('top');
+/* a view from every doorway, looking into the room */
+(ROOM.ops||[]).filter(o=>o.k!=='window'&&EDGES[o.e]).forEach(o=>{const e=EDGES[o.e],m=[e.p[0]+e.dir[0]*(o.off+o.w/2),e.p[1]+e.dir[1]*(o.off+o.w/2)];
+  const bt=document.createElement('button');bt.className='btn';bt.textContent='מבט מ'+(o.n||'הפתח').replace(/^(יציאה מ|כניסה מ|כניסה ל)/,'');
+  bt.onclick=()=>view({c:[m[0]+e.nrm[0]*4,o.k==='hatch'?60:160,m[1]+e.nrm[1]*4],t:[m[0]+e.nrm[0]*260,90,m[1]+e.nrm[1]*260]});
+  document.getElementById('camOps').appendChild(bt)});
 
 /* ===== פריסות קירות ===== */
-const WALLS=[
-  {n:'הקיר השמאלי — קיר חיצוני מבלוקים',ax:'y',at:0,face:'E',a:0,b:L,rev:true,ops:[],ends:['הקיר הרחוק','הקיר הגבוה']},
-  {n:'הקיר הגבוה — ליד היציאה מהמקלחת',ax:'x',at:0,face:'S',a:0,b:WT,rev:false,ops:[[TOP_A,WT,'פתח למקלחת · 80']],ends:['קיר שמאל','דופן הבליטה']},
-  {n:'הנישה — פאת הבליטה',ax:'x',at:DT,face:'S',a:WT,b:W,rev:false,ops:[],ends:['','הקיר הימני']},
-  {n:'הקיר הימני',ax:'y',at:W,face:'W',a:DT,b:L,rev:false,ops:[[OP_A,OP_B,'פתח לחדר השינה · 79']],ends:['הבליטה','הקיר הרחוק']},
-  {n:'הקיר הרחוק',ax:'x',at:L,face:'N',a:0,b:W,rev:true,ops:[[235.2,W,'פתח לגג · מיקום למדוד',50]],ends:['הקיר הימני','קיר שמאל']},
-  {n:'דופן הבליטה — ליד דלתות המקלחת',ax:'y',at:WT,face:'W',a:0,b:DT,rev:false,ops:[],ends:['הקיר הגבוה',''],opt:1}
-];
+/* every wall of the outline, seen from inside the room; image-left is the viewer's left */
+function buildWalls(){return EDGES.map(e=>{const f=[-e.nrm[0],-e.nrm[1]],Lv=[f[1],-f[0]],rev=e.ax==='x'?Lv[0]>0:Lv[1]>0;
+  const nm=i=>{const w=ROOM.walls&&ROOM.walls[i];return(w&&(w.s||w.n))||('קיר '+(i+1))};
+  const pc=e.ax==='x'?e.p[0]:e.p[1],prev=(e.i-1+EDGES.length)%EDGES.length,next=(e.i+1)%EDGES.length,at=c=>Math.abs(c-pc)<.01?nm(prev):nm(next);
+  const ops=(ROOM.ops||[]).filter(o=>o.e===e.i).map(o=>{const c0=pc+(e.ax==='x'?e.dir[0]:e.dir[1])*o.off,c1=pc+(e.ax==='x'?e.dir[0]:e.dir[1])*(o.off+o.w);
+    return[Math.min(c0,c1),Math.max(c0,c1),(o.lbl||o.n||'פתח')+' · '+f1(o.w),o.k==='hatch'?(+o.ht||50):undefined,o.k]});
+  return{n:(ROOM.walls&&ROOM.walls[e.i]&&ROOM.walls[e.i].n)||('קיר '+(e.i+1)+' · '+f1(e.len)+' ס״מ'),ax:e.ax,at:e.at,face:e.face,a:e.a,b:e.b,rev,ops,ends:[at(rev?e.b:e.a),at(rev?e.a:e.b)],i:e.i}})}
+let WALLS=buildWalls();
 let EZ=1,ETOOL='sel';
 document.getElementById('etool').onclick=e=>{const t=e.target.closest('[data-t]')?.dataset.t;if(!t)return;ETOOL=t;
   [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c.dataset.t===t))};
@@ -1255,30 +1330,31 @@ function onWall(b,wl){if(b.a)return false;const r=R(b);
 function drawElev(){
   const host=document.getElementById('elev');if(!host)return;host.innerHTML='';const used=new Set(),K=1.6*EZ;
   document.getElementById('ezv').textContent=Math.round(EZ*100)+'%';
-  WALLS.forEach(wl=>{const bs=B.filter(b=>onWall(b,wl)).sort((p,q)=>zOf(p)-zOf(q));if(!bs.length&&wl.opt)return;
+  const empty=[];WALLS.forEach(wl=>{const bs=B.filter(b=>onWall(b,wl)).sort((p,q)=>zOf(p)-zOf(q));if(!bs.length){empty.push(wl.n);return}
     bs.forEach(b=>used.add(b));
-    const len=wl.b-wl.a,X=t=>wl.rev?wl.b-t:t-wl.a,Z=z=>H-z,ceil=t=>wl.ax==='y'?hAt(t):hAt(wl.at);
+    const len=wl.b-wl.a,X=t=>wl.rev?wl.b-t:t-wl.a,Z=z=>H-z,ceil=t=>wl.ax===AX?ceilC(t):ceilC(wl.at);
     const box=document.createElement('div');box.className='ev';
     box.innerHTML=`<h3>${wl.n}</h3><div class="muted">${f1(len)} ס״מ · ${bs.length?bs.length+' יחידות':'אין יחידות צמודות לקיר הזה'}</div>`;
     const s=document.createElementNS(NS,'svg'),vw=len+60,vh=H+56;
     s.setAttribute('viewBox',`-30 -18 ${vw} ${vh}`);s.setAttribute('width',Math.round(vw*K));s.setAttribute('height',Math.round(vh*K));
     s.setAttribute('role','img');s.setAttribute('aria-label','פריסת '+wl.n);box.appendChild(s);host.appendChild(box);
-    const bps=(t0,t1,extra)=>{const v=[t0,t1];if(wl.ax==='y')[FLAT,...(extra||[])].forEach(q=>{if(q>t0+.01&&q<t1-.01)v.push(q)});return v.sort((p,q)=>p-q)};
+    const bps=(t0,t1,extra)=>{const v=[t0,t1];if(wl.ax===AX)[...SBR,...(extra||[])].forEach(q=>{if(q!=null&&q>t0+.01&&q<t1-.01)v.push(q)});return v.sort((p,q)=>p-q)};
     // wall with its ceiling line
     const wt=bps(wl.a,wl.b).map(t=>[X(t),Z(ceil(t))]).sort((p,q)=>p[0]-q[0]);
     E('polygon',{class:'ewall',points:[[0,Z(0)],...wt,[len,Z(0)]].map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')},s);
     E('polyline',{class:'eceil',points:wt.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')},s);
     T(X(wl.a),Z(ceil(wl.a))-4,'תקרה '+f1(ceil(wl.a)),'ehtx',s);T(X(wl.b),Z(ceil(wl.b))-4,'תקרה '+f1(ceil(wl.b)),'ehtx',s);
-    if(wl.ax==='y'&&FLAT>wl.a&&FLAT<wl.b){const xf=X(FLAT);E('line',{x1:xf,y1:Z(H),x2:xf,y2:Z(0),class:'eceil','stroke-dasharray':'3 2','stroke-width':.5},s);
-      T(xf,Z(H)-4,'171.5 מהקיר הגבוה · מכאן יורד','ehtx',s)}
+    if(wl.ax===AX&&SA>wl.a&&SA<wl.b){const xf=X(SA);E('line',{x1:xf,y1:Z(H),x2:xf,y2:Z(0),class:'eceil','stroke-dasharray':'3 2','stroke-width':.5},s);
+      T(xf,Z(H)-4,f1(ROOM.slope.start)+' '+fromTxt()+' · מכאן '+(HS1<HS0?'יורד':'עולה'),'ehtx',s)}
     wl.ends.forEach((e,i)=>{if(e)T(i?len+14:-14,Z(0)-6,e,'esm',s,{transform:`rotate(-90 ${i?len+14:-14} ${Z(0)-6})`,style:'text-anchor:start'})});
-    wl.ops.forEach(o=>{const x0=Math.min(X(o[0]),X(o[1])),x1=Math.max(X(o[0]),X(o[1])),ht=o[3]||Math.min(200,Math.min(ceil(o[0]),ceil(o[1]))-6);
+    wl.ops.forEach(o=>{if(o[4]==='window'){const x0=Math.min(X(o[0]),X(o[1])),x1=Math.max(X(o[0]),X(o[1]));E('rect',{x:x0,y:Z(Math.min(200,ceil(o[0])-10)),width:x1-x0,height:110,class:'eglass'},s);T((x0+x1)/2,Z(150),o[2],'esm',s);return}
+      const x0=Math.min(X(o[0]),X(o[1])),x1=Math.max(X(o[0]),X(o[1])),ht=o[3]||Math.min(200,Math.min(ceil(o[0]),ceil(o[1]))-6);
       E('rect',{x:x0,y:Z(ht),width:x1-x0,height:ht,class:'eop'},s);T((x0+x1)/2,Z(ht/2),o[2],'esm',s);T((x0+x1)/2,Z(ht/2)+7,'גובה הפתח לא נמדד','esm',s)});
     // units
     bs.forEach(b=>{const r=R(b),a=analyse(b),hb=hOf(b),z0=zOf(b),Tyt=b.t;
       const t0=wl.ax==='y'?r.y:r.x,t1=wl.ax==='y'?r.y+r.h:r.x+r.w,x0=Math.min(X(t0),X(t1)),x1=Math.max(X(t0),X(t1)),uw=x1-x0;
-      const topAt=t=>wl.ax==='y'?Math.min(hb,hAt(t)-2):Math.min(hb,a.cmin-2),topMin=Math.min(hb,a.cmin-2);
-      const tp=bps(t0,t1,[yAt(hb+2)]).map(t=>[X(t),Z(topAt(t))]).sort((p,q)=>p[0]-q[0]);
+      const topAt=t=>wl.ax===AX?Math.min(hb,ceilC(t)-2):Math.min(hb,a.cmin-2),topMin=Math.min(hb,a.cmin-2);
+      const tp=bps(t0,t1,[AX?cAtH(hb+2):null]).map(t=>[X(t),Z(topAt(t))]).sort((p,q)=>p[0]-q[0]);
       const g=E('g',{'data-uid':b.id,style:'cursor:pointer'},s);
       if(Tyt==='mirrorW'||Tyt==='mirrorS'||Tyt==='mirror'){const zt=Math.min(hb,topMin),zb=Tyt==='mirror'?z0:Tyt==='mirrorW'?20:3;
         E('rect',{x:x0,y:Z(zt),width:uw,height:zt-zb,class:'eglass'},g);
@@ -1332,6 +1408,7 @@ function drawElev(){
     E('line',{x1:0,y1:yt,x2:len,y2:yt,class:'edim'},s);[0,len].forEach(v=>E('line',{x1:v,y1:yt-3,x2:v,y2:yt+3,class:'edim'},s));
     T(len/2,yt-2,f1(len)+' — כל הקיר','edtx',s);
   });
+  if(empty.length){const p=document.createElement('p');p.className='muted';p.style.marginTop='12px';p.textContent='קירות בלי יחידות צמודות: '+empty.join(' · ');host.appendChild(p)}
   const rest=B.filter(b=>!used.has(b));
   if(rest.length){const p=document.createElement('p');p.className='muted';p.style.marginTop='12px';
     p.textContent='לא בפריסות, כי הם עומדים בחדר או מסובבים: '+rest.map(b=>bname(b)+' '+f1(b.w)+'×'+f1(b.d)).join(' · ');host.appendChild(p)}
@@ -1347,7 +1424,7 @@ function mirrorOver(v,list){if(v.a)return null;const vr=R(v),f=v.f,ax=(f==='E'||
   const m={t:'mirror',w:+mw.toFixed(1),d:1,f,lb:'מראה איפור'};if(top!==160)m.hh=+top.toFixed(1);
   if(f==='E'){m.x=back;m.y=st}else if(f==='W'){m.x=+(back-1).toFixed(1);m.y=st}else if(f==='S'){m.y=back;m.x=st}else{m.y=+(back-1).toFixed(1);m.x=st}
   return m}
-(function(){let mm=false;try{mm=localStorage.getItem('closet_mig_mirror')==='1';localStorage.setItem('closet_mig_mirror','1')}catch(e){}
+(function(){if(PID!=='eshel')return;let mm=false;try{mm=localStorage.getItem('closet_mig_mirror')==='1';localStorage.setItem('closet_mig_mirror','1')}catch(e){}
   if(!mm&&!B.some(b=>b.t==='mirror'))B.filter(b=>b.t==='vanity').forEach(v=>{const m=mirrorOver(v,B);if(m)B.push(Object.assign({id:uid++},m))})})();
 /* put a unit right next to another along the same wall: R/L as you stand facing it */
 function placeBeside(nb,ref,side){const r=R(ref),f=ref.f;nb.f=f;delete nb.a;const nw=nb.w,nd=nb.d;
@@ -1382,8 +1459,8 @@ function drawShop(){const tb=document.getElementById('shop');if(!tb)return;const
 /* ===== ביטול ושחזור ===== */
 /* every change is a step; the steps survive a reload, so you can always walk back */
 let HIST=[],FUT=[],LAST=null;
-try{const h=JSON.parse(localStorage.getItem('closet_hist'));if(Array.isArray(h))HIST=h.filter(x=>x&&x.s)}catch(e){}
-function saveHist(){try{localStorage.setItem('closet_hist',JSON.stringify(HIST.slice(-80)))}catch(e){}}
+try{const h=JSON.parse(localStorage.getItem(K('hist')));if(Array.isArray(h))HIST=h.filter(x=>x&&x.s)}catch(e){}
+function saveHist(){try{localStorage.setItem(K('hist'),JSON.stringify(HIST.slice(-80)))}catch(e){}}
 function track(){const now=JSON.stringify(strip(B));if(LAST===null){LAST=now;return}
   if(now!==LAST){HIST.push({s:LAST,t:Date.now(),n:JSON.parse(LAST).length});if(HIST.length>80)HIST.shift();FUT=[];LAST=now;saveHist()}}
 function restore(snap){B=clone(JSON.parse(snap));LAST=snap;sel=null;touch();renderAll();saveHist()}
@@ -1401,9 +1478,117 @@ document.getElementById('hist').onchange=e=>{const k=parseInt(e.target.value);if
 /* nothing may leave the drawing: a block that wandered out is pulled back to the edge where it can be grabbed */
 function keepInView(b){const r=R(b),cx=r.x+r.w/2,cy=r.y+r.h/2,nx=Math.max(-15,Math.min(W+15,cx)),ny=Math.max(-25,Math.min(L+25,cy));
   if(Math.abs(nx-cx)>.01||Math.abs(ny-cy)>.01){b.x=+(b.x+nx-cx).toFixed(1);b.y=+(b.y+ny-cy).toFixed(1)}}
-function intoRoom(b){const r=R(b);let x=Math.max(0,Math.min(W-r.w,r.x)),y=Math.max(0,Math.min(L-r.h,r.y));if(x+r.w>WT&&y<DT)y=DT;b.x=+x.toFixed(1);b.y=+y.toFixed(1);delete b.a}
+function intoRoom(b){delete b.a;const r=R(b),x0=Math.max(0,Math.min(W-r.w,r.x)),y0=Math.max(0,Math.min(L-r.h,r.y));b.x=+x0.toFixed(1);b.y=+y0.toFixed(1);
+  if(!outRoom(P(b)))return;let best=null,bd=1e9;
+  for(let x=0;x<=W-r.w;x+=5)for(let y=0;y<=L-r.h;y+=5){b.x=x;b.y=y;if(!outRoom(P(b))){const d=Math.hypot(x-x0,y-y0);if(d<bd){bd=d;best=[x,y]}}}
+  if(best){b.x=best[0];b.y=best[1]}else{b.x=+x0.toFixed(1);b.y=+y0.toFixed(1)}}
+/* ===== פרויקטים והגדרות החדר ===== */
+const KINDN={door:'דלת',double:'דלת כפולה',opening:'פתח בלי דלת',window:'חלון',hatch:'פתח שירות'};
+const DIRN={S:'מלמעלה למטה',N:'מלמטה למעלה',E:'משמאל לימין',W:'מימין לשמאל'};
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+function roomSummary(rm){const xs=rm.poly.map(p=>p[0]),ys2=rm.poly.map(p=>p[1]);
+  return f1(Math.max(...xs)-Math.min(...xs))+'×'+f1(Math.max(...ys2)-Math.min(...ys2))+' ס״מ · '+rm.poly.length+' קירות · '+
+    (rm.slope&&+rm.slope.len?'תקרה '+f1(rm.slope.h0)+' עד '+f1(rm.slope.h1):'תקרה '+f1(rm.h))+' · '+(rm.ops||[]).length+' פתחים · החדר נעול — משנים רק מ״הגדרות החדר״'}
+function drawProj(){const el=document.getElementById('projSel');
+  el.innerHTML=`<option value="eshel">${esc(ESHEL_ROOM.name)}</option>`+PROJ.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');el.value=PID;
+  document.getElementById('projInfo').textContent=roomSummary(ROOM);
+  const n=document.getElementById('eshelNotes');if(n)n.hidden=PID!=='eshel'}
+function switchProj(id){save();try{localStorage.setItem('closet_pid',id)}catch(e){}location.reload()}
+document.getElementById('projSel').onchange=e=>switchProj(e.target.value);
+document.getElementById('projNew').onclick=()=>openRoomSet(null);
+document.getElementById('projEdit').onclick=()=>openRoomSet(PID);
+
+/* the settings form keeps its own draft until "save" */
+let RS=null;
+function polyOf(d){const w=+d.w,dd=+d.d,cw=+d.cw,cd=+d.cd;
+  if(d.shape==='rect')return[[0,0],[w,0],[w,dd],[0,dd]];
+  if(d.shape==='L')return({tr:[[0,0],[w-cw,0],[w-cw,cd],[w,cd],[w,dd],[0,dd]],tl:[[cw,0],[w,0],[w,dd],[0,dd],[0,cd],[cw,cd]],
+    br:[[0,0],[w,0],[w,dd-cd],[w-cw,dd-cd],[w-cw,dd],[0,dd]],bl:[[0,0],[w,0],[w,dd],[cw,dd],[cw,dd-cd],[0,dd-cd]]})[d.corner];
+  return String(d.free||'').split(/\n+/).map(l=>l.split(/[,\s]+/).filter(Boolean).map(Number)).filter(a=>a.length===2&&a.every(isFinite))}
+function checkPoly(pg){if(!pg||pg.length<4)return'צריך לפחות 4 פינות';
+  for(let i=0;i<pg.length;i++){const a=pg[i],b=pg[(i+1)%pg.length];if(a[0]!==b[0]&&a[1]!==b[1])return'קיר '+(i+1)+' לא ישר — כל קיר צריך להיות אופקי או אנכי בשרטוט';if(a[0]===b[0]&&a[1]===b[1])return'שתי פינות זהות ברצף ('+(i+1)+')'}
+  return''}
+function normPoly(pg){const mx=Math.min(...pg.map(p=>p[0])),my=Math.min(...pg.map(p=>p[1]));let q=pg.map(p=>[+(p[0]-mx).toFixed(1),+(p[1]-my).toFixed(1)]);
+  let a=0;for(let i=0;i<q.length;i++){const u=q[i],v=q[(i+1)%q.length];a+=u[0]*v[1]-v[0]*u[1]}if(a<0)q=q.reverse();return q}
+function wallNames(pg,old){const cnt={};return pg.map((p,i)=>{const q=pg[(i+1)%pg.length],dir=[Math.sign(q[0]-p[0]),Math.sign(q[1]-p[1])],nrm=[-dir[1],dir[0]];
+  const base=nrm[1]>0?'הקיר העליון':nrm[1]<0?'הקיר התחתון':nrm[0]>0?'הקיר השמאלי':'הקיר הימני';cnt[base]=(cnt[base]||0)+1;
+  const o=old&&old.length===pg.length?old[i]:null;return o||{n:base+(cnt[base]>1?' '+cnt[base]:''),s:base.replace('הקיר ','קיר ')+(cnt[base]>1?' '+cnt[base]:'')}})}
+function draftFrom(rm,name){const sl=rm.slope||{};return{name,shape:'free',w:300,d:300,corner:'tr',cw:100,cd:100,free:rm.poly.map(p=>p.join(', ')).join('\n'),h:rm.h,
+  slopeOn:!!(sl&&+sl.len),dir:sl.dir||'S',start:sl.start??0,len:sl.len??'',angle:'',h0:sl.h0??rm.h,h1:sl.h1??'',from:sl.from||'',ops:JSON.parse(JSON.stringify(rm.ops||[])),walls:rm.walls}}
+function openRoomSet(id){const box=document.getElementById('roomSet');
+  RS=id==null?{isNew:true,name:'חדר חדש',shape:'rect',w:300,d:350,corner:'tr',cw:100,cd:100,free:'',h:250,slopeOn:false,dir:'S',start:0,len:'',angle:'',h0:250,h1:'',from:'',ops:[]}
+            :Object.assign(draftFrom(ROOM,id==='eshel'?ESHEL_ROOM.name:PROJ.find(p=>p.id===id).name),{id});
+  box.hidden=false;drawRoomSet();box.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+function rsRoom(){const pg0=polyOf(RS),err=checkPoly(pg0);if(err)return{err};const poly=normPoly(pg0);
+  let slope=null;if(RS.slopeOn){let len=+RS.len;const h0=+RS.h0,h1=+RS.h1;
+    if(!(len>0)&&+RS.angle>0&&h0!==h1)len=+(Math.abs(h0-h1)/Math.tan(+RS.angle*D2R)).toFixed(1);
+    if(!(len>0)||!isFinite(h0)||!isFinite(h1)||h0===h1)return{err:'לשיפוע צריך גובה התחלה, גובה סוף, ומרחק ביניהם או זווית'};
+    slope={dir:RS.dir,start:+RS.start||0,len,h0,h1,from:RS.from||''}}
+  const h=slope?Math.max(slope.h0,slope.h1):+RS.h;if(!(h>0))return{err:'צריך גובה תקרה'};
+  const ops=RS.ops.filter(o=>o.e<poly.length).map(o=>Object.assign({},o,{off:+o.off||0,w:+o.w||0}));
+  return{room:{name:RS.name,poly,h,slope,ops,walls:wallNames(poly,RS.walls),drywall:RS.id==='eshel'?ESHEL_ROOM.drywall:undefined}}}
+function drawRoomSet(){const box=document.getElementById('roomSet'),r=rsRoom(),pg=r.room?r.room.poly:normPoly(polyOf(RS).length>2?polyOf(RS):[[0,0],[1,0],[1,1],[0,1]]);
+  const eds=pg.map((p,i)=>{const q=pg[(i+1)%pg.length];return{i,len:Math.hypot(q[0]-p[0],q[1]-p[1])}});
+  const opt=(v,list)=>Object.entries(list).map(([k,t])=>`<option value="${k}"${k===v?' selected':''}>${t}</option>`).join('');
+  box.innerHTML=`<h2>${RS.isNew?'פרויקט חדש':'הגדרות החדר'}</h2>
+   <p class="muted" style="margin:0 0 8px">כאן, ורק כאן, קובעים את החדר: קירות, תקרה ופתחים. בתוכנית עצמה החדר נעול, ומזיזים רק רהיטים.${RS.id==='eshel'?' המידות של אשל 57 נמדדו בשטח — שינוי כאן משנה אותן לכל התוכנית.':''}</p>
+   <div class="rs"><div>
+    <label>שם<input data-k="name" value="${esc(RS.name)}"></label>
+    <h3>צורת החדר</h3>
+    <div class="seg" id="rsShape">${[['rect','מלבן'],['L','צורת L'],['free','חופשי — רשימת פינות']].map(([k,t])=>`<button data-sh="${k}" class="${RS.shape===k?'on':''}">${t}</button>`).join('')}</div>
+    ${RS.shape==='free'?`<label>פינות, אחת בשורה: x, y בס״מ. מתחילים בפינה כלשהי והולכים מסביב. כל קיר אופקי או אנכי<textarea data-k="free">${esc(RS.free)}</textarea></label>`
+     :`<div class="g2"><label>רוחב (שמאל–ימין)<input type="number" step="0.1" data-k="w" value="${RS.w}"></label><label>עומק (למעלה–למטה)<input type="number" step="0.1" data-k="d" value="${RS.d}"></label></div>
+     ${RS.shape==='L'?`<div class="g3" style="margin-top:8px"><label>הפינה החסרה<select data-k="corner">${opt(RS.corner,{tr:'למעלה מימין',tl:'למעלה משמאל',br:'למטה מימין',bl:'למטה משמאל'})}</select></label><label>רוחב החלק החסר<input type="number" step="0.1" data-k="cw" value="${RS.cw}"></label><label>עומק החלק החסר<input type="number" step="0.1" data-k="cd" value="${RS.cd}"></label></div>`:''}`}
+    <h3>תקרה</h3>
+    <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" data-k="slopeOn" style="width:auto"${RS.slopeOn?' checked':''}> יש שיפוע</label>
+    ${RS.slopeOn?`<div class="g2" style="margin-top:6px"><label>כיוון הירידה בשרטוט<select data-k="dir">${opt(RS.dir,DIRN)}</select></label><label>שם הצד הגבוה (לא חובה)<input data-k="from" value="${esc(RS.from)}" placeholder="למשל: הקיר הגבוה"></label>
+      <label>איפה מתחיל — ס״מ מהצד הגבוה<input type="number" step="0.1" data-k="start" value="${RS.start}"></label><label>מרחק בין ההתחלה לסוף<input type="number" step="0.1" data-k="len" value="${RS.len}" placeholder="או זווית"></label>
+      <label>גובה בהתחלה<input type="number" step="0.1" data-k="h0" value="${RS.h0}"></label><label>גובה בסוף<input type="number" step="0.1" data-k="h1" value="${RS.h1}"></label>
+      <label>או זווית במעלות, אם המרחק לא ידוע<input type="number" step="0.1" data-k="angle" value="${RS.angle}"></label></div>`
+     :`<label style="margin-top:6px">גובה התקרה<input type="number" step="0.1" data-k="h" value="${RS.h}"></label>`}
+    <h3>פתחים</h3>
+    <p class="muted" style="margin:0">המרחק נמדד מתחילת הקיר, בכיוון החץ שבשרטוט.</p>
+    ${RS.ops.map((o,i)=>`<div class="oprow" data-op="${i}"><label>קיר<select data-o="e">${eds.map(e=>`<option value="${e.i}"${e.i===o.e?' selected':''}>${e.i+1} · ${f1(e.len)}</option>`).join('')}</select></label>
+      <label>מרחק<input type="number" step="0.1" data-o="off" value="${o.off}"></label><label>רוחב<input type="number" step="0.1" data-o="w" value="${o.w}"></label>
+      <label>סוג<select data-o="k">${opt(o.k,KINDN)}</select></label><label>שם<input data-o="n" value="${esc(o.n||'')}"></label><button class="btn sm danger" data-odel="${i}" aria-label="להסיר פתח">✕</button></div>`).join('')}
+    <div class="bar"><button class="btn sm" id="rsAddOp">+ פתח</button></div>
+   </div><div><svg id="rsPrev" role="img" aria-label="תצוגה מקדימה של החדר"></svg><p class="muted" id="rsErr" style="color:var(--bad)">${esc(r.err||'')}</p></div></div>
+   <div class="bar"><button class="btn pri" id="rsSave">${RS.isNew?'יצירת הפרויקט':'שמירת החדר'}</button><button class="btn" id="rsCancel">ביטול</button>
+     ${RS.id==='eshel'?'<button class="btn" id="rsReset">חזרה למידות שנמדדו</button>':''}${RS.id&&RS.id!=='eshel'?'<button class="btn danger" id="rsDel">מחיקת הפרויקט</button>':''}</div>`;
+  drawRsPrev(r.room||{poly:pg,ops:RS.ops});
+  const $=id=>document.getElementById(id);
+  box.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('change',()=>{RS[el.dataset.k]=el.type==='checkbox'?el.checked:el.value;drawRoomSet()}));
+  $('rsShape').onclick=e=>{const k=e.target.closest('[data-sh]')?.dataset.sh;if(!k)return;if(k==='free'&&RS.shape!=='free')RS.free=polyOf(RS).map(p=>p.join(', ')).join('\n');RS.shape=k;drawRoomSet()};
+  box.querySelectorAll('[data-o]').forEach(el=>el.addEventListener('change',()=>{const o=RS.ops[+el.closest('[data-op]').dataset.op],k=el.dataset.o;
+    o[k]=k==='n'||k==='k'?el.value:+el.value;if(k==='n')o.lbl=el.value;if(k==='k'||k==='w')o.keep=o.k==='hatch'?60:o.k==='double'?Math.max(60,o.w/2+40):o.k==='door'?Math.max(60,o.w):80;drawRoomSet()}));
+  box.querySelectorAll('[data-odel]').forEach(b=>b.onclick=()=>{RS.ops.splice(+b.dataset.odel,1);drawRoomSet()});
+  $('rsAddOp').onclick=()=>{RS.ops.push({e:0,off:20,w:80,k:'door',n:'דלת',lbl:'דלת',keep:80});drawRoomSet()};
+  $('rsCancel').onclick=()=>{box.hidden=true;RS=null};
+  if($('rsReset'))$('rsReset').onclick=()=>{try{localStorage.removeItem('closet_room_eshel')}catch(e){}location.reload()};
+  if($('rsDel'))$('rsDel').onclick=e=>{if(e.target.dataset.sure){PROJ=PROJ.filter(x=>x.id!==RS.id);try{localStorage.setItem('closet_projects',JSON.stringify(PROJ))}catch(er){}switchProj('eshel')}
+    else{e.target.dataset.sure=1;e.target.textContent='בטוח? למחוק את הפרויקט'}};
+  $('rsSave').onclick=()=>{const r2=rsRoom();if(r2.err){$('rsErr').textContent=r2.err;return}
+    if(RS.id==='eshel'){try{localStorage.setItem('closet_room_eshel',JSON.stringify(Object.assign(r2.room,{name:ESHEL_ROOM.name})))}catch(e){}location.reload();return}
+    if(RS.isNew){const id='p'+Date.now().toString(36);PROJ.push({id,name:RS.name||'חדר חדש',room:r2.room});try{localStorage.setItem('closet_projects',JSON.stringify(PROJ))}catch(e){}switchProj(id);return}
+    const pr=PROJ.find(x=>x.id===RS.id);pr.name=RS.name;pr.room=r2.room;try{localStorage.setItem('closet_projects',JSON.stringify(PROJ))}catch(e){}location.reload()}}
+function drawRsPrev(rm){const sv=document.getElementById('rsPrev');if(!sv)return;const pg=rm.poly,mx=Math.max(...pg.map(p=>p[0])),my=Math.max(...pg.map(p=>p[1]));
+  sv.setAttribute('viewBox',`-30 -30 ${mx+60} ${my+60}`);sv.innerHTML='';const fs=Math.max(mx,my)/40;
+  const add=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);sv.appendChild(e);return e};
+  add('polygon',{points:pg.map(p=>p.join(',')).join(' '),fill:cssv('--room'),stroke:cssv('--wallc'),'stroke-width':fs*.25});
+  const sl=rm.slope;if(sl&&+sl.len){const ax=sl.dir==='S'||sl.dir==='N'?'y':'x',ext=ax==='y'?my:mx,pos=sl.dir==='S'||sl.dir==='E',a=pos?+sl.start:ext-sl.start,b=pos?+sl.start+ +sl.len:ext-sl.start-sl.len;
+    const lo=Math.min(a,b),hi=Math.max(a,b);add('rect',ax==='y'?{x:0,y:lo,width:mx,height:hi-lo}:{x:lo,y:0,width:hi-lo,height:my},{}).setAttribute('style',`fill:${cssv('--warn')};fill-opacity:.15`);
+    const t=add('text',{x:ax==='y'?mx/2:(lo+hi)/2,y:ax==='y'?(lo+hi)/2:my/2,'text-anchor':'middle','font-size':fs,fill:cssv('--warn')});t.textContent='שיפוע '+f1(sl.h0)+' → '+f1(sl.h1)}
+  pg.forEach((p,i)=>{const q=pg[(i+1)%pg.length],len=Math.hypot(q[0]-p[0],q[1]-p[1]),dir=[(q[0]-p[0])/len,(q[1]-p[1])/len],nrm=[-dir[1],dir[0]],m=[(p[0]+q[0])/2,(p[1]+q[1])/2];
+    const t=add('text',{x:m[0]+nrm[0]*fs*1.6,y:m[1]+nrm[1]*fs*1.6+fs*.35,'text-anchor':'middle','font-size':fs,'font-weight':700,fill:cssv('--ink')});t.textContent=(i+1)+' · '+f1(len);
+    const a0=[p[0]+dir[0]*fs*.6+nrm[0]*fs*.6,p[1]+dir[1]*fs*.6+nrm[1]*fs*.6],a1=[a0[0]+dir[0]*fs*2.2,a0[1]+dir[1]*fs*2.2];
+    add('line',{x1:a0[0],y1:a0[1],x2:a1[0],y2:a1[1],stroke:cssv('--accent'),'stroke-width':fs*.15,'marker-end':''});
+    add('circle',{cx:a1[0],cy:a1[1],r:fs*.25,fill:cssv('--accent')})});
+  (rm.ops||[]).forEach(o=>{const p=pg[o.e],q=pg[(o.e+1)%pg.length];if(!p)return;const len=Math.hypot(q[0]-p[0],q[1]-p[1]),dir=[(q[0]-p[0])/len,(q[1]-p[1])/len];
+    const a=[p[0]+dir[0]*o.off,p[1]+dir[1]*o.off],b=[a[0]+dir[0]*o.w,a[1]+dir[1]*o.w];
+    add('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:o.k==='window'?cssv('--glass'):cssv('--keep'),'stroke-width':fs*.6})})}
+
 function renderAll(light){B.forEach(keepInView);if(!light)track();setTimeout(drawHist);drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
-drawCatalog();
+drawCatalog();drawProj();
 renderAll();
 if(document.readyState==='complete')init3();else addEventListener('load',init3);
 </script>

@@ -120,6 +120,28 @@ label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .oprow{display:grid;grid-template-columns:1.3fr .8fr .8fr 1.1fr 1.3fr auto;gap:6px;align-items:end;margin-top:6px}
 @media (max-width:560px){.oprow{grid-template-columns:repeat(2,minmax(0,1fr))}}
 #rsPrev{width:100%;height:auto;max-height:420px;display:block;background:var(--surface2);border-radius:10px}
+.studio{position:fixed;inset:0;z-index:60;background:var(--bg);overflow:auto;padding-inline:16px;padding-block:calc(12px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-bottom,0px))}
+.st-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;max-width:1280px;margin:0 auto 10px}
+.st-run{display:flex;flex-wrap:wrap;gap:6px}
+.st-run button{font:500 13px var(--body);border:1px solid var(--line2);background:var(--surface);color:var(--ink2);padding:6px 11px;border-radius:999px;cursor:pointer}
+.st-run button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.st-body{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;max-width:1280px;margin:0 auto}
+@media (max-width:900px){.st-body{grid-template-columns:minmax(0,1fr)}}
+#stSvg{display:block;width:100%;height:auto;max-height:68vh;background:var(--surface);border:1px solid var(--line);border-radius:14px;touch-action:none;user-select:none;-webkit-user-select:none}
+#st3d{height:320px;margin-top:10px;border-radius:14px;overflow:hidden;background:var(--surface2);position:relative}
+#st3d .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink3);font-size:13px}
+.st-tools{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.st-tools button{display:inline-flex;align-items:center;gap:6px;font:500 13px var(--body);border:1px solid var(--line2);background:var(--surface);color:var(--ink);padding:6px 10px;border-radius:10px;cursor:grab}
+.st-tools button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.st-tools svg{width:22px;height:22px}
+.st-side .card{margin-bottom:12px}
+.st-side h3{font:600 15px var(--body);margin:0 0 6px}
+.sizes{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:4px 0}
+.sizes span{font-size:12.5px;color:var(--ink2);min-width:44px}
+.sizes button{font:600 13px var(--body);border:1px solid var(--line2);background:var(--bg);color:var(--ink);padding:5px 11px;border-radius:8px;cursor:pointer;font-variant-numeric:tabular-nums}
+.sizes button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.sizes button:disabled{opacity:.35;cursor:not-allowed}
+.sumt td{padding:4px 6px;font-size:13.5px}
 .std{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12.5px;color:var(--ink2);margin:4px 0 8px}
 .ang input[type=range]{flex:1;accent-color:var(--accent)}
 .ang input[type=number]{width:78px;flex:none}
@@ -215,6 +237,19 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
   <span class="muted" id="projInfo"></span>
 </div>
 <div class="card section" id="roomSet" hidden></div>
+<div class="studio" id="studio" hidden role="dialog" aria-label="סטודיו לעיצוב הארון">
+  <div class="st-head"><div><p class="eyebrow" style="margin:0">סטודיו · כמו מתכנן PAX, לכל הסדרות</p><h2 id="stTitle" style="margin:0"></h2></div>
+    <div class="st-run" id="stRun"></div><button class="btn pri" id="stClose">סיום וחזרה לחדר</button></div>
+  <div class="st-body">
+    <div class="st-left">
+      <div class="st-tools" id="stTools"></div>
+      <svg id="stSvg" role="img" aria-label="חזית הארון"></svg>
+      <div class="bar" style="margin-top:6px"><label class="chk"><input type="checkbox" id="stDoors" checked> להראות דלתות</label><span class="muted" id="stMsg" aria-live="polite"></span></div>
+      <div id="st3d"><div class="ph">טוען תלת-ממד…</div></div>
+    </div>
+    <div class="st-side" id="stSide"></div>
+  </div>
+</div>
 <div class="cur" id="cur"></div>
 <div class="shelf" id="shelf" aria-label="בלוקים להוספה"></div>
 <div class="card prod">
@@ -918,6 +953,7 @@ function wireInside(b){const $=id=>document.getElementById(id),go=()=>{touch();r
   $('cDoor').onclick=()=>{b.cfg.forEach(r=>{if(r.k!=='drawers'&&r.k!=='baskets')r.door=true});go()};
   $('cDef').onclick=()=>{delete b.cfg;go()}}
 function drawPanel(){
+  if(STU){panel.innerHTML='';return}  // the studio owns the unit editor while it is open
   const b=B.find(x=>x.id===sel);
   if(!b){
     const an=B.map(analyse),bad=an.filter(a=>a.lvl==='bad').length,warn=an.filter(a=>a.lvl==='warn').length;
@@ -960,6 +996,7 @@ function drawPanel(){
    <ul class="facts">${a.out.map(([c,t])=>`<li class="${c}">${t}</li>`).join('')}
     <li>תופס ברצפה ${f1(r.w)}×${f1(r.h)}${b.a?'':' · מעומק '+f1(r.y)+' עד '+f1(r.y+r.h)+' מהקיר הגבוה'}</li></ul>
    ${outRoom(P(b))?'<div class="bar"><button class="btn pri" id="inroom">להחזיר לתוך החדר</button></div>':''}
+   ${CFGT.includes(b.t)&&!b.a?'<div class="bar"><button class="btn pri" id="toStudio">🛠 לעצב בסטודיו — חזית גדולה, גרירה ותלת-ממד</button></div>':''}
    <div class="bar"><button class="btn pri" id="rot">↻ סיבוב 90°</button>${b.a?'<button class="btn" id="a0">ישר לקירות</button>':''}<button class="btn" id="dup">שכפול</button><button class="btn danger" id="del">מחיקה</button></div>`;
   const $=id=>document.getElementById(id);
   const num=(id,fn)=>$(id)?.addEventListener('change',e=>{const v=parseFloat(e.target.value);fn(isNaN(v)?null:v);touch();renderAll()});
@@ -988,6 +1025,7 @@ function drawPanel(){
   if($('a0'))$('a0').onclick=()=>setAngle(b,0);
   $('fface').onclick=e=>{const f=e.target.closest('button')?.dataset.f;if(f){setFace(b,f);touch();renderAll()}};
   $('rot').onclick=()=>rotateB(b);
+  if($('toStudio'))$('toStudio').onclick=()=>openStudio(b.id);
   if($('inroom'))$('inroom').onclick=()=>{intoRoom(b);touch();renderAll()};
   $('del').onclick=()=>{B=B.filter(x=>x!==b);sel=null;touch();renderAll()};
   $('dup').onclick=()=>{const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});const q=R(b);
@@ -1523,6 +1561,7 @@ function drawCatalog(){const tabs=document.getElementById('ptabs'),list=document
 document.getElementById('ptabs').onclick=e=>{const g=e.target.closest('[data-g]')?.dataset.g;if(g){PTAB=g;drawCatalog()}};
 document.getElementById('plist').onclick=e=>{const id=e.target.closest('[data-p]')?.dataset.p;if(!id)return;
   const ref=B.find(x=>x.id===sel&&!x.a),b={id:uid++,x:90,y:200,f:'S'};applyProduct(b,id);if(ref)placeInRun(b,ref,'R');B.push(b);sel=b.id;touch();renderAll();
+  if(STU||PMAP[id].g==='pax'||PMAP[id].sys){openStudio(b.id);return}
   svg.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})};
 function drawShop(){const tb=document.getElementById('shop');if(!tb)return;const rows={};let tot=0;
   B.forEach(b=>{const p=b.p&&PMAP[b.p];if(!p)return;(rows[p.id]=rows[p.id]||{p,n:0}).n++;tot+=p.price;const pi=paxInside(b);if(pi&&pi.sum){(rows['in'+b.id]={p:{n:(pi.sys==='pax'?'פנים KOMPLEMENT ל':'חלקי פנים ל')+bname(b),price:pi.sum,u:pi.sys==='pax'?IKS('KOMPLEMENT'):PMAP[b.p].u,s:pi.txt},n:1});tot+=pi.sum}});
@@ -1556,6 +1595,146 @@ function intoRoom(b){delete b.a;const r=R(b),x0=Math.max(0,Math.min(W-r.w,r.x)),
   if(!outRoom(P(b)))return;let best=null,bd=1e9;
   for(let x=0;x<=W-r.w;x+=5)for(let y=0;y<=L-r.h;y+=5){b.x=x;b.y=y;if(!outRoom(P(b))){const d=Math.hypot(x-x0,y-y0);if(d<bd){bd=d;best=[x,y]}}}
   if(best){b.x=best[0];b.y=best[1]}else{b.x=+x0.toFixed(1);b.y=+y0.toFixed(1)}}
+/* ===== סטודיו: עיצוב יחידה אחת בגדול, כמו מתכנן PAX — לכל הסדרות ===== */
+let STU=null,STOOL='sel',ST3=null,stDrag=null,stRow=null;
+const TOOLDEF=[['sel','בחירה',''],['rod','מוט תליה','M3 8h18M7 8v9M11 8v11M15 8v8M19 8v10'],['shelf','מדף','M3 12h18'],['drawers','מגירות','M4 5h16v6H4zM4 13h16v6H4zM10 8h4M10 16h4'],
+  ['baskets','סלסלות רשת','M4 9h16v8H4zM7 9v8M10 9v8M13 9v8M16 9v8'],['shoes','מדפי נעליים','M3 9h18M3 16h18M6 16l3-3h4l1 3'],['door','דלת','M6 3h12v18H6zM15 12h1'],['empty','לרוקן תא','M5 5l14 14M19 5L5 19'],['unshelf','להסיר מדף','M3 12h18M8 8l8 8']];
+function runOf(b){const we=wallOf(b);if(!we)return[b];const ax=we.ax;
+  return B.filter(o=>!o.a&&o.f===b.f&&wallOf(o)===we&&CFGT.includes(o.t)).sort((p,q)=>{const a=R(p),c=R(q);return(ax==='x'?a.x-c.x:a.y-c.y)})}
+function openStudio(id){STU=id;sel=id;const b=B.find(x=>x.id===id);if(b&&!b.cfg)materialize(b);
+  document.getElementById('studio').hidden=false;document.body.style.overflow='hidden';drawStudio();setTimeout(initSt3,30);renderAll(true)}
+function closeStudio(){STU=null;document.getElementById('studio').hidden=true;document.body.style.overflow='';touch();renderAll()}
+document.getElementById('stClose').onclick=closeStudio;
+document.getElementById('stDoors').onchange=()=>drawStudio();
+addEventListener('keydown',e=>{if(STU&&e.key==='Escape'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)){e.stopImmediatePropagation();closeStudio()}},true);
+
+/* frame sizes each series really sells */
+const SIZES={pax:{w:[50,75,100],d:[35,58],h:[201,236],id:(w,d,h)=>'pax'+w+'x'+d+'x'+h},
+  ivar:{w:[89],d:[30,50],h:[124,179,226],id:(w,d,h)=>'ivarS'+d+'x'+h},boaxel:{w:[82],d:[40],h:[201],id:()=>'boaxelS80'}};
+function drawStudio(){const b=B.find(x=>x.id===STU);if(!b){closeStudio();return}
+  const sy=sysOf(b),pd=b.p&&PMAP[b.p],a=analyse(b),run=runOf(b);
+  document.getElementById('stTitle').textContent=bname(b);
+  // the run along the wall: jump between units, or add one
+  document.getElementById('stRun').innerHTML=run.map((o,i)=>`<button data-u="${o.id}" class="${o.id===b.id?'on':''}">יחידה ${i+1} · ${f1(o.w)}</button>`).join('')+
+    `<button data-add="L">+ משמאל</button><button data-add="R">+ מימין</button>`;
+  // tools: only what the series sells
+  const allowed=SYSK[sy];
+  document.getElementById('stTools').innerHTML=TOOLDEF.filter(([k])=>{const kk={shelf:'shelves',rod:'rod',drawers:'drawers',baskets:'baskets',shoes:'shoes'}[k];return!allowed||!kk||allowed.includes(kk)})
+    .map(([k,t,d])=>`<button data-tool="${k}" draggable="${k!=='sel'}" class="${STOOL===k?'on':''}" title="${k==='sel'?'לבחור תא, ולגרור מדף למעלה או למטה':'לגרור אל הארון, או לבחור ולהקיש במקום'}">${d?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="${d}"/></svg>`:''}${t}</button>`).join('');
+  drawStudioFront(b);
+  // side: frame, inside, price
+  const S=SIZES[sy];
+  const sizeRow=(key,label)=>S?`<div class="sizes"><span>${label}</span>${S[key].map(v=>{const w=key==='w'?v:pick(S.w,b.w),d=key==='d'?v:pick(S.d,b.d),h=key==='h'?v:pick(S.h,b.hh??pd?.h),id=S.id(w,d,h);
+    return`<button data-sz="${id}" class="${(key==='w'?pick(S.w,b.w):key==='d'?pick(S.d,b.d):pick(S.h,b.hh??pd?.h))===v?'on':''}"${PMAP[id]?'':' disabled'}>${v}</button>`}).join('')}</div>`:'';
+  const pin=paxInside(b),frameP=pd?pd.price:0;
+  document.getElementById('stSide').innerHTML=`
+   <div class="card"><h3>מסגרת</h3>${pd?`<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:84px;flex:none">${pic(pd,100)}</div><div><b>${pd.n}</b><br><span class="muted">${says(pd)}</span></div></div>`:'<p class="muted">בלוק חופשי — המידות מהלוח הרגיל.</p>'}
+     ${S?sizeRow('w','רוחב')+sizeRow('d','עומק')+sizeRow('h','גובה'):''}
+     ${sy==='boaxel'?'<p class="muted" style="margin:4px 0 0">ל-BOAXEL יש קטע אחד, 80 ס״מ. מוסיפים קטעים צמודים כדי להרחיב.</p>':''}
+     <ul class="facts">${a.out.filter(o=>o[0]!=='ok'||/תקרה|מוט/.test(o[1])).slice(0,5).map(([c,t])=>`<li class="${c}">${t}</li>`).join('')}</ul></div>
+   <div class="card"><h3>פנים</h3><p class="muted" style="margin:0 0 6px">גוררים כלי מהשורה שמעל הארון אל המקום שרוצים, או בוחרים כלי ומקישים. במצב ״בחירה״ גוררים מדף קבוע למעלה או למטה — הוא נצמד לחורים כל 3.2 ס״מ. הרשימה כאן לדיוק בס״מ.</p>${insideHtml(b)}</div>
+   <div class="card"><h3>מחיר</h3><table class="sumt">${pd?`<tr><td>${pd.n}</td><td class="n">₪${frameP}</td></tr>`:''}${pin&&pin.sum?`<tr><td>פנים: ${pin.txt}</td><td class="n">₪${pin.sum}</td></tr>`:''}
+     <tr><td><b>סה״כ ליחידה</b></td><td class="n"><b>₪${frameP+(pin?pin.sum:0)}</b></td></tr>
+     ${run.length>1?`<tr><td>כל השורה (${run.length} יחידות)</td><td class="n">₪${run.reduce((t,o)=>t+(o.p&&PMAP[o.p]?PMAP[o.p].price:0)+((paxInside(o)||{}).sum||0),0)}</td></tr>`:''}</table>
+     ${pd?`<p class="muted" style="margin:6px 0 0"><a href="${pd.u}" target="_blank" rel="noopener" style="color:var(--accent)">לעמוד המוצר</a>${pd.g==='pax'?' · <a href="https://www.ikea.com/addon-app/storageone/pax/web/latest/il/he/#/planner" target="_blank" rel="noopener" style="color:var(--accent)">למתכנן PAX של איקאה</a>':''}</p>`:''}</div>`;
+  wireInside(b);
+  document.querySelectorAll('#stSide [data-sz]').forEach(bt=>bt.onclick=()=>{const keep=b.cfg,lb=b.lb,run0=runOf(b),tight=isTight(run0);
+    applyProduct(b,bt.dataset.sz);if(keep)b.cfg=keep;if(lb)b.lb=lb;if(tight)packRun(run0);touch();renderAll()});
+  build3St()}
+/* units standing shoulder to shoulder stay that way when one changes width, like frames in a PAX run */
+const alongW=o=>o.f==='E'||o.f==='W';
+function isTight(run){for(let i=1;i<run.length;i++){const a=R(run[i-1]),c=R(run[i]);const gap=alongW(run[i])?c.y-(a.y+a.h):c.x-(a.x+a.w);if(Math.abs(gap)>1)return false}return run.length>1}
+function packRun(run){if(run.length<2)return;let c=alongW(run[0])?R(run[0]).y:R(run[0]).x;run.forEach(o=>{if(alongW(o)){o.y=+c.toFixed(1);c+=R(o).h}else{o.x=+c.toFixed(1);c+=R(o).w}})}
+const pick=(list,v)=>list.reduce((a,c)=>Math.abs(c-v)<Math.abs(a-v)?c:a);
+document.getElementById('stRun').onclick=e=>{const u=e.target.closest('[data-u]'),ad=e.target.closest('[data-add]');const b=B.find(x=>x.id===STU);if(!b)return;
+  if(u){STU=+u.dataset.u;sel=STU;const nb=B.find(x=>x.id===STU);if(nb&&!nb.cfg)materialize(nb);drawStudio();renderAll(true)}
+  if(ad){const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});placeInRun(c,b,ad.dataset.add);B.push(c);STU=c.id;sel=c.id;touch();renderAll()}};
+document.getElementById('stTools').onclick=e=>{const t=e.target.closest('[data-tool]')?.dataset.tool;if(t){STOOL=t;drawStudio()}};
+document.getElementById('stTools').addEventListener('dragstart',e=>{const t=e.target.closest('[data-tool]')?.dataset.tool;if(t)e.dataTransfer.setData('text/plain',t)});
+
+/* the big front view: the unit as a carpenter draws it, editable in place */
+function stZ(e){const sv=document.getElementById('stSvg'),pt=sv.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(sv.getScreenCTM().inverse());return{z:STOP-q.y,u:q.x}}
+let STOP=240;
+function drawStudioFront(b){const sv=document.getElementById('stSvg');sv.innerHTML='';const a=analyse(b),w=b.w,d=b.d,z0=zOf(b),hb=hOf(b),topMin=Math.min(hb,a.cmin-2),F=frame(b);
+  const sy=sysOf(b),pd=b.p&&PMAP[b.p],col=pd&&pd.c&&pd.c!==WH?pd.c:'#e9e4da',ink='var(--ink)';
+  STOP=Math.max(H,topMin)+14;sv.setAttribute('viewBox',`-34 0 ${w+68} ${STOP+22}`);
+  const Y=z=>STOP-z,add=(t,at)=>{const el=document.createElementNS(NS,t);for(const k in at)el.setAttribute(k,at[k]);sv.appendChild(el);return el},
+    tx=(x,y,t,st)=>{const el=add('text',{x,y,style:'font:500 5.4px var(--body);fill:var(--ink2);text-anchor:middle;'+(st||'')});el.textContent=t;return el};
+  // ceiling over the unit, from the room
+  const cps=[];for(let i=0;i<=20;i++){const u=w*i/20,q=F(u,u,d/2,d/2);cps.push([u,ceilP(q[0],q[2])])}
+  add('rect',{x:-34,y:0,width:w+68,height:STOP+22,fill:'var(--surface)'});
+  add('polygon',{points:[[-34,0],...cps.map(([u,h])=>[u,Y(h)]),[w+34,Y(cps[20][1])],[w+34,0]].map(p=>p.join(',')).join(' '),fill:'var(--surface2)'});
+  add('polyline',{points:cps.map(([u,h])=>u+','+Y(h)).join(' '),fill:'none',stroke:'var(--warn)','stroke-width':.8});
+  tx(-17,Y(cps[0][1])+2,'תקרה '+f1(cps[0][1]),'fill:var(--warn)');if(Math.abs(cps[20][1]-cps[0][1])>.5)tx(w+17,Y(cps[20][1])+2,f1(cps[20][1]),'fill:var(--warn)');
+  add('line',{x1:-34,y1:Y(0),x2:w+34,y2:Y(0),stroke:'var(--line2)','stroke-width':1});
+  // frame
+  const Lr=lay(b),base=Lr.base,top=Lr.top,open=sy==='boaxel';
+  if(!open){add('rect',{x:0,y:Y(topMin),width:w,height:topMin-z0,fill:col,stroke:ink,'stroke-width':.9});add('rect',{x:TK,y:Y(top),width:w-2*TK,height:top-base,fill:'var(--surface)',stroke:ink,'stroke-width':.4,opacity:.92})}
+  else{[8,w-10.5].forEach(u=>add('rect',{x:u,y:Y(topMin),width:2.5,height:topMin,fill:'#9a9a98'}))}
+  if(!z0&&!open)add('rect',{x:TK,y:Y(PL),width:w-2*TK,height:PL-.5,fill:'var(--ink3)',opacity:.35});
+  const nr=Lr.rows.length,showD=document.getElementById('stDoors').checked;
+  Lr.rows.forEach((r,i)=>{const topN=i===nr-1&&r.h==null?top:r.z1,hh=topN-r.z0;if(hh<1)return;
+    const g=add('g',{'data-row':i,style:'cursor:pointer'});const A=(t,at)=>{const el=document.createElementNS(NS,t);for(const k in at)el.setAttribute(k,at[k]);g.appendChild(el);return el};
+    A('rect',{x:TK,y:Y(topN),width:w-2*TK,height:hh,fill:i===stRow?'var(--accent)':'transparent','fill-opacity':i===stRow?.12:0});
+    if(r.k==='shelves'||r.k==='shoes'){const n=r.n|0,st=hh/(n+1);for(let k=1;k<=n;k++)A('rect',{x:TK,y:Y(r.z0+k*st)-.9,width:w-2*TK,height:1.8,fill:col,stroke:ink,'stroke-width':.3});
+      if(CLOTHES)for(let k=0;k<=n;k++){const zz=r.z0+k*st+(k?.9:0);if(r.k==='shoes')for(let u=TK+3;u+17<w-TK;u+=21){A('path',{d:`M${u} ${Y(zz)} h16 v-3 q-3 -4 -8 -4 l-2 -3 h-6 z`,fill:SHOE[(u|0)%SHOE.length]})}
+        else for(let u=TK+3,j=0;u+22<w-TK;u+=27,j++){const h2=Math.min(st-5,9+(j*7)%10);if(h2>3)A('rect',{x:u,y:Y(zz+h2),width:22,height:h2,rx:1,fill:GARM[(j*5+k)%GARM.length]})}}}
+    if(r.k==='drawers'||r.k==='baskets'){const n=Math.max(1,r.n|0),dh=hh/n,nc=Math.max(1,b.cols|0),cw=(w-2*TK)/nc;
+      for(let c=0;c<nc;c++)for(let k=0;k<n;k++){const x0=TK+c*cw,zz=r.z0+k*dh;
+        if(r.k==='drawers'){A('rect',{x:x0+.4,y:Y(zz+dh)+.3,width:cw-.8,height:dh-.6,fill:col,stroke:ink,'stroke-width':.5,rx:.6});A('rect',{x:x0+cw/2-Math.min(9,cw/5),y:Y(zz+dh-4),width:Math.min(18,cw/2.5),height:1.2,fill:'#8d8a84'})}
+        else{A('rect',{x:x0+1,y:Y(zz+Math.min(dh-2,16)),width:cw-2,height:Math.min(dh-2,16),fill:'none',stroke:'#8d8a84','stroke-width':.6});for(let u=x0+4;u<x0+cw-2;u+=4)A('line',{x1:u,y1:Y(zz+Math.min(dh-2,16)),x2:u,y2:Y(zz),stroke:'#a9a7a2','stroke-width':.3})}}}
+    if(r.k==='rod'){const rz=topN-5;A('rect',{x:TK,y:Y(rz)-.9,width:w-2*TK,height:1.8,rx:.9,fill:'#a9a7a2'});
+      if(CLOTHES)for(let u=TK+3,j=0;u<w-TK-4;u+=4.6,j++){const L2=Math.min(140,hh-8)*(.8+((j*37)%17)/85),bot=Math.max(r.z0+2,rz-3-L2);
+        A('path',{d:`M${u+1.6} ${Y(rz)} l-1.6 3 v${(rz-3-bot).toFixed(1)} h3.6 v-${(rz-3-bot).toFixed(1)} z`,fill:GARM[(j*7)%GARM.length],opacity:.92})}}
+    if(r.door&&showD&&r.k!=='drawers'&&r.k!=='baskets'){const n=Math.max(1,Math.ceil(w/50)),dw=w/n;
+      for(let k=0;k<n;k++){const x0=k*dw;A('rect',{x:x0+.3,y:Y(topN+TK),width:dw-.6,height:hh+TK,fill:col,'fill-opacity':.82,stroke:ink,'stroke-width':.6});
+        const hinge=k%2?x0+dw:x0,hand=k%2?x0:x0+dw;A('polyline',{points:`${hand},${Y(topN+TK)} ${hinge},${Y(r.z0+hh/2)} ${hand},${Y(r.z0)}`,fill:'none',stroke:ink,'stroke-width':.4,'stroke-dasharray':'2 1.5'})}}
+    // height of the compartment, on the side
+    const lt=document.createElementNS(NS,'text');lt.setAttribute('x',w+4);lt.setAttribute('y',Y(r.z0+hh/2)+2);lt.setAttribute('style','font:600 5.2px var(--body);fill:var(--accent);text-anchor:start');lt.textContent=f1(hh);g.appendChild(lt)});
+  // fixed shelves between compartments: grab and drag
+  Lr.rows.forEach((r,i)=>{if(i>=nr-1)return;const zz=r.z1;
+    add('rect',{x:TK,y:Y(zz+TK),width:w-2*TK,height:TK,fill:col,stroke:ink,'stroke-width':.5});
+    const h=add('rect',{x:TK,y:Y(zz+TK)-3,width:w-2*TK,height:TK+6,fill:'transparent','data-dv':i,style:'cursor:ns-resize'});
+    const t=add('text',{x:-4,y:Y(zz+TK/2)+2,style:'font:600 5px var(--body);fill:var(--ink2);text-anchor:end'});t.textContent=f1(zz+TK/2)});
+  for(let c=1;c<Math.max(1,b.cols|0);c++)add('rect',{x:c*w/b.cols-TK/2,y:Y(top),width:TK,height:top-base,fill:col,stroke:ink,'stroke-width':.4});
+  // overall measures
+  add('line',{x1:0,y1:Y(0)+8,x2:w,y2:Y(0)+8,stroke:'var(--accent)','stroke-width':.5});tx(w/2,Y(0)+15,f1(w)+' רוחב · '+f1(d)+' עומק','fill:var(--accent);font-weight:600');
+  add('line',{x1:-12,y1:Y(topMin),x2:-12,y2:Y(z0),stroke:'var(--accent)','stroke-width':.5});
+  const vt=add('text',{x:-15,y:Y((topMin+z0)/2),style:'font:600 5.4px var(--body);fill:var(--accent);text-anchor:middle',transform:`rotate(-90 -15 ${Y((topMin+z0)/2)})`});vt.textContent='גובה '+f1(topMin);
+  if(a.lvl==='bad')add('rect',{x:-1,y:Y(topMin)-1,width:w+2,height:topMin-z0+2,fill:'none',stroke:'var(--bad)','stroke-width':1.2,'stroke-dasharray':'4 2'})}
+(function(){const sv=document.getElementById('stSvg');
+  sv.addEventListener('pointerdown',e=>{const b=B.find(x=>x.id===STU);if(!b)return;const dv=e.target.closest('[data-dv]');
+    if(dv&&STOOL==='sel'){materialize(b);stDrag={b,i:+dv.dataset.dv,z0:stZ(e).z,h0:b.cfg[+dv.dataset.dv].h,h1:b.cfg[+dv.dataset.dv+1].h};sv.setPointerCapture(e.pointerId);e.preventDefault();return}
+    const {z}=stZ(e);
+    if(STOOL==='sel'){const rw=e.target.closest('[data-row]');stRow=rw?+rw.dataset.row:null;drawStudioFront(b);
+      const el=document.querySelector(`#crows [data-i="${stRow}"]`);if(el){el.scrollIntoView({block:'nearest'});el.style.outline='2px solid var(--accent)';setTimeout(()=>el.style.outline='',900)}return}
+    ETOOL=STOOL;const msg=applyTool(b,z);document.getElementById('stMsg').textContent=msg||'';touch();renderAll()});
+  sv.addEventListener('pointermove',e=>{if(!stDrag)return;const {b,i,z0,h0,h1}=stDrag,g=3.2;let dz=Math.round((stZ(e).z-z0)/g)*g;
+    dz=Math.max(-(h0-8),dz);if(h1!=null)dz=Math.min(h1-8,dz);b.cfg[i].h=+(h0+dz).toFixed(1);if(h1!=null)b.cfg[i+1].h=+(h1-dz).toFixed(1);
+    if(h1==null&&lay(b).short<6)b.cfg[i].h=+(h0+dz-(6-lay(b).short)).toFixed(1);drawStudioFront(b)});
+  const end=()=>{if(!stDrag)return;stDrag=null;touch();renderAll()};sv.addEventListener('pointerup',end);sv.addEventListener('pointercancel',end);
+  sv.addEventListener('dragover',e=>e.preventDefault());
+  sv.addEventListener('drop',e=>{e.preventDefault();const t=e.dataTransfer.getData('text/plain'),b=B.find(x=>x.id===STU);if(!t||!b||t==='sel')return;
+    ETOOL=t;const msg=applyTool(b,stZ(e).z);document.getElementById('stMsg').textContent=msg||'';touch();renderAll()})})();
+
+/* close-up 3D of the run, lit like a showroom */
+function initSt3(){if(ST3||!window.THREE||!THREE.OrbitControls)return;const host=document.getElementById('st3d');host.innerHTML='';
+  const ren=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});ren.setPixelRatio(Math.min(2,devicePixelRatio));ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(ren.domElement);
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0xf1eee8);const cam=new THREE.PerspectiveCamera(38,1,8,4000),ctl=new THREE.OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
+  scene.add(new THREE.HemisphereLight(0xffffff,0x9a8a76,.75),new THREE.AmbientLight(0xffffff,.25));
+  const dl=new THREE.DirectionalLight(0xfff6ea,.55);dl.castShadow=true;dl.shadow.mapSize.set(1024,1024);Object.assign(dl.shadow.camera,{left:-300,right:300,top:300,bottom:-300,near:20,far:1500});scene.add(dl,dl.target);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(4000,4000),new THREE.MeshStandardMaterial({map:floorTex(),roughness:.85}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
+  const G=new THREE.Group();scene.add(G);ST3={ren,scene,cam,ctl,G,dl,host,aim:null};
+  const sz=()=>{const w=host.clientWidth,h=host.clientHeight;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix()};sz();addEventListener('resize',sz);
+  (function loop(){requestAnimationFrame(loop);if(!STU)return;ctl.update();ren.render(scene,cam)})();build3St()}
+function build3St(){if(!ST3)return;const b=B.find(x=>x.id===STU);if(!b)return;const G=ST3.G;
+  G.traverse(o=>{if(o.geometry)o.geometry.dispose()});while(G.children.length)G.remove(G.children[0]);
+  const run=runOf(b);run.forEach(o=>{const g=new THREE.Group();G.add(g);joinery(o,g)});
+  const bx=new THREE.Box3().setFromObject(G),c=bx.getCenter(new THREE.Vector3()),sz=bx.getSize(new THREE.Vector3());
+  const n={S:[0,1],N:[0,-1],E:[1,0],W:[-1,0]}[b.f],dist=Math.max(sz.x,sz.z,sz.y)*1.25+120,key=run.map(o=>o.id).join(',');
+  if(ST3.aim!==key){ST3.aim=key;ST3.cam.position.set(c.x+n[0]*dist+(n[1]?dist*.35:0),Math.min(190,c.y+60),c.z+n[1]*dist+(n[0]?dist*.35:0));ST3.ctl.target.set(c.x,c.y*.9,c.z);ST3.ctl.update()}
+  ST3.dl.position.set(c.x+n[0]*300+150,420,c.z+n[1]*300+150);ST3.dl.target.position.copy(c)}
+
 /* ===== פרויקטים והגדרות החדר ===== */
 const KINDN={door:'דלת',double:'דלת כפולה',opening:'פתח בלי דלת',window:'חלון',hatch:'פתח שירות'};
 const DIRN={S:'מלמעלה למטה',N:'מלמטה למעלה',E:'משמאל לימין',W:'מימין לשמאל'};
@@ -1665,7 +1844,7 @@ function drawRsPrev(rm){const sv=document.getElementById('rsPrev');if(!sv)return
 const OPP={N:'S',S:'N',E:'W',W:'E'};
 function fixFacing(b){if(b.a||TYPES[b.t].corner||['bench','box','suit','rack'].includes(b.t))return;
   const r=R(b),fd=wallRay(r,b.f)[0],bd=wallRay(r,OPP[b.f])[0];if(fd<15&&bd>fd+.5)b.f=OPP[b.f]}
-function renderAll(light){B.forEach(keepInView);if(!light)B.forEach(fixFacing);if(!light)track();setTimeout(drawHist);drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
+function renderAll(light){if(STU)setTimeout(drawStudio);B.forEach(keepInView);if(!light)B.forEach(fixFacing);if(!light)track();setTimeout(drawHist);drawPlan();drawPanel();drawList();drawShop();drawCur();drawVersions();drawElev();sched3();if(!light)save()}
 drawCatalog();drawProj();
 renderAll();
 if(document.readyState==='complete')init3();else addEventListener('load',init3);

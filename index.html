@@ -90,7 +90,11 @@ label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .ptabs button{font:500 12.5px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--ink2);padding:5px 10px;border-radius:999px;cursor:pointer}
 .ptabs button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 .plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:10px}
-.thumb{display:block;width:100%;height:130px;margin-bottom:4px;background:var(--surface2);border-radius:7px}
+.pic{display:block;position:relative;width:100%;background:#fff;border-radius:7px;margin-bottom:4px;overflow:hidden}
+.pic img{width:100%;height:100%;object-fit:contain;display:block}
+.pic .alt{display:none;height:100%}.pic.noimg img{display:none}.pic.noimg .alt{display:block}
+.pic em{position:absolute;bottom:2px;inset-inline-start:4px;font:400 10.5px var(--body);color:#7a7266;background:rgba(255,255,255,.85);padding:0 4px;border-radius:4px}
+.thumb{display:block;width:100%;height:100%;margin-bottom:4px;background:var(--surface2);border-radius:7px}
 .pitem.nofit{opacity:.6}
 .pitem{text-align:start;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:2px}
 .pitem:hover{border-color:var(--ink2)}
@@ -257,7 +261,7 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
   <p class="muted" style="margin:0 0 8px">גוררים כדי לסובב, צובטים או גוללים כדי להתקרב. במצב נגרות כל ארון בנוי מלוחות: דפנות, גב, מדפים, מוטות, חזיתות מגירות וידיות, וחותך את עצמו לפי התקרה בנקודה שבה הוא עומד.</p>
   <div class="bar" style="margin:0 0 8px">
     <div class="seg" id="mode3" style="margin:0"><button data-m="real" class="on">נגרות</button><button data-m="schem">סכמטי</button></div>
-    <div class="seg" id="fin3" style="margin:0"><button data-f="oak" class="on">אלון טבעי</button><button data-f="white">לבן מט</button><button data-f="walnut">אגוז</button><button data-f="block">צבעי הבלוקים</button></div>
+    <div class="seg" id="fin3" style="margin:0"><button data-f="prod" class="on">כמו המוצר</button><button data-f="oak">אלון טבעי</button><button data-f="white">לבן מט</button><button data-f="walnut">אגוז</button><button data-f="block">צבעי הבלוקים</button></div>
   </div>
   <div id="three"><div class="ph">טוען את התלת-ממד…</div></div>
   <div class="bar"><label class="chk"><input type="checkbox" id="ceil"> להראות את התקרה</label><label class="chk"><input type="checkbox" id="clothes" checked> בגדים על המוטות</label>
@@ -462,7 +466,15 @@ const PRODUCTS=[
   note:'אורן גולמי. מחיר: 2 צדדים ('+side+' ₪ כל אחד) ועוד מדפים 83 ס״מ לפי העיצוב, כולל עליון ותחתון. שתי יחידות צמודות חולקות צד אחד'}));
 PRODUCTS.push({id:'boaxelS80',g:'sys',sys:'boaxel',n:'BOAXEL קטע קיר 80',t:'hangS',w:82,d:40,h:201,price:110,u:IKS('BOAXEL'),c:WH,cfg:[{k:'rod',h:null},{k:'shelves',h:30,n:0}],
   note:'נתלה על הקיר: 2 קורות של 200 ומסילה 82 (110 ₪). מוט 20 ₪, מדף 80×40 עם 2 תומכים 90 ₪, סלסלת רשת 80 ₪. קטעים צמודים חולקים קורה'});
+/* product photos from IKEA Israel's own catalogue (checked 3.11.2026); a size without its own photo shows its family's */
+const IMGB='https://www.ikea.com/il/he/images/products/',PIMG={"10056770": "dimpa-storage-bag-transparent__0711229_pe728074_s5.jpg", "10135659": "marius-stool-black__0727386_pe735638_s5.jpg", "10239280": "hemnes-chest-of-8-drawers-white-stain__1602270_pe1043360_s5.jpg", "10458710": "idanaes-chest-of-6-drawers-white__0898855_pe782665_s5.jpg", "10530259": "bissa-shoe-cabinet-with-3-compartments-white__1126565_pe875785_s5.jpg", "10585888": "aelganaes-clothes-rack-with-shoe-storage-black__1358370_pe953854_s5.jpg", "20439472": "nordkisa-dressing-table-bamboo__0756073_pe748752_s5.jpg", "20591049": "skubb-storage-case-white__0711311_pe728149_s5.jpg", "20605485": "nissedal-mirror-white__0637800_pe698596_s5.jpg", "20609916": "kilberget-chest-of-6-drawers-white__1590226_pe1038865_s5.jpg", "20611127": "raggberg-bench-with-shoe-storage-pine__1457000_pe992547_s5.jpg", "20621541": "stuk-storage-case-white-black__1457442_pe992633_s5.jpg", "30213076": "micke-desk-white__0736022_pe740349_s5.jpg", "30275861": "kallax-shelving-unit-white__0644546_pe702768_s5.jpg", "30298396": "ikornnes-standing-mirror-ash__0633524_pe695900_s5.jpg", "40294982": "karmsund-standing-mirror-black__0633525_pe695899_s5.jpg", "40601778": "laerbro-mirror__1419636_pe977048_s5.jpg", "40630479": "lillberget-chest-of-6-drawers-white__1602300_pe1043390_s5.jpg", "50231630": "rigga-clothes-rack-white__0710721_pe727742_s5.jpg", "50530993": "mackapaer-shoe-rack-white__0710716_pe727737_s5.jpg", "60179434": "mulig-clothes-rack-white__0710723_pe727744_s5.jpg", "60239273": "hemnes-chest-of-6-drawers-white-stain__1602273_pe1043363_s5.jpg", "60416925": "kyrre-stool-birch__1488024_pe1003293_s5.jpg", "60485339": "perjohan-bench-with-storage-pine__0948199_pe798912_s5.jpg", "60632019": "stegesund-bench-light-bamboo__1531968_pe1015823_s5.jpg", "70290459": "brimnes-dressing-table-white__0627086_pe693167_s5.jpg", "70515915": "hovet-mirror-black__1100010_pe866038_s5.jpg", "70530256": "bissa-shoe-cabinet-with-2-compartments-white__1126569_pe875786_s5.jpg", "70620346": "malm-dressing-table-white__1550503_pe1022440_s5.jpg", "70627550": "storklinta-chest-of-6-drawers-white__1590235_pe1038874_s5.jpg", "80458207": "pax-wardrobe-frame-white__1164284_pe890498_s5.jpg", "80458231": "pax-wardrobe-frame-white__1164300_pe890510_s5.jpg", "80556401": "lettan-mirror__0714759_pe756223_s5.jpg", "80597232": "lindbyn-mirror-black__1374978_pe960159_s5.jpg", "80605487": "nissedal-mirror-white__0637799_pe698595_s5.jpg", "80624645": "vasskaer-shoe-rack-bamboo__1165482_pe890877_s5.jpg", "90301555": "kallax-shelving-unit-white__0383004_pe557240_s5.jpg", "90392046": "brimnes-chest-of-4-drawers-white-frosted-glass__1602277_pe1043367_s5.jpg", "90458221": "pax-wardrobe-frame-white__1164296_pe890506_s5.jpg", "90458235": "pax-wardrobe-frame-white__1164304_pe890514_s5.jpg", "00130129": "samla-box-transparent__0711136_pe728025_s5.jpg", "00396242": "knapper-standing-mirror-white__0594294_pe676198_s5.jpg", "00526875": "kuggis-storage-box-with-lid-white__1139591_pe880451_s5.jpg", "00570222": "grafjaellet-clothes-rack-with-shoe-storage-anthracite__1327718_pe944560_s5.jpg", "00581536": "hauga-chest-of-6-drawers-white__1602283_pe1043373_s5.jpg", "s09631216": "ivar-shelving-unit-with-6-shelves-pine__1538962_pe1017530_s5.jpg", "s49403948": "ivar-3-sections-shelves-pine__0124413_pe281090_s5.jpg", "s59574459": "trofast-storage-combination-with-boxes-white-white__1354571_pe952833_s5.jpg", "s79407054": "ivar-1-section-shelves-pine__0169608_pe323553_s5.jpg", "s89404578": "ivar-shelving-unit-pine__1192924_pe901291_s5.jpg", "s89404583": "ivar-shelving-unit-pine__0944326_pe797236_s5.jpg", "s89407058": "ivar-2-sections-shelves-pine__0138387_pe297655_s5.jpg", "s19332368": "boaxel-wardrobe-combination-white__0933369_pe791960_s5.jpg", "s99157902": "elvarli-wardrobe-combination-white__0442433_pe593801_s5.jpg"},PFAM={"70458217": "80458231", "70458203": "80458231", "20458210": "80458231", "30458224": "80458231", "30458196": "80458231", "00275848": "30275861", "10409932": "30275861", "20275814": "90301555", "80275887": "30275861"};
+PRODUCTS.forEach(p=>{const m=(p.u||'').match(/-(s?\d{8})\/$/),id=m&&m[1];
+  if(id&&PIMG[id])p.img=IMGB+PIMG[id];else if(id&&PFAM[id]){p.img=IMGB+PIMG[PFAM[id]];p.imgFam=1}
+  else if(p.sys==='ivar'){p.img=IMGB+PIMG.s89404578;p.imgFam=1}else if(p.sys==='boaxel'||/^boaxel/.test(p.id)){p.img=IMGB+PIMG.s19332368;p.imgFam=1}
+  else if(/^elvarli/.test(p.id)){p.img=IMGB+PIMG.s99157902}});
 const PMAP=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+/* the photo when it loads, the drawn front view when it can't */
+const pic=(p,h)=>p.img?`<span class="pic" style="height:${h}px"><img src="${p.img}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('noimg')"><span class="alt">${thumb(p)}</span>${p.imgFam?'<em>תמונה של דגם אחר בסדרה</em>':''}</span>`:`<span class="pic noimg" style="height:${h}px"><span class="alt">${thumb(p)}</span></span>`;
 const sysOf=b=>{const p=b.p&&PMAP[b.p];return p?(p.sys||(p.g==='pax'?'pax':null)):null};
 const SYSK={ivar:['shelves','empty'],boaxel:['shelves','rod','baskets','shoes','empty']};
 /* KOMPLEMENT interiors for PAX, ₪ by frame depth and width */
@@ -920,7 +932,7 @@ function drawPanel(){
   const pd=b.p&&PMAP[b.p],pin=paxInside(b);
   const pchoice=`<label class="wide">${pd?'להחליף במוצר אחר':'להפוך למוצר אמיתי'}<select id="fp"><option value="">${pd?'— בלוק חופשי, בלי מוצר —':'— בחירת מוצר —'}</option>${PGROUPS.map(([g,gn])=>`<optgroup label="${gn}">${PRODUCTS.filter(p=>p.g===g).map(p=>`<option value="${p.id}"${p.id===b.p?' selected':''}>${p.n} · ₪${p.price}</option>`).join('')}</optgroup>`).join('')}</select></label>`;
   panel.innerHTML=`<h2>${bname(b)}</h2><p class="muted" style="margin:0">${Ty.info}</p>
-   ${pd?`<div class="pcard"><div style="float:inline-start;width:74px;margin-inline-end:10px">${thumb(pd)}</div><b>${pd.n}</b> · ${pd.s||'IKEA'} · <b>₪${pd.price}</b>${pin?` + פנים ₪${pin.sum} (${pin.txt})`:''}<br>${says(pd)?says(pd)+'<br>':''}${pd.w}×${pd.d}×${pd.h} ס״מ${pd.note?' · '+pd.note:''}${(b.w!==pd.w||b.d!==pd.d||(b.hh??999)!==pd.h)?' · <span style="color:var(--warn)">המידות כאן שונו מהמוצר</span>':''}<br><a href="${pd.u}" target="_blank" rel="noopener">לעמוד המוצר</a></div>`:''}
+   ${pd?`<div class="pcard"><div style="float:inline-start;width:92px;margin-inline-end:10px">${pic(pd,110)}</div><b>${pd.n}</b> · ${pd.s||'IKEA'} · <b>₪${pd.price}</b>${pin?` + פנים ₪${pin.sum} (${pin.txt})`:''}<br>${says(pd)?says(pd)+'<br>':''}${pd.w}×${pd.d}×${pd.h} ס״מ${pd.note?' · '+pd.note:''}${(b.w!==pd.w||b.d!==pd.d||(b.hh??999)!==pd.h)?' · <span style="color:var(--warn)">המידות כאן שונו מהמוצר</span>':''}<br><a href="${pd.u}" target="_blank" rel="noopener">לעמוד המוצר</a>${pd.g==='pax'?' · <a href="https://www.ikea.com/addon-app/storageone/pax/web/latest/il/he/#/planner" target="_blank" rel="noopener">לעצב אותו במתכנן PAX של איקאה</a>':''}</div>`:''}
    <div class="fields" style="margin-bottom:0">${pchoice}</div>
    ${!b.a?`<div class="bar" style="margin-top:6px"><button class="btn sm" id="addL">+ עוד אחד צמוד משמאל</button><button class="btn sm" id="addR">+ עוד אחד צמוד מימין</button></div>`:''}
    <div class="fields">
@@ -1059,7 +1071,7 @@ document.getElementById('load').onclick=()=>{try{const s=JSON.parse(io.value);
   catch(e){ioMsg.textContent='הטקסט בתיבה לא נראה כמו תוכנית. להדביק אותו שוב בשלמותו.'}};
 
 /* ===== תלת-ממד ===== */
-let R3=null,MODE='real',FINISH='oak',CLOTHES=true;
+let R3=null,MODE='real',FINISH='prod',CLOTHES=true;
 const FINS={oak:'#c9a274',white:'#efebe4',walnut:'#6e4b33'};
 const GARM=['#e9e3d8','#c9b8a0','#8e9aa8','#3d4a5c','#b7735a','#d8c8b2','#6d7b63','#2f2f33','#f2ede4','#a3887a','#556270','#c4a484','#7d5a50','#9fb3c8'];
 const SHOE=['#2f2a26','#7a5236','#e8e4dc','#a8885f','#3c4a5c','#8e2f2f'];
@@ -1081,7 +1093,9 @@ function floorTex(){if(TEX.floor)return TEX.floor;
       x.moveTo(0,yy);x.bezierCurveTo(170,yy+3,340,yy-3,512,yy+r()*3);x.stroke()}}
   const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/160,1/160);return TEX.floor=t}
 const mat=(k,mk)=>MATS[k]||(MATS[k]=mk());
-function finMat(b,shade){const plain=FINISH==='block'||FINISH==='white',hex=FINISH==='block'?colOf(b):FINS[FINISH];
+function finMat(b,shade){let fin=FINISH;
+  if(fin==='prod'){const p=b.p&&PMAP[b.p];fin=!p?'oak':p.c===WH||p.c==='#d8d8d8'?'white':p.c===BLK?'black':p.c===PINE?'pine':p.c===BAMB?'bamboo':'oak'}
+  const plain=fin==='block'||fin==='white'||fin==='black',hex=fin==='block'?colOf(b):fin==='black'?'#2e2d2b':fin==='pine'?'#dcc196':fin==='bamboo'?'#cfae72':FINS[fin];
   return mat('f'+hex+(shade||1),()=>{const col=plain?new THREE.Color(hex):new THREE.Color(0xffffff);if(shade)col.multiplyScalar(shade);
     return new THREE.MeshStandardMaterial({color:col,map:plain?null:woodTex(hex),roughness:.72})})}
 const MFAB=c=>mat('fab'+c,()=>new THREE.MeshStandardMaterial({color:new THREE.Color(c),roughness:.95}));
@@ -1116,7 +1130,7 @@ function joinery(b,G){
   const a=analyse(b),z0=zOf(b),w=b.w,d=b.d,F=frame(b),hb=hOf(b);
   const cap=c=>Math.min(hb,ceilC(c)-2);cap.br=AX?[cAtH(hb+2)]:[];
   const topMin=Math.min(hb,a.cmin-2),Cm=finMat(b),Fr=finMat(b,.93),Dk=finMat(b,.62),seed=b.id*97;
-  const P=(u0,u1,v0,v1,zb,zt,m)=>{const q=F(u0,u1,v0,v1);addPrism(G,q[0],q[1],q[2],q[3],zb,zt,m||Cm,cap)};
+  const P=(u0,u1,v0,v1,zb,zt,m)=>{u0=Math.max(u0,.15);u1=Math.min(u1,w-.15);if(v0<.15)v0=.15;if(u1<=u0)return;const q=F(u0,u1,v0,v1);addPrism(G,q[0],q[1],q[2],q[3],zb,zt,m||Cm,cap)};
   const carcass=(zb,plinth)=>{const fl=zb+(plinth?PL:0);
     P(0,TK,0,d,zb,cap);P(w-TK,w,0,d,zb,cap);P(TK,w-TK,0,.8,zb,cap);
     P(TK,w-TK,.8,d,y=>cap(y)-TK,cap);P(TK,w-TK,.8,d,fl,fl+TK);
@@ -1226,10 +1240,10 @@ function schem(b,G,real){const Ty=TYPES[b.t],r=R(b),a=analyse(b),z0=zOf(b);
 function init3(){
   if(!window.THREE||!THREE.OrbitControls){document.querySelector('#three .ph').textContent='התלת-ממד לא נטען. התוכנית למעלה עובדת גם בלעדיו.';return}
   const host=document.getElementById('three');host.innerHTML='';
-  const ren=new THREE.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(2,devicePixelRatio));
+  const ren=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});ren.setPixelRatio(Math.min(2,devicePixelRatio));
   ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(ren.domElement);
   const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9e5dc);
-  const cam=new THREE.PerspectiveCamera(42,1,1,6000);
+  const cam=new THREE.PerspectiveCamera(42,1,8,5000);
   const ctl=new THREE.OrbitControls(cam,ren.domElement);ctl.enableDamping=true;
   scene.add(new THREE.HemisphereLight(0xfffaf0,0x8a7a66,.55),new THREE.AmbientLight(0xffffff,.2));
   const dl=new THREE.DirectionalLight(0xfff4e6,.65);dl.position.set(W/2-160,620,L/2-260);dl.target.position.set(W/2,0,L/2);
@@ -1244,7 +1258,7 @@ function init3(){
     g.computeVertexNormals();let side=THREE.DoubleSide;
     if(inward){const nm=g.attributes.normal,n=C(nm.getX(0),nm.getY(0),nm.getZ(0)),p=C(pa.getX(0),pa.getY(0),pa.getZ(0));
       side=n.dot(mid.clone().sub(p))>0?THREE.FrontSide:THREE.BackSide}
-    const ms=new THREE.Mesh(g,m||new THREE.MeshStandardMaterial({color,side,transparent:opa<1,opacity:opa,roughness:.95}));ms.receiveShadow=true;return ms}
+    const ms=new THREE.Mesh(g,m||new THREE.MeshStandardMaterial({color,side,transparent:opa<1,opacity:opa,roughness:.95,polygonOffset:true,polygonOffsetFactor:2,polygonOffsetUnits:2}));ms.receiveShadow=true;return ms}
   const wc=0xefebe4;
   room.add(plane(POLY,(u,v)=>[u,0,v],0,1,0,new THREE.MeshStandardMaterial({map:floorTex(),roughness:.8})));
   // walls: each edge rises to the ceiling over it, with door-height cuts where openings reach the floor
@@ -1505,7 +1519,7 @@ function drawCatalog(){const tabs=document.getElementById('ptabs'),list=document
   tabs.innerHTML=PGROUPS.map(([g,n])=>`<button data-g="${g}" class="${g===PTAB?'on':''}">${n}</button>`).join('');
   document.getElementById('pinfo').textContent=GINFO[PTAB]||'';
   list.innerHTML=PRODUCTS.filter(p=>p.g===PTAB).map(p=>{const sy=says(p),bad=sy.includes('לא נכנסת');
-    return`<button class="pitem${bad?' nofit':''}" data-p="${p.id}">${thumb(p)}<b>${p.n}</b><span>${p.w}×${p.d}×${p.h} ס״מ · ${p.s||'IKEA'}</span>${sy?`<span class="fit${bad?' no':''}">${sy}</span>`:''}<span class="pr">₪${p.price}${p.g==='pax'||p.sys?' + פנים':''}</span></button>`}).join('')}
+    return`<button class="pitem${bad?' nofit':''}" data-p="${p.id}">${pic(p,130)}<b>${p.n}</b><span>${p.w}×${p.d}×${p.h} ס״מ · ${p.s||'IKEA'}</span>${sy?`<span class="fit${bad?' no':''}">${sy}</span>`:''}<span class="pr">₪${p.price}${p.g==='pax'||p.sys?' + פנים':''}</span></button>`}).join('')}
 document.getElementById('ptabs').onclick=e=>{const g=e.target.closest('[data-g]')?.dataset.g;if(g){PTAB=g;drawCatalog()}};
 document.getElementById('plist').onclick=e=>{const id=e.target.closest('[data-p]')?.dataset.p;if(!id)return;
   const ref=B.find(x=>x.id===sel&&!x.a),b={id:uid++,x:90,y:200,f:'S'};applyProduct(b,id);if(ref)placeInRun(b,ref,'R');B.push(b);sel=b.id;touch();renderAll();

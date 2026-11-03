@@ -89,7 +89,9 @@ label.chk{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .ptabs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .ptabs button{font:500 12.5px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--ink2);padding:5px 10px;border-radius:999px;cursor:pointer}
 .ptabs button.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:8px;margin-top:10px}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:10px}
+.thumb{display:block;width:100%;height:130px;margin-bottom:4px;background:var(--surface2);border-radius:7px}
+.pitem.nofit{opacity:.6}
 .pitem{text-align:start;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:2px}
 .pitem:hover{border-color:var(--ink2)}
 .pitem b{font-size:13.5px;font-weight:600}
@@ -215,6 +217,7 @@ textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;borde
   <h2>מוצרים אמיתיים</h2>
   <p class="muted" style="margin:0">רהיטים מוכנים במידות ובמחירים מאתר איקאה ישראל ומאורבן, נבדק 31.10.2026. לוחצים על מוצר כדי להוסיף אותו. אם בלוק בחור, המוצר החדש נכנס צמוד אליו מימין, על אותו קיר — כמו הוספת מסגרות במתכנן PAX. אחר כך מזיזים, מסובבים ומעצבים כמו כל בלוק. ליד כל מוצר גבוה כתוב עד איפה הוא נכנס מתחת לשיפוע.</p>
   <div class="ptabs" id="ptabs"></div>
+  <p class="muted" id="pinfo" style="margin:8px 0 0;max-width:80ch"></p>
   <div class="plist" id="plist"></div>
 </div>
 
@@ -384,7 +387,7 @@ const ORDER=['drawers','hang2','hangL','hangM','hangS','corner','shelves','shoes
 
 /* ===== מוצרים אמיתיים — מידות ומחירים מהאתרים, 31.10.2026 ===== */
 const IK='https://www.ikea.com/il/he/p/',IKS=q=>'https://www.ikea.com/il/he/search/?q='+encodeURIComponent(q);
-const PGROUPS=[['pax','ארונות PAX'],['chest','שידות מגירות'],['shelf','מדפים IVAR ו-KALLAX'],['wall','ארונות פתוחים'],['rack','מתלים'],['mirror','מראות'],['vanity','איפור'],['shoes','נעליים'],['low','אחסון נמוך וספסלים']];
+const PGROUPS=[['pax','ארונות PAX'],['sys','מערכות לבנייה: IVAR ו-BOAXEL'],['chest','שידות מגירות'],['shelf','מדפים IVAR ו-KALLAX'],['wall','ארונות פתוחים'],['rack','מתלים'],['mirror','מראות'],['vanity','איפור'],['shoes','נעליים'],['low','אחסון נמוך וספסלים']];
 const PAXH=[{k:'rod',h:null},{k:'shelves',h:30,n:0}],PAXS=[{k:'shelves',h:null,n:4}];
 const WH='#ece8e0',PINE='#d2b48c',BAMB='#c8a96a',BLK='#3a3a3c',GL='#8fb3c8';
 const PRODUCTS=[
@@ -453,16 +456,30 @@ const PRODUCTS=[
  {id:'stegesund',g:'low',n:'STEGESUND ספסל 79×34×47',t:'bench',w:79,d:34,h:47,price:275,u:IK+'stegesund-bench-light-bamboo-60632019/',c:BAMB},
  {id:'raggberg',g:'low',n:'RAGGBERG ספסל עם מקום לנעליים 60×35×45',t:'bench',w:60,d:35,h:45,price:195,u:IK+'raggberg-bench-with-shoe-storage-pine-20611127/',c:PINE},
 ];
+/* IVAR and BOAXEL sections: a frame you fill like PAX. Frame price = its parts; the inside is priced from what you put in */
+[[30,124,75],[30,179,100],[30,226,130],[50,179,130],[50,226,150]].forEach(([d,h,side])=>PRODUCTS.push({id:'ivarS'+d+'x'+h,g:'sys',sys:'ivar',
+  n:'IVAR יחידה 89×'+d+'×'+h,t:'shelves',w:89,d,h,price:2*side,u:IKS('IVAR'),c:PINE,cfg:[{k:'shelves',h:null,n:Math.max(1,Math.round((h-60)/40))}],
+  note:'אורן גולמי. מחיר: 2 צדדים ('+side+' ₪ כל אחד) ועוד מדפים 83 ס״מ לפי העיצוב, כולל עליון ותחתון. שתי יחידות צמודות חולקות צד אחד'}));
+PRODUCTS.push({id:'boaxelS80',g:'sys',sys:'boaxel',n:'BOAXEL קטע קיר 80',t:'hangS',w:82,d:40,h:201,price:110,u:IKS('BOAXEL'),c:WH,cfg:[{k:'rod',h:null},{k:'shelves',h:30,n:0}],
+  note:'נתלה על הקיר: 2 קורות של 200 ומסילה 82 (110 ₪). מוט 20 ₪, מדף 80×40 עם 2 תומכים 90 ₪, סלסלת רשת 80 ₪. קטעים צמודים חולקים קורה'});
 const PMAP=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+const sysOf=b=>{const p=b.p&&PMAP[b.p];return p?(p.sys||(p.g==='pax'?'pax':null)):null};
+const SYSK={ivar:['shelves','empty'],boaxel:['shelves','rod','baskets','shoes','empty']};
 /* KOMPLEMENT interiors for PAX, ₪ by frame depth and width */
 const KOMP={58:{rod:{50:20,75:25,100:30},shelves:{50:50,75:60,100:75},drawers:{50:115,75:140,100:165},baskets:{50:45,75:55,100:65}},
             35:{rod:{50:55,75:65,100:75},shelves:{50:45,75:55,100:65},drawers:{50:90,75:115,100:140},baskets:{50:40,75:50,100:60}}};
-function paxInside(b){const p=PMAP[b.p];if(!p||p.g!=='pax'||!b.cfg)return null;const K=KOMP[b.d>=50?58:35],w=[50,75,100].reduce((a,c)=>Math.abs(c-b.w)<Math.abs(a-b.w)?c:a);
+function paxInside(b){const sy=sysOf(b);if(!sy||!b.cfg)return null;
+  if(sy==='ivar'||sy==='boaxel'){let sum=0;const parts={},add=(k,n,each)=>{if(!n)return;sum+=n*each;parts[k]=(parts[k]||0)+n};
+    const sh=sy==='ivar'?(b.d>=50?85:65):90;if(sy==='ivar')add('מדף',2,sh);
+    b.cfg.forEach((r,i)=>{if(i)add('מדף',1,sh);if(r.k==='shelves'||r.k==='shoes')add('מדף',r.n|0,sh);
+      if(sy==='boaxel'){if(r.k==='rod')add('מוט',1,20);if(r.k==='baskets')add('סלסלה',r.n|0,80)}});
+    return{sum,txt:Object.entries(parts).map(([k,n])=>n+' '+k).join(', '),sys:sy}}
+  const p=PMAP[b.p];if(p.g!=='pax')return null;const K=KOMP[b.d>=50?58:35],w=[50,75,100].reduce((a,c)=>Math.abs(c-b.w)<Math.abs(a-b.w)?c:a);
   let sum=0;const parts={};const add=(k,n,each)=>{if(!n)return;sum+=n*each;parts[k]=(parts[k]||0)+n};
   b.cfg.forEach((r,i)=>{if(i)add('מדף',1,K.shelves[w]);
     if(r.k==='rod')add('מוט',1,K.rod[w]);if(r.k==='shelves'||r.k==='shoes')add('מדף',r.n|0,K.shelves[w]);
     if(r.k==='drawers')add('מגירה',r.n|0,K.drawers[w]);if(r.k==='baskets')add('סלסלה',r.n|0,K.baskets[w]+15)});
-  return{sum,txt:Object.entries(parts).map(([k,n])=>n+' '+k).join(', ')}}
+  return{sum,txt:Object.entries(parts).map(([k,n])=>n+' '+k).join(', '),sys:'pax'}}
 function applyProduct(b,id){const p=PMAP[id];if(!p)return;
   Object.assign(b,{p:id,t:p.t,w:p.w,d:p.d,hh:p.h,c:p.c});
   if(p.zz!=null)b.zz=p.zz;else delete b.zz;
@@ -865,7 +882,7 @@ const FACES=[['N','פונה למעלה'],['S','פונה למטה'],['E','פונ�
 function insideHtml(b){
   if(!b.cfg)return`<div class="inside"><h3>פנים הרהיט</h3><p class="muted" style="margin:0 0 6px">כרגע ברירת המחדל של ${TYPES[b.t].n}. אפשר לחלק לתאים, ולקבוע לכל תא מדפים, מגירות, סלסלות או מוט, ודלת או חזית פתוחה.</p><button class="btn pri" id="cfgOn">לעצב את הפנים</button></div>`;
   const Lr=lay(b);
-  const row=r=>`<div class="crow" data-i="${r.i}"><select data-f="k" aria-label="סוג התא">${KINDS.map(([k,t])=>`<option value="${k}"${k===r.k?' selected':''}>${t}</option>`).join('')}</select>
+  const row=r=>`<div class="crow" data-i="${r.i}"><select data-f="k" aria-label="סוג התא">${KINDS.filter(([k])=>!SYSK[sysOf(b)]||SYSK[sysOf(b)].includes(k)||k===r.k).map(([k,t])=>`<option value="${k}"${k===r.k?' selected':''}>${t}</option>`).join('')}</select>
     <label>גובה<input data-f="h" type="number" step="0.5" min="5" value="${r.h??''}" placeholder="${f1(r.z1-r.z0)}" aria-label="גובה התא"></label>
     ${['shelves','drawers','baskets','shoes'].includes(r.k)?`<label>${r.k==='drawers'?'מגירות':r.k==='baskets'?'סלסלות':'מדפים'}<input data-f="n" type="number" min="${r.k==='drawers'||r.k==='baskets'?1:0}" max="20" step="1" value="${r.n|0}"></label>`:''}
     ${r.k!=='drawers'&&r.k!=='baskets'?`<label><input data-f="door" type="checkbox"${r.door?' checked':''}> דלת</label>`:''}
@@ -903,7 +920,7 @@ function drawPanel(){
   const pd=b.p&&PMAP[b.p],pin=paxInside(b);
   const pchoice=`<label class="wide">${pd?'להחליף במוצר אחר':'להפוך למוצר אמיתי'}<select id="fp"><option value="">${pd?'— בלוק חופשי, בלי מוצר —':'— בחירת מוצר —'}</option>${PGROUPS.map(([g,gn])=>`<optgroup label="${gn}">${PRODUCTS.filter(p=>p.g===g).map(p=>`<option value="${p.id}"${p.id===b.p?' selected':''}>${p.n} · ₪${p.price}</option>`).join('')}</optgroup>`).join('')}</select></label>`;
   panel.innerHTML=`<h2>${bname(b)}</h2><p class="muted" style="margin:0">${Ty.info}</p>
-   ${pd?`<div class="pcard"><b>${pd.n}</b> · ${pd.s||'IKEA'} · <b>₪${pd.price}</b>${pin?` + פנים ₪${pin.sum} (${pin.txt})`:''}<br>${pd.w}×${pd.d}×${pd.h} ס״מ${pd.note?' · '+pd.note:''}${(b.w!==pd.w||b.d!==pd.d||(b.hh??999)!==pd.h)?' · <span style="color:var(--warn)">המידות כאן שונו מהמוצר</span>':''}<br><a href="${pd.u}" target="_blank" rel="noopener">לעמוד המוצר</a></div>`:''}
+   ${pd?`<div class="pcard"><div style="float:inline-start;width:74px;margin-inline-end:10px">${thumb(pd)}</div><b>${pd.n}</b> · ${pd.s||'IKEA'} · <b>₪${pd.price}</b>${pin?` + פנים ₪${pin.sum} (${pin.txt})`:''}<br>${says(pd)?says(pd)+'<br>':''}${pd.w}×${pd.d}×${pd.h} ס״מ${pd.note?' · '+pd.note:''}${(b.w!==pd.w||b.d!==pd.d||(b.hh??999)!==pd.h)?' · <span style="color:var(--warn)">המידות כאן שונו מהמוצר</span>':''}<br><a href="${pd.u}" target="_blank" rel="noopener">לעמוד המוצר</a></div>`:''}
    <div class="fields" style="margin-bottom:0">${pchoice}</div>
    ${!b.a?`<div class="bar" style="margin-top:6px"><button class="btn sm" id="addL">+ עוד אחד צמוד משמאל</button><button class="btn sm" id="addR">+ עוד אחד צמוד מימין</button></div>`:''}
    <div class="fields">
@@ -1115,7 +1132,13 @@ function joinery(b,G){
   const hangs={hangS:95,hangM:112,hangL:140};
   const shoesAt=(zz,g,s)=>{if(!CLOTHES||g<6)return;const r=rng(s);for(let u=TK+2;u+19<w-TK;u+=21){const c=SHOE[r()*SHOE.length|0],t=zz+Math.min(g-4,9);
     P(u,u+8,d-29,d-4,zz,t,MFAB(c));P(u+9.5,u+17.5,d-29,d-4,zz,t,MFAB(c))}};
-  if(b.cfg&&CFGT.includes(b.t)){carcass(z0,!z0);const Lr=lay(b),nr=Lr.rows.length;
+  const sy3=sysOf(b);
+  if(b.cfg&&CFGT.includes(b.t)){
+    if(sy3==='ivar'){[[0,1.6],[w-1.6,w]].forEach(([u0,u1])=>{P(u0,u1,0,2.6,0,cap);P(u0,u1,d-2.6,d,0,cap);[30,90,150,210].forEach(zz=>P(u0,u1,2.6,d-2.6,zz,zz+1.2))});
+      P(1.6,w-1.6,0,d,PL,PL+TK);P(1.6,w-1.6,0,d,c=>cap(c)-TK,cap)}
+    else if(sy3==='boaxel'){[8,w-10.5].forEach(u=>P(u,u+2.5,0,1.5,0,cap));P(2,w-2,0,1.2,c=>cap(c)-4,c=>cap(c)-1,MMET())}
+    else carcass(z0,!z0);
+    const Lr=lay(b),nr=Lr.rows.length;
     Lr.rows.forEach((r,i)=>{const flex=i===nr-1&&r.h==null,topN=flex?Lr.top:r.z1,hh=topN-r.z0;if(hh<2)return;
       if(i<nr-1)P(TK,w-TK,.8,d,r.z1,r.z1+TK);
       if(r.k==='shelves'||r.k==='shoes'){const n=Math.max(0,r.n|0),st=hh/(n+1);
@@ -1292,7 +1315,9 @@ document.getElementById('etool').onclick=e=>{const t=e.target.closest('[data-t]'
 /* fixed heights for every compartment, so one can be split where the click lands */
 function materialize(b){if(!b.cfg)b.cfg=defCfg(b);const L=lay(b),n=L.rows.length;
   b.cfg=L.rows.map((r,i)=>{const o={k:r.k};if(r.n!=null)o.n=r.n;if(r.door)o.door=true;o.h=i===n-1?null:+(r.z1-r.z0).toFixed(1);return o});return lay(b)}
-function applyTool(b,z){const L=materialize(b),grid=3.2,zz=L.base+Math.round((z-L.base)/grid)*grid;
+function applyTool(b,z){const sk=SYSK[sysOf(b)],tk={rod:'rod',drawers:'drawers',baskets:'baskets',shoes:'shoes'}[ETOOL];
+  if(sk&&tk&&!sk.includes(tk))return'אין '+({rod:'מוט',drawers:'מגירות',baskets:'סלסלות',shoes:'מדפי נעליים'}[tk])+' בסדרה '+sysOf(b).toUpperCase();
+  const L=materialize(b),grid=3.2,zz=L.base+Math.round((z-L.base)/grid)*grid;
   const i=L.rows.findIndex((r,j)=>z>=r.z0-.5&&z<=r.z1+TK+.5||(j===L.rows.length-1&&z>r.z1));if(i<0)return'';
   const r=L.rows[i],row=b.cfg[i],T2=ETOOL;
   if(T2==='door'){if(row.k==='drawers'||row.k==='baskets')return'למגירות אין דלת';row.door=row.door?undefined:true;return row.door?'נוספה דלת לתא':'הדלת הוסרה'}
@@ -1440,18 +1465,53 @@ function placeInRun(nb,ref,side){for(const sd of [side,side==='R'?'L':'R']){let 
   for(let k=0;k<20;k++){placeBeside(nb,at,sd);if(outRoom(P(nb)))break;
     const hitB=B.find(o=>o!==nb&&!o.a&&!under(nb,o)&&hit(P(nb),P(o)));if(!hitB)return;at=hitB}}
   placeBeside(nb,ref,side)}
+/* a small front view of a product, drawn from its real size and its default inside */
+function thumb(p){const w=p.w,h=Math.min(p.h,240),z0=p.zz||0,top=Math.min(p.h,240),pad=6,vw=Math.max(w,60)+pad*2,vh=250;
+  const X=u=>pad+(vw-pad*2-w)/2+u,Y=z=>vh-6-z,col=p.c&&p.c!==WH?p.c:'#e2dccf',ink='var(--ink2)';let o='';
+  const rect=(u0,z0_,u1,z1,f,st,extra)=>o+=`<rect x="${X(u0).toFixed(1)}" y="${Y(z1).toFixed(1)}" width="${(u1-u0).toFixed(1)}" height="${(z1-z0_).toFixed(1)}" fill="${f}" stroke="${st||ink}" stroke-width="1.6" ${extra||''}/>`;
+  const ln=(u0,z0_,u1,z1,st,wd)=>o+=`<line x1="${X(u0)}" y1="${Y(z0_)}" x2="${X(u1)}" y2="${Y(z1)}" stroke="${st||ink}" stroke-width="${wd||1.2}"/>`;
+  const gar=(u0,u1,rz,len,fz)=>{ln(u0+3,rz,u1-3,rz,'#8a8a8a',2.4);for(let u=u0+5,i=0;u<u1-5;u+=7,i++){const L2=len*(.82+((i*37)%17)/90);o+=`<rect x="${X(u)}" y="${Y(rz-3)}" width="5" height="${Math.max(4,Math.min(L2,rz-3-fz))}" fill="${GARM[i%GARM.length]}" opacity=".9"/>`}};
+  o+=`<line x1="0" y1="${Y(0)}" x2="${vw}" y2="${Y(0)}" stroke="var(--line2)" stroke-width="1"/>`;
+  if(p.t==='mirror'||p.t==='mirrorW'||p.t==='mirrorS'){const zb=p.t==='mirror'?z0:p.t==='mirrorS'?4:0;rect(0,zb,w,top,'var(--glass)','var(--ink2)','fill-opacity=".45"');if(p.t==='mirrorS'){ln(4,0,4,4);ln(w-4,0,w-4,4)}}
+  else if(p.t==='rack'){ln(2,0,2,top,ink,2.5);ln(w-2,0,w-2,top,ink,2.5);ln(0,1,w,1,ink,2.5);gar(2,w-2,top-3,Math.min(110,top-12),2)}
+  else if(p.t==='vanity'){rect(0,top-3,w,top,col);ln(3,0,3,top-3,ink,2.5);ln(w-3,0,w-3,top-3,ink,2.5);rect(4,top-16,w-4,top-4,'none')}
+  else if(p.t==='bench'){rect(0,p.h-8,w,p.h,col);ln(4,0,4,p.h-8,ink,2.5);ln(w-4,0,w-4,p.h-8,ink,2.5)}
+  else if(p.t==='box'||p.t==='suit'){rect(0,0,w,p.h,col)}
+  else{const base=z0>0?z0+1.8:(p.sys?10:9.8),inTop=top-1.8,cf=p.cfg||[{k:'shelves',h:null,n:2}],cols=p.cols||1;
+    if(p.sys==='boaxel'){ln(8,0,8,top,ink,2.5);ln(w-8,0,w-8,top,ink,2.5)}else rect(0,z0,w,top,col,'var(--ink)','fill-opacity=".7"');
+    const fixed=cf.reduce((t,r)=>t+(r.h!=null?+r.h:0),0),nul=cf.filter(r=>r.h==null).length,share=nul?(inTop-base-fixed-1.8*(cf.length-1))/nul:0;let z=base;
+    cf.forEach((r,i)=>{const hh=r.h!=null?+r.h:share,z1=z+hh;if(i)ln(1,z-.9,w-1,z-.9);
+      if(r.k==='rod')gar(1.8,w-1.8,z1-5,Math.min(140,hh-8),z);
+      if(r.k==='shelves'||r.k==='shoes'){const n=r.n|0,st=hh/(n+1);for(let k=1;k<=n;k++)ln(1,z+k*st,w-1,z+k*st)}
+      if(r.k==='drawers'||r.k==='baskets'){const n=Math.max(1,r.n|0),dh=hh/n,cw=w/cols;for(let c=0;c<cols;c++)for(let k=0;k<n;k++){rect(c*cw+1,z+k*dh+.6,(c+1)*cw-1,z+(k+1)*dh-.6,r.k==='baskets'?'none':col,ink);ln(c*cw+cw/2-Math.min(9,cw/5),z+(k+1)*dh-4,c*cw+cw/2+Math.min(9,cw/5),z+(k+1)*dh-4,ink,2)}}
+      if(r.door){rect(1,z,w-1,z1,col,ink,'fill-opacity=".9"')}
+      z=z1+1.8});
+    for(let c=1;c<cols;c++)ln(c*w/cols,base,c*w/cols,inTop)}
+  return`<svg viewBox="0 0 ${vw} ${vh}" class="thumb" aria-hidden="true">${o}</svg>`}
+/* what a product is good for, in plain words */
+function says(p){const t=[];
+  if(p.g==='pax'||p.sys){t.push(p.w<=50?'צר':p.w<=80?'בינוני':'רחב');t.push(p.d>=55?'עמוק — לתליה על קולבים':p.d>=40?'עומק בינוני — מוט ומדפים':'רדוד — מקופלים ונעליים')}
+  else if(p.t==='drawers')t.push(p.w>=130?'רחבה, שתי עמודות מגירות':'עמודה אחת של מגירות');
+  else if(p.t==='rack')t.push('מתלה פתוח על הרצפה, בלי ארון');
+  else if(p.t==='mirrorS')t.push('עומדת על הרצפה');else if(p.t==='mirror')t.push('נתלית על הקיר');
+  if(p.h<999&&!p.t.startsWith('mirror')&&p.zz==null){const f=fitTxt(p.h);if(f.startsWith('לא'))t.push('לא נכנסת בחדר');else if(f.startsWith('נכנס עד'))t.push(f.replace('נכנס','נכנסת'))}
+  return t.join(' · ')}
+const GINFO={pax:'PAX = שלד של ארון. בוחרים רוחב (50 צר · 75 בינוני · 100 רחב), עומק (58 לקולבים · 35 למקופלים) וגובה (201 או 236), ואז ממלאים מבפנים במוטות, מדפים, מגירות וסלסלות — בכלי הפנים שבפריסת הקיר. מחיר הפנים מתווסף לבד.',
+  sys:'שתי סדרות שבונים מחלקים, כמו PAX. IVAR: יחידות אורן פתוחות בשלושה גבהים — אפשר להעמיד יחידה נמוכה מתחת לשיפוע ליד גבוהה. BOAXEL: קורות על הקיר, ועליהן מוטות, מדפים וסלסלות בכל גובה. בוחרים יחידה, מוסיפים צמודות, וממלאים בכלי הפנים.',
+  chest:'שידות מוכנות. השידות הרחבות (138–162) מחזיקות 6 מגירות בשתי עמודות.',shelf:'יחידות מדפים מוכנות. KALLAX מגיע בקוביות של כ-33 ס״מ.',wall:'ארונות פתוחים מוכנים, בלי דלתות.',rack:'מתלים פתוחים — הכי זול, ונייד.',mirror:'מראות גוף מלא.',vanity:'לפינת האיפור: שולחן, מראה ושרפרף.',shoes:'אחסון נעליים.',low:'למטר הנמוך מאחור ולמעבר: קופסאות רכות וספסלים.'};
 /* ===== קטלוג המוצרים ===== */
 let PTAB='pax';
 function drawCatalog(){const tabs=document.getElementById('ptabs'),list=document.getElementById('plist');if(!tabs)return;
   tabs.innerHTML=PGROUPS.map(([g,n])=>`<button data-g="${g}" class="${g===PTAB?'on':''}">${n}</button>`).join('');
-  list.innerHTML=PRODUCTS.filter(p=>p.g===PTAB).map(p=>{const ft=p.t.startsWith('mirror')||p.zz!=null?'':fitTxt(p.h);
-    return`<button class="pitem" data-p="${p.id}"><b>${p.n}</b><span>${p.w}×${p.d}×${p.h} · ${p.s||'IKEA'}</span><span class="pr">₪${p.price}</span>${ft?`<span class="fit${ft.startsWith('לא')?' no':''}">${ft}</span>`:''}</button>`}).join('')}
+  document.getElementById('pinfo').textContent=GINFO[PTAB]||'';
+  list.innerHTML=PRODUCTS.filter(p=>p.g===PTAB).map(p=>{const sy=says(p),bad=sy.includes('לא נכנסת');
+    return`<button class="pitem${bad?' nofit':''}" data-p="${p.id}">${thumb(p)}<b>${p.n}</b><span>${p.w}×${p.d}×${p.h} ס״מ · ${p.s||'IKEA'}</span>${sy?`<span class="fit${bad?' no':''}">${sy}</span>`:''}<span class="pr">₪${p.price}${p.g==='pax'||p.sys?' + פנים':''}</span></button>`}).join('')}
 document.getElementById('ptabs').onclick=e=>{const g=e.target.closest('[data-g]')?.dataset.g;if(g){PTAB=g;drawCatalog()}};
 document.getElementById('plist').onclick=e=>{const id=e.target.closest('[data-p]')?.dataset.p;if(!id)return;
   const ref=B.find(x=>x.id===sel&&!x.a),b={id:uid++,x:90,y:200,f:'S'};applyProduct(b,id);if(ref)placeInRun(b,ref,'R');B.push(b);sel=b.id;touch();renderAll();
   svg.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'nearest'})};
 function drawShop(){const tb=document.getElementById('shop');if(!tb)return;const rows={};let tot=0;
-  B.forEach(b=>{const p=b.p&&PMAP[b.p];if(!p)return;(rows[p.id]=rows[p.id]||{p,n:0}).n++;tot+=p.price;const pi=paxInside(b);if(pi&&pi.sum){(rows['in'+b.id]={p:{n:'פנים KOMPLEMENT ל'+bname(b),price:pi.sum,u:IKS('KOMPLEMENT'),s:pi.txt},n:1});tot+=pi.sum}});
+  B.forEach(b=>{const p=b.p&&PMAP[b.p];if(!p)return;(rows[p.id]=rows[p.id]||{p,n:0}).n++;tot+=p.price;const pi=paxInside(b);if(pi&&pi.sum){(rows['in'+b.id]={p:{n:(pi.sys==='pax'?'פנים KOMPLEMENT ל':'חלקי פנים ל')+bname(b),price:pi.sum,u:pi.sys==='pax'?IKS('KOMPLEMENT'):PMAP[b.p].u,s:pi.txt},n:1});tot+=pi.sum}});
   const list=Object.values(rows);
   tb.innerHTML=list.length?list.map(({p,n})=>`<tr><td><a href="${p.u}" target="_blank" rel="noopener" style="color:var(--ink)">${p.n}</a>${p.s&&p.s!=='IKEA'&&p.s!=='Urban'?`<div class="muted">${p.s}</div>`:p.s==='Urban'?' <span class="muted">· אורבן</span>':''}</td><td class="n">${n}</td><td class="n">₪${p.price}</td><td class="n">₪${p.price*n}</td></tr>`).join(''):`<tr><td colspan="4" class="muted">עוד אין בחדר מוצרים אמיתיים. בוחרים מוצר מ״מוצרים אמיתיים״ למעלה, או הופכים בלוק קיים למוצר בלוח שלו.</td></tr>`;
   document.getElementById('shopTot').textContent=list.length?'סך הכל ₪'+tot.toLocaleString('he-IL')+' · בלי דלתות, משלוח והרכבה':''}

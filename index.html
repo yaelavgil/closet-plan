@@ -407,7 +407,7 @@ const TYPES={
   hang2:{n:'תליה כפולה',w:100,d:60,h:999,req:205,c:'#3c5c66',doors:1,rod:2,info:'שני מוטות — חולצות ומכנסיים'},
   hangL:{n:'תליה ארוכה',w:80,d:60,h:999,req:160,c:'#4f6e5a',doors:1,rod:1,info:'שמלות עד 150'},
   hangM:{n:'תליה בינונית',w:80,d:60,h:999,req:135,c:'#5d7f6a',doors:1,rod:1,info:'מעילים ושמלות קצרות עד 120'},
-  corner:{n:'תליה פינתית',w:110,d:60,h:999,req:120,c:'#4a6670',doors:1,rod:1,corner:1,info:'יחידת פינה: שתי זרועות תליה לאורך שני קירות, וחזית אלכסונית. ״רוחב״ הוא אורך כל זרוע, ״עומק״ הוא עומק הזרוע. סיבוב מעביר אותה בין ארבע הפינות'},
+  corner:{n:'תליה פינתית',w:110,d:58,h:999,req:120,c:'#4a6670',doors:1,rod:1,corner:1,info:'יחידת פינה: שתי זרועות תליה לאורך שני קירות, וחזית אלכסונית. לכל זרוע אורך משלה — גוררים צלע, או מקלידים. העומק נשאר קבוע. ״רוחב״ הוא אורך כל זרוע, ״עומק״ הוא עומק הזרוע. סיבוב מעביר אותה בין ארבע הפינות'},
   hangS:{n:'תליה קצרה',w:80,d:60,h:999,req:120,c:'#6f8f74',doors:1,rod:1,info:'חולצות, 90–100 מתחת למוט'},
   shelves:{n:'מדפים',w:80,d:45,h:999,req:40,c:'#8c7a55',doors:1,info:'מקופלים, סלסלות'},
   shoes:{n:'נעליים',w:80,d:35,h:999,req:40,c:'#8a6a4f',doors:1,info:'מדפים משופעים'},
@@ -587,11 +587,12 @@ document.getElementById('doors').checked=doorsOn;
 
 /* ===== גאומטריה ===== */
 const D2R=Math.PI/180;
-function R(b){if(TYPES[b.t].corner)return{x:b.x,y:b.y,w:b.w,h:b.w};const ns=b.f==='S'||b.f==='N';return{x:b.x,y:b.y,w:ns?b.w:b.d,h:ns?b.d:b.w}}
+const w2Of=b=>b.w2!=null?b.w2:b.w;
+function R(b){if(TYPES[b.t].corner){const rot=CORN[b.f]==='tr'||CORN[b.f]==='bl';return{x:b.x,y:b.y,w:rot?w2Of(b):b.w,h:rot?b.w:w2Of(b)}}const ns=b.f==='S'||b.f==='N';return{x:b.x,y:b.y,w:ns?b.w:b.d,h:ns?b.d:b.w}}
 /* a corner unit sits in one corner of its square: S top-left, W top-right, N bottom-right, E bottom-left */
 const CORN={S:'tl',W:'tr',N:'br',E:'bl'};
-function cornerMap(b){const r=R(b),w=b.w;return({tl:(u,v)=>[r.x+u,r.y+v],tr:(u,v)=>[r.x+w-v,r.y+u],br:(u,v)=>[r.x+w-u,r.y+w-v],bl:(u,v)=>[r.x+v,r.y+w-u]})[CORN[b.f]]}
-function shape(b){if(TYPES[b.t].corner){const m=cornerMap(b),w=b.w,d=Math.min(b.d,w);return[[0,0],[w,0],[w,d],[d,w],[0,w]].map(([u,v])=>m(u,v))}return rp(R(b))}
+function cornerMap(b){const r=R(b);return({tl:(u,v)=>[r.x+u,r.y+v],tr:(u,v)=>[r.x+r.w-v,r.y+u],br:(u,v)=>[r.x+r.w-u,r.y+r.h-v],bl:(u,v)=>[r.x+v,r.y+r.h-u]})[CORN[b.f]]}
+function shape(b){if(TYPES[b.t].corner){const m=cornerMap(b),w=b.w,w2=w2Of(b),d=Math.min(b.d,w,w2);return[[0,0],[w,0],[w,d],[d,w2],[0,w2]].map(([u,v])=>m(u,v))}return rp(R(b))}
 function ctr(b){const r=R(b);return[r.x+r.w/2,r.y+r.h/2]}
 const rp=r=>[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]];
 function rot(pts,c,a){if(!a)return pts;const s=Math.sin(a*D2R),k=Math.cos(a*D2R);
@@ -607,7 +608,7 @@ function FZ(b){const T=TYPES[b.t];let z=T.fz||0;
   if(b.f==='E')return{x:r.x+r.w,y:r.y+i,w:z,h:r.h-2*i};
   return{x:r.x-z,y:r.y+i,w:z,h:r.h-2*i}}
 function FZP(b){
-  if(TYPES[b.t].corner){if(!doorsOn)return null;const m=cornerMap(b),w=b.w,d=Math.min(b.d,w),p1=m(w,d),p2=m(d,w),o=m(w,w),mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2;
+  if(TYPES[b.t].corner){if(!doorsOn)return null;const m=cornerMap(b),w=b.w,w2=w2Of(b),d=Math.min(b.d,w,w2),p1=m(w,d),p2=m(d,w2),o=m(w,w2),mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2;
     const L2=Math.hypot(o[0]-mx,o[1]-my)||1,nx=(o[0]-mx)/L2,ny=(o[1]-my)/L2,z=Math.min(50,(w-d)*Math.SQRT2/2);
     return rot([p1,p2,[p2[0]+nx*z,p2[1]+ny*z],[p1[0]+nx*z,p1[1]+ny*z]],ctr(b),b.a||0)}
   const z=FZ(b);return z?rot(rp(z),ctr(b),b.a||0):null}
@@ -695,6 +696,10 @@ function analyse(b){
   const we=wallOf(b),wi=we&&ROOM.walls&&ROOM.walls[we.i];
   if((z0>0||b.t==='mirrorW')&&wi&&wi.load)out.push(['ok',wi.load]);
   else if(z0>0||b.t==='mirrorW')out.push(['warn','🔴 תלוי על הקיר, ולכן מותנה. '+(ROOM.drywall||'צריך לוודא שהקיר נושא את זה.')+' חלופה: '+(b.t==='mirrorW'||b.t==='mirror'?'מראה עומדת על הרצפה או על השולחן':'מדף עומד ברוחב ובעומק דומים')]);
+  if(T.corner){const fr=Math.min(b.w,w2Of(b))-b.d;
+    if(b.d<55){out.push(['warn','עומק '+f1(b.d)+' — קולב צריך לפחות 55 כדי לתלות בלי שהבגדים יבלטו']);if(lvl==='ok')lvl='warn'}
+    if(fr<30){out.push(['warn','זרוע קצרה: '+f1(fr)+' ס״מ בלבד אחרי הפינה — כמעט אין מקום לקולבים']);if(lvl==='ok')lvl='warn'}
+    else out.push(['ok','זרועות '+f1(b.w)+' ו-'+f1(w2Of(b))+' · '+f1(b.w+w2Of(b)-b.d)+' ס״מ מוט'])}
   if(b.a)out.push(['ok','מסובב '+f1(b.a)+'° · נבדק לפי ארבע הפינות']);
   return{lvl,out,cmin,cmax}
 }
@@ -773,7 +778,7 @@ function drawPlan(){
     E(Ty.corner?'polygon':'rect',Object.assign(Ty.corner?{points:shape(b).map(p=>p.join(',')).join(' ')}:{x:rx,y:ry,width:rw,height:rh,rx:1.2},{fill:colOf(b),'data-id':b.id,
       class:'blk'+(b.id===sel?' sel':'')+(a.lvl==='bad'?' ring-bad':a.lvl==='warn'?' ring-warn':'')},
       hung?{'fill-opacity':.55,'stroke-dasharray':'3 2'}:{}),g);
-    const fe=Ty.corner?(()=>{const m=cornerMap(b),dd=Math.min(b.d,b.w);return[...m(b.w,dd),...m(dd,b.w)]})():{S:[r.x,r.y+r.h,r.x+r.w,r.y+r.h],N:[r.x,r.y,r.x+r.w,r.y],E:[r.x+r.w,r.y,r.x+r.w,r.y+r.h],W:[r.x,r.y,r.x,r.y+r.h]}[b.f];
+    const fe=Ty.corner?(()=>{const m=cornerMap(b),dd=Math.min(b.d,b.w,w2Of(b));return[...m(b.w,dd),...m(dd,w2Of(b))]})():{S:[r.x,r.y+r.h,r.x+r.w,r.y+r.h],N:[r.x,r.y,r.x+r.w,r.y],E:[r.x+r.w,r.y,r.x+r.w,r.y+r.h],W:[r.x,r.y,r.x,r.y+r.h]}[b.f];
     if(b.t!=='mirrorW')E('line',{x1:fe[0],y1:fe[1],x2:fe[2],y2:fe[3],stroke:'rgba(255,255,255,.7)','stroke-width':1.4,'pointer-events':'none'},g);
     if(b.t==='mirrorW'||b.t==='mirror'){T(r.x+r.w/2,r.y+12,bname(b),'dimtx',g,{style:'fill:var(--glass)'});return}
     const vert=r.h>r.w*1.15,along=vert?r.h:r.w,cross=vert?r.w:r.h,cx=r.x+r.w/2,cy=r.y+r.h/2;
@@ -895,7 +900,7 @@ function doResize(e){const p=svgPt(e),{b,k,r0}=rsz,MIN=5;
   else{if(k==='e')x1=Math.max(x0+MIN,snap(p.x,xs));if(k==='w')x0=Math.min(x1-MIN,snap(p.x,xs));
     if(k==='s')y1=Math.max(y0+MIN,snap(p.y,yv));if(k==='n')y0=Math.min(y1-MIN,snap(p.y,yv))}
   const rw=x1-x0,rh=y1-y0;b.x=+x0.toFixed(1);b.y=+y0.toFixed(1);
-  if(TYPES[b.t].corner){b.w=+(s?rw:(k==='e'||k==='w'?rw:rh)).toFixed(1);if(s)b.d=+(rsz.d0*s).toFixed(1)}
+  if(TYPES[b.t].corner){const rot=CORN[b.f]==='tr'||CORN[b.f]==='bl';b.w=+(rot?rh:rw).toFixed(1);b.w2=+(rot?rw:rh).toFixed(1)}
   else if(b.f==='S'||b.f==='N'){b.w=+rw.toFixed(1);b.d=+rh.toFixed(1)}else{b.w=+rh.toFixed(1);b.d=+rw.toFixed(1)}
   drawPlan()}
 svg.addEventListener('pointerup',()=>{if(rsz){rsz=null;touch();renderAll()}});
@@ -977,7 +982,7 @@ function drawPanel(){
       <div class="sw" id="fsw">${SWATCH.map(c=>`<button type="button" data-c="${c}" class="${colOf(b).toLowerCase()===c?'on':''}" style="background:${c}" aria-label="צבע ${c}"></button>`).join('')}
         <input id="fc" type="color" value="${colOf(b)}" aria-label="צבע אחר"><button type="button" class="btn sm" id="fc0">צבע מקורי</button></div></div>
     <label class="wide">ייעוד<select id="ft">${ORDER.map(k=>`<option value="${k}"${k===b.t?' selected':''}>${TYPES[k].n}</option>`).join('')}</select></label>
-    <label>רוחב (לאורך הקיר)<input id="fw" type="number" step="0.5" min="1" value="${b.w}"></label>
+    <label>${Ty.corner?'זרוע ראשונה':'רוחב (לאורך הקיר)'}<input id="fw" type="number" step="0.5" min="1" value="${b.w}"></label>${Ty.corner?`<label>זרוע שנייה<input id="fw2" type="number" step="0.5" min="1" value="${w2Of(b)}"></label>`:''}
     <label>עומק<input id="fd" type="number" step="0.5" min="1" value="${b.d}"></label>
     <label>${hung?'עד גובה — ריק = התקרה':'גובה — ריק = עד התקרה'}<input id="fh" type="number" step="0.5" min="1" value="${b.hh!=null?b.hh:(Ty.h<999?Ty.h:'')}" placeholder="עד התקרה"></label>
     <label>מגובה — 0 = מהרצפה<input id="fz" type="number" step="0.5" min="0" value="${zOf(b)}"></label>
@@ -1000,7 +1005,9 @@ function drawPanel(){
    <div class="bar"><button class="btn pri" id="rot">↻ סיבוב 90°</button>${b.a?'<button class="btn" id="a0">ישר לקירות</button>':''}<button class="btn" id="dup">שכפול</button><button class="btn danger" id="del">מחיקה</button></div>`;
   const $=id=>document.getElementById(id);
   const num=(id,fn)=>$(id)?.addEventListener('change',e=>{const v=parseFloat(e.target.value);fn(isNaN(v)?null:v);touch();renderAll()});
-  num('fw',v=>{if(v)b.w=Math.max(1,v)});num('fd',v=>{if(v)b.d=Math.max(1,v)});
+  num('fw',v=>{if(v)b.w=Math.max(1,v)});num('fw2',v=>{if(v)b.w2=Math.max(1,v)});
+  const nb=B.find(o=>o!==b&&!o.a&&o.d!==b.d&&CFGT.concat('corner').includes(o.t)&&(()=>{const p=R(b),q=R(o);return Math.abs(p.x+p.w-q.x)<.6||Math.abs(q.x+q.w-p.x)<.6||Math.abs(p.y+p.h-q.y)<.6||Math.abs(q.y+q.h-p.y)<.6})()&&hit(rp((r=>({x:r.x-1,y:r.y-1,w:r.w+2,h:r.h+2}))(R(b))),P(o)));
+  if(nb&&$('fd')){const bt=document.createElement('button');bt.className='btn sm';bt.type='button';bt.textContent='עומק כמו '+bname(nb)+' ('+f1(nb.d)+')';bt.style.marginTop='4px';bt.onclick=()=>{b.d=nb.d;touch();renderAll()};$('fd').parentNode.appendChild(bt)}num('fd',v=>{if(v)b.d=Math.max(1,v)});
   num('fx',v=>{if(v!=null)b.x=v});num('fy',v=>{if(v!=null)b.y=v});
   num('fr',v=>{b.rq=v==null||v===TYPES[b.t].req?null:v});
   num('fh',v=>{b.hh=v==null||v===TYPES[b.t].h?null:v});
@@ -1034,7 +1041,7 @@ function drawPanel(){
 
 /* ===== טבלה וסיכום ===== */
 function stats(list){let rod=0,dr=0,bad=0,warn=0;
-  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.corner)rod+=2*(b.w-b.d/2);else if(b.t==='rack')rod+=b.w;else if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
+  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.corner)rod+=b.w+w2Of(b)-b.d;else if(b.t==='rack')rod+=b.w;else if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
   B=keep;return{rod,dr,bad,warn}}
 function drawList(){
   const tb=document.getElementById('list');tb.innerHTML='';
@@ -1218,17 +1225,17 @@ function joinery(b,G){
         garments(rodZ,92,low+4,seed);garments(low,90,fl,seed+1)}
       else garments(rodZ,hangs[b.t],fl,seed);
       break}
-    case 'corner':{const m=cornerMap(b),dd=Math.min(d,w);
+    case 'corner':{const m=cornerMap(b),w2=w2Of(b),dd=Math.min(d,w,w2);
       const Q=(u0,u1,v0,v1,zb,zt,mm)=>{const a1=m(u0,v0),a2=m(u1,v1);addPrism(G,Math.min(a1[0],a2[0]),Math.max(a1[0],a2[0]),Math.min(a1[1],a2[1]),Math.max(a1[1],a2[1]),zb,zt,mm||Cm,cap)};
-      Q(0,w,0,.8,0,cap);Q(0,.8,.8,w,0,cap);Q(w-TK,w,.8,dd,0,cap);Q(.8,dd,w-TK,w,0,cap);
-      Q(.8,w-TK,.8,dd,y=>cap(y)-TK,cap);Q(.8,dd,dd,w-TK,y=>cap(y)-TK,cap);
-      Q(.8,w-TK,.8,dd,PL,PL+TK);Q(.8,dd,dd,w-TK,PL,PL+TK);Q(.8,w-TK,dd-5,dd-3.2,0,PL,Dk);Q(dd-5,dd-3.2,dd,w-TK,0,PL,Dk);
+      Q(0,w,0,.8,0,cap);Q(0,.8,.8,w2,0,cap);Q(w-TK,w,.8,dd,0,cap);Q(.8,dd,w2-TK,w2,0,cap);
+      Q(.8,w-TK,.8,dd,y=>cap(y)-TK,cap);Q(.8,dd,dd,w2-TK,y=>cap(y)-TK,cap);
+      Q(.8,w-TK,.8,dd,PL,PL+TK);Q(.8,dd,dd,w2-TK,PL,PL+TK);Q(.8,w-TK,dd-5,dd-3.2,0,PL,Dk);Q(dd-5,dd-3.2,dd,w2-TK,0,PL,Dk);
       const rz=topMin-TK-5,rodB=(u0,v0,u1,v1)=>{const a1=m(u0,v0),a2=m(u1,v1),len=Math.hypot(a2[0]-a1[0],a2[1]-a1[1]),g=new THREE.CylinderGeometry(1.2,1.2,len,12);
         g.rotateZ(Math.PI/2);if(Math.abs(a2[0]-a1[0])<.01)g.rotateY(Math.PI/2);const ms=new THREE.Mesh(g,MMET());ms.position.set((a1[0]+a2[0])/2,rz,(a1[1]+a2[1])/2);ms.castShadow=true;G.add(ms)};
-      rodB(dd/2,dd/2,w-TK,dd/2);rodB(dd/2,dd/2,dd/2,w-TK);
+      rodB(dd/2,dd/2,w-TK,dd/2);rodB(dd/2,dd/2,dd/2,w2-TK);
       if(CLOTHES){const r=rng(seed),dep=Math.min(dd-6,40);
         for(let u=dd+1;u<w-TK-2;u+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2));Q(u,u+1.3,dd/2-dep/2,dd/2+dep/2,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}
-        for(let v=dd+1;v<w-TK-2;v+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2));Q(dd/2-dep/2,dd/2+dep/2,v,v+1.3,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}}
+        for(let v=dd+1;v<w2-TK-2;v+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2));Q(dd/2-dep/2,dd/2+dep/2,v,v+1.3,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}}
       break}
     case 'shelves':{const fl=carcass(z0,!z0);shelves(fl,topMin-TK,34,(zz,g)=>stacks(zz,g,seed+zz|0));led(topMin-TK);break}
     case 'deep':{const fl=carcass(z0,!z0),r=rng(seed);
@@ -1400,7 +1407,7 @@ function onWall(b,wl){if(b.a)return false;const r=R(b);
   if(TYPES[b.t].corner){const sd={tl:'LT',tr:'RT',br:'RB',bl:'LB'}[CORN[b.f]];
     const t=wl.ax==='y'?(wl.face==='E'?sd.includes('L')&&Math.abs(r.x-wl.at)<1.5:sd.includes('R')&&Math.abs(r.x+r.w-wl.at)<1.5)
                        :(wl.face==='S'?sd.includes('T')&&Math.abs(r.y-wl.at)<1.5:sd.includes('B')&&Math.abs(r.y+r.h-wl.at)<1.5);
-    if(!t)return false;const s0=wl.ax==='y'?r.y:r.x;return s0>=wl.a-1&&s0+r.w<=wl.b+1}
+    if(!t)return false;const s0=wl.ax==='y'?r.y:r.x,ln=wl.ax==='y'?r.h:r.w;return s0>=wl.a-1&&s0+ln<=wl.b+1}
   if(b.f!==wl.face)return false;
   const back={E:r.x,W:r.x+r.w,S:r.y,N:r.y+r.h}[b.f];if(Math.abs(back-wl.at)>1.5)return false;
   const s0=wl.ax==='y'?r.y:r.x,s1=wl.ax==='y'?r.y+r.h:r.x+r.w;return s0>=wl.a-1&&s1<=wl.b+1}

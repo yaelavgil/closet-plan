@@ -587,12 +587,12 @@ document.getElementById('doors').checked=doorsOn;
 
 /* ===== גאומטריה ===== */
 const D2R=Math.PI/180;
-const w2Of=b=>b.w2!=null?b.w2:b.w;
+const w2Of=b=>b.w2!=null?b.w2:b.w,d2Of=b=>b.d2!=null?b.d2:b.d;
 function R(b){if(TYPES[b.t].corner){const rot=CORN[b.f]==='tr'||CORN[b.f]==='bl';return{x:b.x,y:b.y,w:rot?w2Of(b):b.w,h:rot?b.w:w2Of(b)}}const ns=b.f==='S'||b.f==='N';return{x:b.x,y:b.y,w:ns?b.w:b.d,h:ns?b.d:b.w}}
 /* a corner unit sits in one corner of its square: S top-left, W top-right, N bottom-right, E bottom-left */
 const CORN={S:'tl',W:'tr',N:'br',E:'bl'};
 function cornerMap(b){const r=R(b);return({tl:(u,v)=>[r.x+u,r.y+v],tr:(u,v)=>[r.x+r.w-v,r.y+u],br:(u,v)=>[r.x+r.w-u,r.y+r.h-v],bl:(u,v)=>[r.x+v,r.y+r.h-u]})[CORN[b.f]]}
-function shape(b){if(TYPES[b.t].corner){const m=cornerMap(b),w=b.w,w2=w2Of(b),d=Math.min(b.d,w,w2);return[[0,0],[w,0],[w,d],[d,w2],[0,w2]].map(([u,v])=>m(u,v))}return rp(R(b))}
+function shape(b){if(TYPES[b.t].corner){const m=cornerMap(b),w=b.w,w2=w2Of(b),dA=Math.min(b.d,w2),dB=Math.min(d2Of(b),w);return[[0,0],[w,0],[w,dA],[dB,w2],[0,w2]].map(([u,v])=>m(u,v))}return rp(R(b))}
 function ctr(b){const r=R(b);return[r.x+r.w/2,r.y+r.h/2]}
 const rp=r=>[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h],[r.x,r.y+r.h]];
 function rot(pts,c,a){if(!a)return pts;const s=Math.sin(a*D2R),k=Math.cos(a*D2R);
@@ -608,7 +608,7 @@ function FZ(b){const T=TYPES[b.t];let z=T.fz||0;
   if(b.f==='E')return{x:r.x+r.w,y:r.y+i,w:z,h:r.h-2*i};
   return{x:r.x-z,y:r.y+i,w:z,h:r.h-2*i}}
 function FZP(b){
-  if(TYPES[b.t].corner){if(!doorsOn)return null;const m=cornerMap(b),w=b.w,w2=w2Of(b),d=Math.min(b.d,w,w2),p1=m(w,d),p2=m(d,w2),o=m(w,w2),mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2;
+  if(TYPES[b.t].corner){if(!doorsOn)return null;const m=cornerMap(b),w=b.w,w2=w2Of(b),d=Math.min(b.d,w,w2),p1=m(w,Math.min(b.d,w2)),p2=m(Math.min(d2Of(b),w),w2),o=m(w,w2),mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2;
     const L2=Math.hypot(o[0]-mx,o[1]-my)||1,nx=(o[0]-mx)/L2,ny=(o[1]-my)/L2,z=Math.min(50,(w-d)*Math.SQRT2/2);
     return rot([p1,p2,[p2[0]+nx*z,p2[1]+ny*z],[p1[0]+nx*z,p1[1]+ny*z]],ctr(b),b.a||0)}
   const z=FZ(b);return z?rot(rp(z),ctr(b),b.a||0):null}
@@ -696,10 +696,10 @@ function analyse(b){
   const we=wallOf(b),wi=we&&ROOM.walls&&ROOM.walls[we.i];
   if((z0>0||b.t==='mirrorW')&&wi&&wi.load)out.push(['ok',wi.load]);
   else if(z0>0||b.t==='mirrorW')out.push(['warn','🔴 תלוי על הקיר, ולכן מותנה. '+(ROOM.drywall||'צריך לוודא שהקיר נושא את זה.')+' חלופה: '+(b.t==='mirrorW'||b.t==='mirror'?'מראה עומדת על הרצפה או על השולחן':'מדף עומד ברוחב ובעומק דומים')]);
-  if(T.corner){const fr=Math.min(b.w,w2Of(b))-b.d;
-    if(b.d<55){out.push(['warn','עומק '+f1(b.d)+' — קולב צריך לפחות 55 כדי לתלות בלי שהבגדים יבלטו']);if(lvl==='ok')lvl='warn'}
+  if(T.corner){const fr=Math.min(b.w-d2Of(b),w2Of(b)-b.d),dm=Math.min(b.d,d2Of(b));
+    if(dm<55){out.push(['warn','עומק '+f1(dm)+' — קולב צריך לפחות 55 כדי לתלות בלי שהבגדים יבלטו']);if(lvl==='ok')lvl='warn'}
     if(fr<30){out.push(['warn','זרוע קצרה: '+f1(fr)+' ס״מ בלבד אחרי הפינה — כמעט אין מקום לקולבים']);if(lvl==='ok')lvl='warn'}
-    else out.push(['ok','זרועות '+f1(b.w)+' ו-'+f1(w2Of(b))+' · '+f1(b.w+w2Of(b)-b.d)+' ס״מ מוט'])}
+    else out.push(['ok','זרועות '+f1(b.w)+' ו-'+f1(w2Of(b))+' · עומקים '+f1(b.d)+(d2Of(b)!==b.d?' ו-'+f1(d2Of(b)):'')+' · '+f1(b.w+w2Of(b)-(b.d+d2Of(b))/2)+' ס״מ מוט'])}
   if(b.a)out.push(['ok','מסובב '+f1(b.a)+'° · נבדק לפי ארבע הפינות']);
   return{lvl,out,cmin,cmax}
 }
@@ -778,7 +778,7 @@ function drawPlan(){
     E(Ty.corner?'polygon':'rect',Object.assign(Ty.corner?{points:shape(b).map(p=>p.join(',')).join(' ')}:{x:rx,y:ry,width:rw,height:rh,rx:1.2},{fill:colOf(b),'data-id':b.id,
       class:'blk'+(b.id===sel?' sel':'')+(a.lvl==='bad'?' ring-bad':a.lvl==='warn'?' ring-warn':'')},
       hung?{'fill-opacity':.55,'stroke-dasharray':'3 2'}:{}),g);
-    const fe=Ty.corner?(()=>{const m=cornerMap(b),dd=Math.min(b.d,b.w,w2Of(b));return[...m(b.w,dd),...m(dd,w2Of(b))]})():{S:[r.x,r.y+r.h,r.x+r.w,r.y+r.h],N:[r.x,r.y,r.x+r.w,r.y],E:[r.x+r.w,r.y,r.x+r.w,r.y+r.h],W:[r.x,r.y,r.x,r.y+r.h]}[b.f];
+    const fe=Ty.corner?(()=>{const m=cornerMap(b);return[...m(b.w,Math.min(b.d,w2Of(b))),...m(Math.min(d2Of(b),b.w),w2Of(b))]})():{S:[r.x,r.y+r.h,r.x+r.w,r.y+r.h],N:[r.x,r.y,r.x+r.w,r.y],E:[r.x+r.w,r.y,r.x+r.w,r.y+r.h],W:[r.x,r.y,r.x,r.y+r.h]}[b.f];
     if(b.t!=='mirrorW')E('line',{x1:fe[0],y1:fe[1],x2:fe[2],y2:fe[3],stroke:'rgba(255,255,255,.7)','stroke-width':1.4,'pointer-events':'none'},g);
     if(b.t==='mirrorW'||b.t==='mirror'){T(r.x+r.w/2,r.y+12,bname(b),'dimtx',g,{style:'fill:var(--glass)'});return}
     const vert=r.h>r.w*1.15,along=vert?r.h:r.w,cross=vert?r.w:r.h,cx=r.x+r.w/2,cy=r.y+r.h/2;
@@ -928,6 +928,18 @@ function setFace(b,f){const r0=R(b);b.f=f;const r1=R(b);
   b.x=+(r0.x+(r0.w-r1.w)/2).toFixed(1);b.y=+(r0.y+(r0.h-r1.h)/2).toFixed(1);
   if(Math.abs(r0.x)<.1)b.x=0;if(Math.abs(r0.y)<.1)b.y=0;if(Math.abs(r0.x+r0.w-W)<.1)b.x=+(W-r1.w).toFixed(1);if(Math.abs(r0.y+r0.h-L)<.1)b.y=+(L-r1.h).toFixed(1)}
 
+/* two cabinets on walls that meet: the corner unit between them, each arm as deep as the cabinet it continues */
+function cornerFor(a){if(a.a||!wallOf(a))return[];const out=[];
+  B.forEach(o=>{if(o===a||o.a||!wallOf(o)||TYPES[o.t].corner)return;const horiz=x=>x.f==='S'||x.f==='N',h=horiz(a)?a:horiz(o)?o:null,v=h===a?o:a;
+    if(!h||horiz(v))return;const rh=R(h),rv=R(v),cy=h.f==='S'?rh.y:rh.y+rh.h,cx=v.f==='E'?rv.x:rv.x+rv.w;
+    if(!POLY.some(p=>Math.abs(p[0]-cx)<1&&Math.abs(p[1]-cy)<1))return;   // the two back walls must meet in a room corner
+    const left=v.f==='E',top=h.f==='S',Lh=left?rh.x-cx:cx-(rh.x+rh.w),Lv=top?rv.y-cy:cy-(rv.y+rv.h);
+    if(Lh<v.d+20||Lv<h.d+20){if(Lh>-1&&Lv>-1)out.push({no:'אי אפשר לחבר בפינה את '+bname(h)+' ו'+bname(v)+': צריך רווח של לפחות '+f1(v.d+20)+' ס״מ מהפינה לאורך קיר אחד ו-'+f1(h.d+20)+' לאורך השני. עכשיו יש '+f1(Lh)+' ו-'+f1(Lv)+'.'});return}
+    if(Lh>220||Lv>220)return;
+    const cfg=top?(left?'S':'W'):(left?'E':'N'),k=CORN[cfg];
+    const c={t:'corner',f:cfg,w:(k==='tl'||k==='br')?Lh:Lv,w2:(k==='tl'||k==='br')?Lv:Lh,d:(k==='tl'||k==='br')?h.d:v.d,d2:(k==='tl'||k==='br')?v.d:h.d,lb:'פינה בין '+bname(h)+' ל'+bname(v)};
+    c.x=left?cx:cx-Lh;c.y=top?cy:cy-Lv;['x','y','w','w2','d','d2'].forEach(q=>c[q]=+(+c[q]).toFixed(1));out.push({c,h,v,Lh,Lv})});
+  return out}
 /* ===== לוח בלוק ===== */
 const panel=document.getElementById('panel');
 const FACES=[['N','פונה למעלה'],['S','פונה למטה'],['E','פונה ימינה'],['W','פונה שמאלה']];
@@ -982,7 +994,7 @@ function drawPanel(){
       <div class="sw" id="fsw">${SWATCH.map(c=>`<button type="button" data-c="${c}" class="${colOf(b).toLowerCase()===c?'on':''}" style="background:${c}" aria-label="צבע ${c}"></button>`).join('')}
         <input id="fc" type="color" value="${colOf(b)}" aria-label="צבע אחר"><button type="button" class="btn sm" id="fc0">צבע מקורי</button></div></div>
     <label class="wide">ייעוד<select id="ft">${ORDER.map(k=>`<option value="${k}"${k===b.t?' selected':''}>${TYPES[k].n}</option>`).join('')}</select></label>
-    <label>${Ty.corner?'זרוע ראשונה':'רוחב (לאורך הקיר)'}<input id="fw" type="number" step="0.5" min="1" value="${b.w}"></label>${Ty.corner?`<label>זרוע שנייה<input id="fw2" type="number" step="0.5" min="1" value="${w2Of(b)}"></label>`:''}
+    <label>${Ty.corner?'זרוע ראשונה':'רוחב (לאורך הקיר)'}<input id="fw" type="number" step="0.5" min="1" value="${b.w}"></label>${Ty.corner?`<label>זרוע שנייה<input id="fw2" type="number" step="0.5" min="1" value="${w2Of(b)}"></label><label>עומק הזרוע השנייה<input id="fd2" type="number" step="0.5" min="1" value="${d2Of(b)}"></label>`:''}
     <label>עומק<input id="fd" type="number" step="0.5" min="1" value="${b.d}"></label>
     <label>${hung?'עד גובה — ריק = התקרה':'גובה — ריק = עד התקרה'}<input id="fh" type="number" step="0.5" min="1" value="${b.hh!=null?b.hh:(Ty.h<999?Ty.h:'')}" placeholder="עד התקרה"></label>
     <label>מגובה — 0 = מהרצפה<input id="fz" type="number" step="0.5" min="0" value="${zOf(b)}"></label>
@@ -1005,7 +1017,7 @@ function drawPanel(){
    <div class="bar"><button class="btn pri" id="rot">↻ סיבוב 90°</button>${b.a?'<button class="btn" id="a0">ישר לקירות</button>':''}<button class="btn" id="dup">שכפול</button><button class="btn danger" id="del">מחיקה</button></div>`;
   const $=id=>document.getElementById(id);
   const num=(id,fn)=>$(id)?.addEventListener('change',e=>{const v=parseFloat(e.target.value);fn(isNaN(v)?null:v);touch();renderAll()});
-  num('fw',v=>{if(v)b.w=Math.max(1,v)});num('fw2',v=>{if(v)b.w2=Math.max(1,v)});
+  num('fw',v=>{if(v)b.w=Math.max(1,v)});num('fw2',v=>{if(v)b.w2=Math.max(1,v)});num('fd2',v=>{if(v)b.d2=Math.max(1,v)});
   const nb=B.find(o=>o!==b&&!o.a&&o.d!==b.d&&CFGT.concat('corner').includes(o.t)&&(()=>{const p=R(b),q=R(o);return Math.abs(p.x+p.w-q.x)<.6||Math.abs(q.x+q.w-p.x)<.6||Math.abs(p.y+p.h-q.y)<.6||Math.abs(q.y+q.h-p.y)<.6})()&&hit(rp((r=>({x:r.x-1,y:r.y-1,w:r.w+2,h:r.h+2}))(R(b))),P(o)));
   if(nb&&$('fd')){const bt=document.createElement('button');bt.className='btn sm';bt.type='button';bt.textContent='עומק כמו '+bname(nb)+' ('+f1(nb.d)+')';bt.style.marginTop='4px';bt.onclick=()=>{b.d=nb.d;touch();renderAll()};$('fd').parentNode.appendChild(bt)}num('fd',v=>{if(v)b.d=Math.max(1,v)});
   num('fx',v=>{if(v!=null)b.x=v});num('fy',v=>{if(v!=null)b.y=v});
@@ -1033,6 +1045,11 @@ function drawPanel(){
   $('fface').onclick=e=>{const f=e.target.closest('button')?.dataset.f;if(f){setFace(b,f);touch();renderAll()}};
   $('rot').onclick=()=>rotateB(b);
   if($('toStudio'))$('toStudio').onclick=()=>openStudio(b.id);
+  const cj=cornerFor(b);if(cj.length){const bar=document.createElement('div');bar.className='bar';
+    cj.forEach(({c,h,v,Lh,Lv,no})=>{if(no){const t=document.createElement('span');t.className='muted';t.textContent=no;bar.appendChild(t);return}const bt=document.createElement('button');bt.className='btn';bt.type='button';
+      bt.textContent='⌐ לחבר בפינה: '+bname(h)+' + '+bname(v)+' · זרועות '+f1(Lh)+'×'+f1(Lv)+', עומק '+f1(h.d)+(v.d!==h.d?'/'+f1(v.d):'');
+      bt.onclick=()=>{const n=Object.assign({id:uid++},c);B.push(n);sel=n.id;touch();renderAll()};bar.appendChild(bt)});
+    $('rot').closest('.bar').before(bar)}
   if($('inroom'))$('inroom').onclick=()=>{intoRoom(b);touch();renderAll()};
   $('del').onclick=()=>{B=B.filter(x=>x!==b);sel=null;touch();renderAll()};
   $('dup').onclick=()=>{const c=Object.assign(JSON.parse(JSON.stringify(b)),{id:uid++});const q=R(b);
@@ -1041,7 +1058,7 @@ function drawPanel(){
 
 /* ===== טבלה וסיכום ===== */
 function stats(list){let rod=0,dr=0,bad=0,warn=0;
-  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.corner)rod+=b.w+w2Of(b)-b.d;else if(b.t==='rack')rod+=b.w;else if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
+  const keep=B;B=list;list.forEach(b=>{const t=TYPES[b.t];if(b.cfg&&CFGT.includes(b.t))b.cfg.forEach(r=>{if(r.k==='rod')rod+=b.w;if(r.k==='drawers'||r.k==='baskets')dr+=r.n|0});else{if(t.corner)rod+=b.w+w2Of(b)-(b.d+d2Of(b))/2;else if(b.t==='rack')rod+=b.w;else if(t.rod)rod+=b.w*t.rod;if(b.t==='drawers')dr+=6}const l=analyse(b).lvl;if(l==='bad')bad++;if(l==='warn')warn++});
   B=keep;return{rod,dr,bad,warn}}
 function drawList(){
   const tb=document.getElementById('list');tb.innerHTML='';
@@ -1225,17 +1242,17 @@ function joinery(b,G){
         garments(rodZ,92,low+4,seed);garments(low,90,fl,seed+1)}
       else garments(rodZ,hangs[b.t],fl,seed);
       break}
-    case 'corner':{const m=cornerMap(b),w2=w2Of(b),dd=Math.min(d,w,w2);
+    case 'corner':{const m=cornerMap(b),w2=w2Of(b),dA=Math.min(d,w2),dB=Math.min(d2Of(b),w);
       const Q=(u0,u1,v0,v1,zb,zt,mm)=>{const a1=m(u0,v0),a2=m(u1,v1);addPrism(G,Math.min(a1[0],a2[0]),Math.max(a1[0],a2[0]),Math.min(a1[1],a2[1]),Math.max(a1[1],a2[1]),zb,zt,mm||Cm,cap)};
-      Q(0,w,0,.8,0,cap);Q(0,.8,.8,w2,0,cap);Q(w-TK,w,.8,dd,0,cap);Q(.8,dd,w2-TK,w2,0,cap);
-      Q(.8,w-TK,.8,dd,y=>cap(y)-TK,cap);Q(.8,dd,dd,w2-TK,y=>cap(y)-TK,cap);
-      Q(.8,w-TK,.8,dd,PL,PL+TK);Q(.8,dd,dd,w2-TK,PL,PL+TK);Q(.8,w-TK,dd-5,dd-3.2,0,PL,Dk);Q(dd-5,dd-3.2,dd,w2-TK,0,PL,Dk);
+      Q(0,w,0,.8,0,cap);Q(0,.8,.8,w2,0,cap);Q(w-TK,w,.8,dA,0,cap);Q(.8,dB,w2-TK,w2,0,cap);
+      Q(.8,w-TK,.8,dA,y=>cap(y)-TK,cap);Q(.8,dB,dA,w2-TK,y=>cap(y)-TK,cap);
+      Q(.8,w-TK,.8,dA,PL,PL+TK);Q(.8,dB,dA,w2-TK,PL,PL+TK);Q(dB,w-TK,dA-5,dA-3.2,0,PL,Dk);Q(dB-5,dB-3.2,dA,w2-TK,0,PL,Dk);
       const rz=topMin-TK-5,rodB=(u0,v0,u1,v1)=>{const a1=m(u0,v0),a2=m(u1,v1),len=Math.hypot(a2[0]-a1[0],a2[1]-a1[1]),g=new THREE.CylinderGeometry(1.2,1.2,len,12);
         g.rotateZ(Math.PI/2);if(Math.abs(a2[0]-a1[0])<.01)g.rotateY(Math.PI/2);const ms=new THREE.Mesh(g,MMET());ms.position.set((a1[0]+a2[0])/2,rz,(a1[1]+a2[1])/2);ms.castShadow=true;G.add(ms)};
-      rodB(dd/2,dd/2,w-TK,dd/2);rodB(dd/2,dd/2,dd/2,w2-TK);
-      if(CLOTHES){const r=rng(seed),dep=Math.min(dd-6,40);
-        for(let u=dd+1;u<w-TK-2;u+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2));Q(u,u+1.3,dd/2-dep/2,dd/2+dep/2,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}
-        for(let v=dd+1;v<w2-TK-2;v+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2));Q(dd/2-dep/2,dd/2+dep/2,v,v+1.3,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}}
+      rodB(dB/2,dA/2,w-TK,dA/2);rodB(dB/2,dA/2,dB/2,w2-TK);
+      if(CLOTHES){const r=rng(seed);
+        for(let u=dB+1;u<w-TK-2;u+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2)),dep=Math.min(dA-6,40);Q(u,u+1.3,dA/2-dep/2,dA/2+dep/2,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}
+        for(let v=dA+1;v<w2-TK-2;v+=4.6+r()*1.4){const bot=Math.max(PL+TK+2,rz-3-100*(.8+r()*.2)),dep=Math.min(dB-6,40);Q(dB/2-dep/2,dB/2+dep/2,v,v+1.3,bot,rz-3,MFAB(GARM[r()*GARM.length|0]))}}
       break}
     case 'shelves':{const fl=carcass(z0,!z0);shelves(fl,topMin-TK,34,(zz,g)=>stacks(zz,g,seed+zz|0));led(topMin-TK);break}
     case 'deep':{const fl=carcass(z0,!z0),r=rng(seed);
